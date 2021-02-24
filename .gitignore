@@ -17,3 +17,4 @@ main.map
 # VSC Configuration files
 compile_commands.json
 .vscode/c_cpp_properties.json
+miosix.code-workspace
