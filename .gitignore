@@ -14,7 +14,5 @@ main.map
 ._*
 .DS_Store
 
-# VSC Configuration files
-compile_commands.json
-.vscode/c_cpp_properties.json
-miosix.code-workspace
+# Exclude IDE files
+.idea
