@@ -1,5 +1,6 @@
-#include <miosix.h>
-#include <audio.h>
+
+#include "miosix.h"
+#include "audio.h"
 #include <functional>
 #include <math.h>
 
@@ -18,6 +19,7 @@ void playSine(unsigned short *buffer, unsigned int bufferSize) {
 }
 
 int main() {
+    
     for (int i = 0; i < SINE_LEN; i++) {
         sine_buf[i] = (sin(2 * M_PI * SINE_LEN / i) / 2 + 1) * 4096;
     }
@@ -28,4 +30,5 @@ int main() {
     for (;;) {
 
     }
+    
 }

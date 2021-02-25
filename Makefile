@@ -18,7 +18,7 @@ SUBDIRS := $(KPATH)
 ##
 ## List here your source files (both .s, .c and .cpp)
 ##
-SRC := main.cpp audio.cpp
+SRC := main.cpp audio.cpp dac.cpp
 
 ##
 ## List here additional static libraries with relative path
