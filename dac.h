@@ -26,11 +26,16 @@ public:
      * \return value to store in register 0x20 and 0x21
      */
     void setVolume(int db);
+
+    // TODO: add getVolume()
     
 private:
     Cs43l22dac(const Cs43l22dac &);
     Cs43l22dac &operator=(const Cs43l22dac &);
 
+    // TODO: add volume variable
+
+    // TODO: find the meaning of these strange names
     typedef miosix::Gpio<GPIOB_BASE,  6> scl;
     typedef miosix::Gpio<GPIOB_BASE,  9> sda;
     typedef miosix::Gpio<GPIOA_BASE,  4> lrck;

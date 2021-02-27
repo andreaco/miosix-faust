@@ -34,8 +34,8 @@ AudioDriver &AudioDriver::getInstance() {
 }
 
 AudioDriver::AudioDriver()
-        : bufferSize(256) {
-    auto lambda = [](unsigned short *, unsigned int) {};
+        : bufferSize(256) { // TODO: fine tune the bufferSize
+    auto lambda = [](unsigned short *, unsigned int) {}; // TODO: redesign this quick and dirty fix
     callback = lambda;
     buffer = new unsigned short[bufferSize];
     fill(buffer, buffer + bufferSize, 0);
@@ -73,8 +73,6 @@ AudioDriver::AudioDriver()
     refillDMA(buffer, bufferSize);
     audioDac.send(0x02, 0x9e);
 }
-
-
 
 void AudioDriver::setDMACallback(CallbackFunction newCallback) {
     callback = newCallback;

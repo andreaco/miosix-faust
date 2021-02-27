@@ -35,7 +35,7 @@ void Cs43l22dac::init() {
     send(0x05, 0x20); //AUTO=0, SPEED=01, 32K=0, VIDEO=0, RATIO=0, MCLK=0
     send(0x04, 0xaf); //Headphone always ON, Speaker always OFF
     send(0x06, 0x04); //I2S Mode
-    setVolume(-20);
+    setVolume(-20); // TODO: use the attribute volume
 }
 
 Cs43l22dac::Cs43l22dac() {
@@ -46,7 +46,7 @@ Cs43l22dac::Cs43l22dac() {
 
 void Cs43l22dac::send(unsigned char index, unsigned char data) {
     i2c::sendStart();
-    i2c::send(0x94);
+    i2c::send(0x94); // TODO: wtf is this
     i2c::send(index);
     i2c::send(data);
     i2c::sendStop();
