@@ -9,7 +9,7 @@ using namespace std;
 
 static AudioDriver& audioDriver = AudioDriver::getInstance();
 
-void refillDMA_IRQ(AudioBuffer buffer, unsigned int bufferSize) {
+void refillDMA_IRQ(AudioDriver::AudioBuffer buffer, unsigned int bufferSize) {
     DMA1_Stream5->CR = 0;
     DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
     DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(buffer);
@@ -23,7 +23,7 @@ void refillDMA_IRQ(AudioBuffer buffer, unsigned int bufferSize) {
                        DMA_SxCR_EN;       //Start the DMA
 }
 
-void refillDMA(AudioBuffer buffer, unsigned int bufferSize) {
+void refillDMA(AudioDriver::AudioBuffer buffer, unsigned int bufferSize) {
     FastInterruptDisableLock lock;
     refillDMA_IRQ(buffer, bufferSize);
 }
@@ -96,9 +96,9 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
                   DMA_HIFCR_CDMEIF5 |
                   DMA_HIFCR_CFEIF5;
 
-    AudioBuffer buffer = audioDriver.getBuffer();
+    AudioDriver::AudioBuffer buffer = audioDriver.getBuffer();
     unsigned int bufferSize = audioDriver.getBufferSize();
-    CallbackFunction callback = audioDriver.getCallbackFunction();
+    AudioDriver::CallbackFunction callback = audioDriver.getCallbackFunction();
 
     refillDMA_IRQ(buffer, bufferSize);
     callback(buffer, bufferSize);

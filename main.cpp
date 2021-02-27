@@ -3,6 +3,7 @@
 #include "audio.h"
 #include <functional>
 #include <math.h>
+#include "audio_processor.h"
 
 #define SINE_LEN 256
 
@@ -10,6 +11,13 @@ using namespace miosix;
 using namespace std;
 
 unsigned short sine_buf[SINE_LEN];
+
+class AudioProcessorTest : public AudioProcessor {
+public:
+    inline void process() override {
+        return;
+    }
+};
 
 void playSine(unsigned short *buffer, unsigned int bufferSize) {
     FastInterruptDisableLock lock;
@@ -27,6 +35,11 @@ int main() {
     function<void(unsigned short *, int)> callback = playSine;
     AudioDriver &audioDriver = AudioDriver::getInstance();
     audioDriver.setDMACallback(callback);
+
+    AudioProcessorTest apt;
+    apt.getSampleRate();
+    apt.getBufferSize();
+    apt.getBuffer();
     for (;;) {
 
     }

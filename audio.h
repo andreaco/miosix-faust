@@ -12,14 +12,13 @@
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
 
-typedef std::function<void(unsigned short *, unsigned int)> CallbackFunction;
-typedef unsigned short *AudioBuffer;
-
-
 class AudioDriver {
 public:
 
-    static AudioDriver &getInstance();
+    typedef std::function<void(unsigned short *, unsigned int)> CallbackFunction;
+    typedef unsigned short *AudioBuffer;
+
+    static AudioDriver &getInstance(); // TODO: move initialization in initialize() method, and use parameters to setup the drivers
 
     void setDMACallback(CallbackFunction callback);
 
@@ -28,11 +27,15 @@ public:
     inline unsigned int getBufferSize() { return bufferSize; };
 
     inline CallbackFunction getCallbackFunction() { return callback; };
+
+
+
 private:
     unsigned int bufferSize;
     AudioBuffer buffer;
     CallbackFunction callback;
     Cs43l22dac audioDac;
+
 
 
     AudioDriver();
