@@ -5,13 +5,14 @@
 #ifndef MIOSIX_DAC_H
 #define MIOSIX_DAC_H
 
-using namespace std;
+namespace miosix {
 
-
-class AudioDAC {
+/**
+ * Class to control the CS43L22 on STM32F407VG_Discovery boards
+ */
+class Cs43l22dac {
 public:
-    static AudioDAC &getInstance();
-
+    Cs43l22dac();
     void init();
 
     /**
@@ -28,9 +29,8 @@ public:
     void setVolume(int db);
     
 private:
-    AudioDAC();
-    AudioDAC(const AudioDAC &);
-    AudioDAC &operator=(const AudioDAC &);
+    Cs43l22dac(const Cs43l22dac &);
+    Cs43l22dac &operator=(const Cs43l22dac &);
 
     typedef miosix::Gpio<GPIOB_BASE,  6> scl;
     typedef miosix::Gpio<GPIOB_BASE,  9> sda;
@@ -42,5 +42,6 @@ private:
     typedef miosix::SoftwareI2C<sda, scl> i2c;
 };
 
+} //namespace miosix
 
 #endif //MIOSIX_DAC_H

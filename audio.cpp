@@ -8,8 +8,6 @@ using namespace miosix;
 using namespace std;
 
 static AudioDriver& audioDriver = AudioDriver::getInstance();
-static AudioDAC& audioDAC = AudioDAC::getInstance();
-
 
 void refillDMA_IRQ(AudioBuffer buffer, unsigned int bufferSize) {
     DMA1_Stream5->CR = 0;
@@ -55,7 +53,7 @@ AudioDriver::AudioDriver()
         RCC->PLLI2SCFGR = (2 << 28) | (271 << 6);
         RCC->CR |= RCC_CR_PLLI2SON;
     }
-    audioDAC.init();
+    audioDac.init();
 
 
     //Wait for PLL to lock
@@ -73,7 +71,7 @@ AudioDriver::AudioDriver()
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
     refillDMA(buffer, bufferSize);
-    audioDAC.send(0x02, 0x9e);
+    audioDac.send(0x02, 0x9e);
 }
 
 

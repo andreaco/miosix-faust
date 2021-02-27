@@ -31,6 +31,8 @@ private:
     unsigned int bufferSize;
     AudioBuffer buffer;
     CallbackFunction callback;
+    Cs43l22dac audioDac;
+
 
     AudioDriver();
 
