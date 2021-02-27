@@ -5,7 +5,7 @@
  * Function that initialize the periphereal to play audio.
  * Call this function in the AudioDriver constructor after having set up the DMA
  */
-void AudioDAC::init() {
+void Cs43l22dac::init() {
     {
         miosix::FastInterruptDisableLock dLock;
         //Configure GPIOs
@@ -38,17 +38,13 @@ void AudioDAC::init() {
     setVolume(-20);
 }
 
-AudioDAC::AudioDAC() {
+Cs43l22dac::Cs43l22dac() {
 
    
 }
 
-AudioDAC &AudioDAC::getInstance() {
-    static AudioDAC instance;
-    return instance;
-}
 
-void AudioDAC::send(unsigned char index, unsigned char data) {
+void Cs43l22dac::send(unsigned char index, unsigned char data) {
     i2c::sendStart();
     i2c::send(0x94);
     i2c::send(index);
@@ -56,8 +52,8 @@ void AudioDAC::send(unsigned char index, unsigned char data) {
     i2c::sendStop();
 }
 
-void AudioDAC::setVolume(int db) {
-    db = 2 * max(-102, min(0, db));
+void Cs43l22dac::setVolume(int db) {
+    db = 2 * std::max(-102, std::min(0, db));
     unsigned char vol = static_cast<unsigned int>(db) & 0xff;
     send(0x20, vol);
     send(0x21, vol);

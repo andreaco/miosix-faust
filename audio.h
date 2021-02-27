@@ -2,6 +2,7 @@
 // Created by Federico Di Marzo on 24/02/2021.
 //
 #include "miosix.h"
+#include "dac.h"
 #include "miosix/kernel/queue.h"
 #include <functional>
 #include <vector>

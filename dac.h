@@ -5,7 +5,6 @@
 #ifndef MIOSIX_DAC_H
 #define MIOSIX_DAC_H
 
-namespace miosix {
 
 /**
  * Class to control the CS43L22 on STM32F407VG_Discovery boards
@@ -41,7 +40,5 @@ private:
     typedef miosix::Gpio<GPIOD_BASE,  4> reset;
     typedef miosix::SoftwareI2C<sda, scl> i2c;
 };
-
-} //namespace miosix
 
 #endif //MIOSIX_DAC_H
