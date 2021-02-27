@@ -95,6 +95,7 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
                   DMA_HIFCR_CTEIF5 |
                   DMA_HIFCR_CDMEIF5 |
                   DMA_HIFCR_CFEIF5;
+    // TODO: handle DMA errors (maybe cleaning the buffer?)
 
     AudioDriver::AudioBuffer buffer = audioDriver.getBuffer();
     unsigned int bufferSize = audioDriver.getBufferSize();
