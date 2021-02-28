@@ -26,7 +26,11 @@ void Cs43l22dac::init() {
     reset::high();
     miosix::delayUs(5);
 
-    send(0x00, 0x99); //These five command are the "magic" initialization
+    /**
+     * "Magic" Initialization:
+     * https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 32
+     */
+    send(0x00, 0x99); 
     send(0x47, 0x80);
     send(0x32, 0xbb);
     send(0x32, 0x3b);
@@ -46,7 +50,7 @@ Cs43l22dac::Cs43l22dac() {
 
 void Cs43l22dac::send(unsigned char index, unsigned char data) {
     i2c::sendStart();
-    i2c::send(0x94); // TODO: wtf is this
+    i2c::send(0x94); //0x94 = [100101][0][0] is [start condition][AD0][0] (https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 33)
     i2c::send(index);
     i2c::send(data);
     i2c::sendStop();
