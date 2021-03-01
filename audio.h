@@ -2,15 +2,15 @@
 #ifndef MIOSIX_AUDIO_DRIVER_AUDIO_H
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
-#include <miosix.h>
+#include "miosix.h"
+#include "dac.h"
+#include "audio_processable.h"
 #include <functional>
 #include <vector>
-#include "dac.h"
 
 class AudioDriver {
 public:
 
-    typedef std::function<void(unsigned short *, unsigned int)> CallbackFunction;
 
     /**
      * Type used for the audio buffer.
@@ -22,7 +22,6 @@ public:
      *
      * @return AudioDriver singletor
      */
-    // TODO: move initialization in initialize() method, and use parameters to setup the drivers
     static AudioDriver &getInstance();
 
     /**
@@ -30,8 +29,21 @@ public:
      */
     void init();
 
-    // TODO: switch from callback logic to storing a reference to an AudioProcessor
-    void setDMACallback(CallbackFunction callback);
+    /**
+     * Getter for audioProcessable.
+     *
+     * @return audioProcessable
+     */
+    inline AudioProcessable &getAudioProcessable() {
+        return *audioProcessable;
+    }
+
+    /**
+     * Setter for audioProcessable.
+     */
+    inline void setAudioProcessable(AudioProcessable &newAudioProcessable) {
+        audioProcessable = &newAudioProcessable;
+    }
 
     /**
      * Getter method for AudioBuffer.
@@ -47,15 +59,13 @@ public:
      */
     inline unsigned int getBufferSize() { return bufferSize; };
 
-    inline CallbackFunction getCallbackFunction() { return callback; };
-
+    ~AudioDriver();
 
 private:
-
     /**
      * This buffer can be used to write in the DAC.
      */
-    AudioBuffer buffer;
+    AudioBuffer buffer; // TODO: change buffer in audio buffer with a refactor
 
     /**
      * Size of the buffer.
@@ -67,7 +77,19 @@ private:
      */
     Cs43l22dac audioDac;
 
-    CallbackFunction callback;
+    /**
+     * Instance of an AudioProcessable used as a callback
+     * to process the buffer
+     */
+    AudioProcessable* audioProcessable;
+
+    /**
+     * Volume value of the audio driver.
+     */
+     // TODO: implement volume attribute (maybe is better a float?)
+//    int volume;
+
+    // TODO:
 
     /**
      * Private constructor, use getInstance() to get the singleton.

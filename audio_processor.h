@@ -3,8 +3,13 @@
 #define MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 
 #include "audio.h"
+#include "audio_processable.h"
 
-class AudioProcessor {
+/**
+ * Base abstract class that can be extended to implement a
+ * processor for audio.
+ */
+class AudioProcessor : public AudioProcessable {
 public:
     AudioProcessor();
 
@@ -17,6 +22,9 @@ public:
     int getSampleRate(); // TODO: implement audio rate
 
 private:
+    /**
+     * Reference to the AudioDriver.
+     */
     AudioDriver &audioDriver;
 };
 

@@ -3,11 +3,17 @@
 #include "miosix.h"
 #include <functional>
 #include <algorithm>
+#include <memory>
 
 using namespace miosix;
 using namespace std;
 
+// singleton instance of the AudioDriver
 static AudioDriver &audioDriver = AudioDriver::getInstance();
+
+// instance of an AudioProcessable with an empty processor
+static AudioProcessableDummy audioProcessableDummy;
+
 
 /**
  * This function is used to fill the DMA with a buffer.
@@ -55,7 +61,7 @@ void AudioDriver::init() {
         RCC->APB1ENR |= RCC_APB1ENR_SPI3EN;
         RCC_SYNC();
 
-        //Enable audio PLL (settings for 44100Hz audio)
+        //Enable audio PLL (settings for 44100Hz audio) // TODO: variable sample rates
         RCC->PLLI2SCFGR = (2 << 28) | (271 << 6);
         RCC->CR |= RCC_CR_PLLI2SON;
     }
@@ -67,7 +73,7 @@ void AudioDriver::init() {
 
 
     SPI3->CR2 = SPI_CR2_TXDMAEN;
-    SPI3->I2SPR = SPI_I2SPR_MCKOE | 6;
+    SPI3->I2SPR = SPI_I2SPR_MCKOE | 6; // TODO: variable sample rates
     SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD    //I2S mode selected
                     | SPI_I2SCFGR_I2SE      //I2S Enabled
                     | SPI_I2SCFGR_I2SCFG_1; //Master transmit
@@ -77,19 +83,22 @@ void AudioDriver::init() {
 
     refillDMA(buffer, bufferSize);
     audioDac.send(0x02, 0x9e);
+
+    // TODO: set the volume based on the volume attribute
 }
 
 AudioDriver::AudioDriver()
-        : bufferSize(256) { // TODO: fine tune the bufferSize
-    auto lambda = [](unsigned short *, unsigned int) {}; // TODO: redesign this quick and dirty fix
-    callback = lambda;
-    buffer = new unsigned short[bufferSize];
+        :
+        bufferSize(256),
+        audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
+    buffer = new unsigned short[bufferSize]; // TODO: manage memory in a better way
     fill(buffer, buffer + bufferSize, 0); // zeroing the audio buffer
 }
 
-void AudioDriver::setDMACallback(CallbackFunction newCallback) {
-    callback = newCallback;
+AudioDriver::~AudioDriver() {
+    delete [] buffer;
 }
+
 
 /**
  * DMA end of transfer interrupt
@@ -105,16 +114,18 @@ void __attribute__((naked)) DMA1_Stream5_IRQHandler() {
  */
 void __attribute__((used)) I2SdmaHandlerImpl() {
     // TODO: handle DMA errors (maybe cleaning the buffer?)
+    // removing the interrupts flags
     DMA1->HIFCR = DMA_HIFCR_CTCIF5 |
                   DMA_HIFCR_CTEIF5 |
                   DMA_HIFCR_CDMEIF5 |
                   DMA_HIFCR_CFEIF5;
 
+    // refilling the DMA buffer
     AudioDriver::AudioBuffer buffer = audioDriver.getBuffer();
     unsigned int bufferSize = audioDriver.getBufferSize();
-    AudioDriver::CallbackFunction callback = audioDriver.getCallbackFunction();
-
     refillDMA_IRQ(buffer, bufferSize);
-    callback(buffer, bufferSize);
+
+    // callback to the AudioProcessable to process the buffer
+    audioDriver.getAudioProcessable().process();
 }
 

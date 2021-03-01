@@ -3,9 +3,7 @@
 #include "audio_processor.h"
 
 AudioProcessor::AudioProcessor()
-        : audioDriver(AudioDriver::getInstance()) {
-
-}
+        : audioDriver(AudioDriver::getInstance()) {}
 
 AudioDriver::AudioBuffer AudioProcessor::getBuffer() {
     return audioDriver.getBuffer();
