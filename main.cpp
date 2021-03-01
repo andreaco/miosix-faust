@@ -34,6 +34,7 @@ int main() {
 
     function<void(unsigned short *, int)> callback = playSine;
     AudioDriver &audioDriver = AudioDriver::getInstance();
+    audioDriver.init();
     audioDriver.setDMACallback(callback);
 
     AudioProcessorTest apt;

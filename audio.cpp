@@ -7,8 +7,14 @@
 using namespace miosix;
 using namespace std;
 
-static AudioDriver& audioDriver = AudioDriver::getInstance();
+static AudioDriver &audioDriver = AudioDriver::getInstance();
 
+/**
+ * This function is used to fill the DMA with a buffer.
+ *
+ * @param buffer AudioBuffer to move with DMA
+ * @param bufferSize buffer size
+ */
 void refillDMA_IRQ(AudioDriver::AudioBuffer buffer, unsigned int bufferSize) {
     DMA1_Stream5->CR = 0;
     DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
@@ -23,6 +29,13 @@ void refillDMA_IRQ(AudioDriver::AudioBuffer buffer, unsigned int bufferSize) {
                        DMA_SxCR_EN;       //Start the DMA
 }
 
+/**
+ * This function is a wrapper to refillDMA_IRQ that can be called
+ * outside an interrupt.
+ *
+ * @param buffer AudioBuffer to move with DMA
+ * @param bufferSize buffer size
+ */
 void refillDMA(AudioDriver::AudioBuffer buffer, unsigned int bufferSize) {
     FastInterruptDisableLock lock;
     refillDMA_IRQ(buffer, bufferSize);
@@ -33,14 +46,7 @@ AudioDriver &AudioDriver::getInstance() {
     return instance;
 }
 
-AudioDriver::AudioDriver()
-        : bufferSize(256) { // TODO: fine tune the bufferSize
-    auto lambda = [](unsigned short *, unsigned int) {}; // TODO: redesign this quick and dirty fix
-    callback = lambda;
-    buffer = new unsigned short[bufferSize];
-    fill(buffer, buffer + bufferSize, 0);
-
-
+void AudioDriver::init() {
     {
         FastInterruptDisableLock dLock;
         //Enable DMA1 and SPI3/I2S3
@@ -48,7 +54,7 @@ AudioDriver::AudioDriver()
         RCC_SYNC();
         RCC->APB1ENR |= RCC_APB1ENR_SPI3EN;
         RCC_SYNC();
-               
+
         //Enable audio PLL (settings for 44100Hz audio)
         RCC->PLLI2SCFGR = (2 << 28) | (271 << 6);
         RCC->CR |= RCC_CR_PLLI2SON;
@@ -59,7 +65,6 @@ AudioDriver::AudioDriver()
     //Wait for PLL to lock
     while ((RCC->CR & RCC_CR_PLLI2SRDY) == 0);
 
-    
 
     SPI3->CR2 = SPI_CR2_TXDMAEN;
     SPI3->I2SPR = SPI_I2SPR_MCKOE | 6;
@@ -72,6 +77,14 @@ AudioDriver::AudioDriver()
 
     refillDMA(buffer, bufferSize);
     audioDac.send(0x02, 0x9e);
+}
+
+AudioDriver::AudioDriver()
+        : bufferSize(256) { // TODO: fine tune the bufferSize
+    auto lambda = [](unsigned short *, unsigned int) {}; // TODO: redesign this quick and dirty fix
+    callback = lambda;
+    buffer = new unsigned short[bufferSize];
+    fill(buffer, buffer + bufferSize, 0); // zeroing the audio buffer
 }
 
 void AudioDriver::setDMACallback(CallbackFunction newCallback) {
@@ -91,11 +104,11 @@ void __attribute__((naked)) DMA1_Stream5_IRQHandler() {
  * DMA end of transfer interrupt actual implementation
  */
 void __attribute__((used)) I2SdmaHandlerImpl() {
+    // TODO: handle DMA errors (maybe cleaning the buffer?)
     DMA1->HIFCR = DMA_HIFCR_CTCIF5 |
                   DMA_HIFCR_CTEIF5 |
                   DMA_HIFCR_CDMEIF5 |
                   DMA_HIFCR_CFEIF5;
-    // TODO: handle DMA errors (maybe cleaning the buffer?)
 
     AudioDriver::AudioBuffer buffer = audioDriver.getBuffer();
     unsigned int bufferSize = audioDriver.getBufferSize();
