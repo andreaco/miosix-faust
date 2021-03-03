@@ -16,6 +16,5 @@ main.map
 
 # Exclude IDE files
 .idea
-compile_commands.json
 miosix.code-workspace
 .vscode/c_cpp_properties.json
