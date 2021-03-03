@@ -8,31 +8,6 @@
 #include <functional>
 #include <vector>
 
-/**
- * This class encapsulates the SR enum
- */
-class SampleRate
-{
-public:
-    /**
-     * Example usage:
-     * \code audioDriver.init(SampleRate::_44100Hz); \endcode
-     */
-    enum SR
-    {
-        _8000Hz,
-        _16000Hz,
-        _32000Hz,
-        _48000Hz,
-        _96000Hz,
-        _22050Hz,
-        _44100Hz
-    };
-private:
-    SampleRate(); // Wrapper class, disallow creating instances
-};
-
-
 
 class AudioDriver {
 public:
@@ -124,6 +99,11 @@ private:
      */
      // TODO: implement volume attribute (maybe is better a float?)
 //    int volume;
+
+    /**
+     * Setup of the sample rate from SampleRate enum class
+     */
+     void setSampleRate(SampleRate::SR sampleRate);
 
     /**
      * Private constructor, use getInstance() to get the singleton.

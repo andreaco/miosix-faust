@@ -41,10 +41,72 @@ typedef miosix::SoftwareI2C<sda, scl> i2c;   //! Software I2C static object
 
 
 
-void Cs43l22dac::init() {
+void Cs43l22dac::init(SampleRate::SR sampleRate) {
+    int plli2sn;    // Multiplication factor for VCO
+    int plli2sr;    // Division factor for I2S clocks
+    int i2sdiv;     // I2S linear prescaler
+    int i2sodd;     // Odd factor for the prescaler
+    switch(sampleRate) {
+        case SampleRate::_8000Hz:
+            plli2sn = 256;
+            plli2sr = 5;
+            i2sdiv  = 122;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_16000Hz:
+            plli2sn = 213;
+            plli2sr = 2;
+            i2sdiv  = 13;
+            i2sodd  = 0;
+            break;
+        case SampleRate::_32000Hz:
+            plli2sn = 213;
+            plli2sr = 2;
+            i2sdiv  = 6;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_48000Hz:
+            plli2sn = 258;
+            plli2sr = 3;
+            i2sdiv  = 3;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_96000Hz:
+            plli2sn = 344;
+            plli2sr = 2;
+            i2sdiv  = 3;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_22050Hz:
+            plli2sn = 429;
+            plli2sr = 4;
+            i2sdiv  = 9;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_44100Hz:
+            plli2sn = 271;
+            plli2sr = 2;
+            i2sdiv  = 6;
+            i2sodd  = 0;
+            break;
+        default:
+            plli2sn = 0;
+            plli2sr = 0;
+            i2sdiv  = 0;
+            i2sodd  = 0;
+            break;
+    }
+
     //Pin initialization
     {
         miosix::FastInterruptDisableLock dLock;
+
+        //Enable DMA1 and SPI3/I2S3
+        RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN;
+        RCC_SYNC();
+        RCC->APB1ENR |= RCC_APB1ENR_SPI3EN;
+        RCC_SYNC();
+
         //Configure GPIOs
         i2c::init();
         mclk::mode(miosix::Mode::ALTERNATE);
@@ -56,7 +118,14 @@ void Cs43l22dac::init() {
         lrck::mode(miosix::Mode::ALTERNATE);
         lrck::alternateFunction(6);
         reset::mode(miosix::Mode::OUTPUT);
-    }   
+
+        //Enable audio PLL
+        RCC->PLLI2SCFGR = (plli2sr << 28) | (plli2sn << 6);
+        RCC->CR |= RCC_CR_PLLI2SON;
+    }
+
+    //Wait for PLL to lock
+    while ((RCC->CR & RCC_CR_PLLI2SRDY) == 0);
 
     /*
      * The device will remain in the Power-Down State
@@ -88,6 +157,17 @@ void Cs43l22dac::init() {
 
     // Initial default volume
     setVolume(-20);
+
+    SPI3->CR2 = SPI_CR2_TXDMAEN;
+    SPI3->I2SPR = SPI_I2SPR_MCKOE | (i2sodd << 8) | i2sdiv;
+    SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD    //I2S mode selected
+                    | SPI_I2SCFGR_I2SE      //I2S Enabled
+                    | SPI_I2SCFGR_I2SCFG_1; //Master transmit
+
+    NVIC_SetPriority(DMA1_Stream5_IRQn, 1); //High priority for DMA
+    NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+
+    Cs43l22dac::send(0x02, 0x9e);
 }
 
 

@@ -19,7 +19,7 @@ public:
 
     unsigned int getBufferSize();
 
-    double getSampleRate(); 
+    double getSampleRate();
 
 private:
     /**
