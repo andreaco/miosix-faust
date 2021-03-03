@@ -9,12 +9,23 @@ using namespace miosix;
 using namespace std;
 
 // testing an implementation of an AudioProcessor
+#define BUFFSIZE 256
 class AudioProcessorTest : public AudioProcessor {
 public:
-    inline void process() override {
-        static int i = 0;
-        i++;
+    AudioProcessorTest() {
+        for(int i=0; i < BUFFSIZE; ++i) {
+            sinTable[i] = 4095 * ((sin(2 * 3.14 * i / BUFFSIZE) + 1) / 2);
+        }
+
     }
+    inline void process() override {
+        auto* b = getBuffer();
+        for (int i=0; i < getBufferSize(); ++i) {
+            b[i] = sinTable[i];
+        }
+    }
+
+    unsigned int sinTable[BUFFSIZE];
 };
 
 int main() {
@@ -22,7 +33,7 @@ int main() {
 
     // initializing the audio driver
     AudioDriver &audioDriver = AudioDriver::getInstance();
-    audioDriver.init();
+    audioDriver.init(SampleRate::_44100Hz);
 
     // setting the audio processor
     audioDriver.setAudioProcessable(audioProcessorTest);
