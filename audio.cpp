@@ -81,7 +81,7 @@ void AudioDriver::init() {
     NVIC_SetPriority(DMA1_Stream5_IRQn, 2);//High priority for DMA
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
-    refillDMA(buffer, bufferSize);
+    refillDMA(audioBuffer, bufferSize);
     Cs43l22dac::send(0x02, 0x9e);
 
     // TODO: set the volume based on the volume attribute
@@ -91,12 +91,12 @@ AudioDriver::AudioDriver()
         :
         bufferSize(256),
         audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
-    buffer = new unsigned short[bufferSize]; // TODO: manage memory in a better way
-    fill(buffer, buffer + bufferSize, 0); // zeroing the audio buffer
+    audioBuffer = new unsigned short[bufferSize]; // TODO: manage memory in a better way
+    fill(audioBuffer, audioBuffer + bufferSize, 0); // zeroing the audio buffer
 }
 
 AudioDriver::~AudioDriver() {
-    delete [] buffer;
+    delete [] audioBuffer;
 }
 
 

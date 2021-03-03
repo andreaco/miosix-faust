@@ -50,7 +50,7 @@ public:
      *
      * @return AudioBuffer
      */
-    inline AudioBuffer getBuffer() { return buffer; };
+    inline AudioBuffer getBuffer() { return audioBuffer; };
 
     /**
      * Getter method for the bufferSize.
@@ -65,7 +65,7 @@ private:
     /**
      * This buffer can be used to write in the DAC.
      */
-    AudioBuffer buffer; // TODO: change buffer in audio buffer with a refactor
+    AudioBuffer audioBuffer;
 
     /**
      * Size of the buffer.
