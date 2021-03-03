@@ -13,6 +13,6 @@ unsigned int AudioProcessor::getBufferSize() {
     return audioDriver.getBufferSize();
 }
 
-int AudioProcessor::getSampleRate() {
-    return 44100;
+double AudioProcessor::getSampleRate() {
+    return audioDriver.getSampleRate();
 }

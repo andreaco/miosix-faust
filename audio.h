@@ -8,6 +8,32 @@
 #include <functional>
 #include <vector>
 
+/**
+ * This class encapsulates the SR enum
+ */
+class SampleRate
+{
+public:
+    /**
+     * Example usage:
+     * \code audioDriver.init(SampleRate::_44100Hz); \endcode
+     */
+    enum SR
+    {
+        _8000Hz,
+        _16000Hz,
+        _32000Hz,
+        _48000Hz,
+        _96000Hz,
+        _22050Hz,
+        _44100Hz
+    };
+private:
+    SampleRate(); // Wrapper class, disallow creating instances
+};
+
+
+
 class AudioDriver {
 public:
 
@@ -27,7 +53,7 @@ public:
     /**
      * Initializes the audio driver.
      */
-    void init();
+    void init(SampleRate::SR = SampleRate::_44100Hz);
 
     /**
      * Getter for audioProcessable.
@@ -59,6 +85,16 @@ public:
      */
     inline unsigned int getBufferSize() { return bufferSize; };
 
+    /**
+     * Getter method for the sampleRate;
+     *
+     * @return sampleRate
+     */
+    inline double getSampleRate() { return sampleRate; };
+
+    /**
+     * Destructor
+     */
     ~AudioDriver();
 
 private:
@@ -72,6 +108,10 @@ private:
      */
     unsigned int bufferSize;
 
+    /**
+     *
+     */
+     double sampleRate;
 
     /**
      * Instance of an AudioProcessable used as a callback

@@ -19,7 +19,7 @@ public:
 
     unsigned int getBufferSize();
 
-    int getSampleRate(); // TODO: implement audio rate
+    double getSampleRate(); 
 
 private:
     /**

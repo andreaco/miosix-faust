@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <memory>
 
+
+// TODO: Remove using declarations
 using namespace miosix;
 using namespace std;
 
@@ -26,13 +28,13 @@ void refillDMA_IRQ(AudioDriver::AudioBuffer buffer, unsigned int bufferSize) {
     DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
     DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(buffer);
     DMA1_Stream5->NDTR = bufferSize;
-    DMA1_Stream5->CR = DMA_SxCR_PL_1 | //High priority DMA stream
-                       DMA_SxCR_MSIZE_0 | //Read  16bit at a time from RAM
-                       DMA_SxCR_PSIZE_0 | //Write 16bit at a time to SPI
-                       DMA_SxCR_MINC | //Increment RAM pointer
-                       DMA_SxCR_DIR_0 | //Memory to peripheral direction
-                       DMA_SxCR_TCIE | //Interrupt on completion
-                       DMA_SxCR_EN;       //Start the DMA
+    DMA1_Stream5->CR = DMA_SxCR_PL_1 |      //High priority DMA stream
+                       DMA_SxCR_MSIZE_0 |   //Read  16bit at a time from RAM
+                       DMA_SxCR_PSIZE_0 |   //Write 16bit at a time to SPI
+                       DMA_SxCR_MINC |      //Increment RAM pointer
+                       DMA_SxCR_DIR_0 |     //Memory to peripheral direction
+                       DMA_SxCR_TCIE |      //Interrupt on completion
+                       DMA_SxCR_EN;         //Start the DMA
 }
 
 /**
@@ -52,7 +54,70 @@ AudioDriver &AudioDriver::getInstance() {
     return instance;
 }
 
-void AudioDriver::init() {
+void AudioDriver::init(SampleRate::SR sampleRate) {
+    int plli2sn;    // Multiplication factor for VCO
+    int plli2sr;    // Division factor for I2S clocks
+    int i2sdiv;     // I2S linear prescaler
+    int i2sodd;     // Odd factor for the prescaler
+    switch(sampleRate) {
+        case SampleRate::_8000Hz:
+            this->sampleRate = 8000.0;
+            plli2sn = 256;
+            plli2sr = 5;
+            i2sdiv  = 122;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_16000Hz:
+            this->sampleRate = 16000.0;
+            plli2sn = 213;
+            plli2sr = 2;
+            i2sdiv  = 13;
+            i2sodd  = 0;
+            break;
+        case SampleRate::_32000Hz:
+            this->sampleRate = 32000.0;
+            plli2sn = 213;
+            plli2sr = 2;
+            i2sdiv  = 6;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_48000Hz:
+            this->sampleRate = 48000.0;
+            plli2sn = 258;
+            plli2sr = 3;
+            i2sdiv  = 3;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_96000Hz:
+            this->sampleRate = 96000.0;
+            plli2sn = 344;
+            plli2sr = 2;
+            i2sdiv  = 3;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_22050Hz:
+            this->sampleRate = 22050.0;
+            plli2sn = 429;
+            plli2sr = 4;
+            i2sdiv  = 9;
+            i2sodd  = 1;
+            break;
+        case SampleRate::_44100Hz:
+            this->sampleRate = 44100.0;
+            plli2sn = 271;
+            plli2sr = 2;
+            i2sdiv  = 6;
+            i2sodd  = 0;
+            break;
+        default:
+            this->sampleRate = 0.0;
+            plli2sn = 0;
+            plli2sr = 0;
+            i2sdiv  = 0;
+            i2sodd  = 0;
+            break;
+    }
+
     {
         FastInterruptDisableLock dLock;
         //Enable DMA1 and SPI3/I2S3
@@ -61,8 +126,8 @@ void AudioDriver::init() {
         RCC->APB1ENR |= RCC_APB1ENR_SPI3EN;
         RCC_SYNC();
 
-        //Enable audio PLL (settings for 44100Hz audio) // TODO: variable sample rates
-        RCC->PLLI2SCFGR = (2 << 28) | (271 << 6);
+        //Enable audio PLL
+        RCC->PLLI2SCFGR = (plli2sr << 28) | (plli2sn << 6);
         RCC->CR |= RCC_CR_PLLI2SON;
     }
     Cs43l22dac::init();
@@ -73,12 +138,12 @@ void AudioDriver::init() {
 
 
     SPI3->CR2 = SPI_CR2_TXDMAEN;
-    SPI3->I2SPR = SPI_I2SPR_MCKOE | 6; // TODO: variable sample rates
+    SPI3->I2SPR = SPI_I2SPR_MCKOE | (i2sodd << 8) | i2sdiv;
     SPI3->I2SCFGR = SPI_I2SCFGR_I2SMOD    //I2S mode selected
                     | SPI_I2SCFGR_I2SE      //I2S Enabled
                     | SPI_I2SCFGR_I2SCFG_1; //Master transmit
 
-    NVIC_SetPriority(DMA1_Stream5_IRQn, 2);//High priority for DMA
+    NVIC_SetPriority(DMA1_Stream5_IRQn, 2); //High priority for DMA
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
     refillDMA(audioBuffer, bufferSize);
