@@ -1,5 +1,5 @@
 #include "audio.h"
-#include "dac.h"
+#include "cs43l22dac.h"
 #include "miosix.h"
 #include <functional>
 #include <algorithm>
@@ -65,7 +65,7 @@ void AudioDriver::init() {
         RCC->PLLI2SCFGR = (2 << 28) | (271 << 6);
         RCC->CR |= RCC_CR_PLLI2SON;
     }
-    audioDac.init();
+    Cs43l22dac::init();
 
 
     //Wait for PLL to lock
@@ -82,7 +82,7 @@ void AudioDriver::init() {
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
     refillDMA(buffer, bufferSize);
-    audioDac.send(0x02, 0x9e);
+    Cs43l22dac::send(0x02, 0x9e);
 
     // TODO: set the volume based on the volume attribute
 }

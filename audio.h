@@ -3,7 +3,7 @@
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
 #include "miosix.h"
-#include "dac.h"
+#include "cs43l22dac.h"
 #include "audio_processable.h"
 #include <functional>
 #include <vector>
@@ -72,10 +72,6 @@ private:
      */
     unsigned int bufferSize;
 
-    /**
-     * Dac driver.
-     */
-    Cs43l22dac audioDac;
 
     /**
      * Instance of an AudioProcessable used as a callback
@@ -88,8 +84,6 @@ private:
      */
      // TODO: implement volume attribute (maybe is better a float?)
 //    int volume;
-
-    // TODO:
 
     /**
      * Private constructor, use getInstance() to get the singleton.
