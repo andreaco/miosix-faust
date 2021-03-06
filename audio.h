@@ -64,6 +64,8 @@ public:
      * Getter method for the sampleRate;
      *
      * @return sampleRate
+     *
+     * //TODO: change from double to float
      */
     inline double getSampleRate() { return sampleRate; };
 

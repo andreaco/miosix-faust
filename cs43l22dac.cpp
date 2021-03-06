@@ -127,19 +127,16 @@ void Cs43l22dac::init(SampleRate::SR sampleRate) {
     //Wait for PLL to lock
     while ((RCC->CR & RCC_CR_PLLI2SRDY) == 0);
 
-    /*
-     * The device will remain in the Power-Down State
-     * until RESET is brought high.
-     */
+    //The device will remain in the Power-Down State
+    //until RESET is brought high.
     reset::low();
     miosix::delayUs(5);
     reset::high();
     miosix::delayUs(5);
 
-    /*
-     * "Magic" Initialization:
-     * https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 32
-     */
+
+    //"Magic" Initialization:
+    //https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 32
     send(0x00, 0x99); 
     send(0x47, 0x80);
     send(0x32, 0xbb);
@@ -174,11 +171,9 @@ void Cs43l22dac::init(SampleRate::SR sampleRate) {
 
 void Cs43l22dac::send(unsigned char index, unsigned char data) {
     i2c::sendStart();
-    /*
-     * TODO: Define of this value?
-     * 0x94 = [100101][0][0] is [start condition][AD0][0]
-     * (https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 33)
-     */
+
+    //0x94 = [100101][0][0] is [start condition][AD0][0]
+    // (https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 33)
     i2c::send(0x94);
     i2c::send(index);
     i2c::send(data);
