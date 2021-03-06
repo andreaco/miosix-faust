@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 
+// TODO: add noexcepts
 
 class AudioDriver {
 public:
