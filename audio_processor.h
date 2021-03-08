@@ -4,6 +4,7 @@
 
 #include "audio.h"
 #include "audio_processable.h"
+#include "audio_buffer.h"
 
 /**
  * Base abstract class that can be extended to implement a
@@ -15,11 +16,12 @@ public:
 
     virtual void process() = 0;
 
-    AudioDriver::AudioBuffer getBuffer();
+    // TODO: find an way to define the buffer len
+    inline AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() { return audioDriver.getBuffer();};
 
-    unsigned int getBufferSize();
+    inline unsigned int getBufferSize() { return audioDriver.getBufferSize(); };
 
-    double getSampleRate();
+    inline double getSampleRate() { return audioDriver.getSampleRate(); };
 
 private:
     /**
