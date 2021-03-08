@@ -145,7 +145,6 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
     audioDriver.getAudioProcessable().process();
 
 
-    // TODO: calling getBuffer() freezes the board
     unsigned int bufferSize = audioDriver.getBufferSize();
     auto& buffer = audioDriver.getBuffer();
 
