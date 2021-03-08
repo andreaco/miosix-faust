@@ -5,19 +5,20 @@
 #include "miosix.h"
 #include "cs43l22dac.h"
 #include "audio_processable.h"
+#include "audio_buffer.h"
 #include <functional>
 #include <vector>
+#include <cstdint>
 
 // TODO: add noexcepts
+
+#define AUDIO_DRIVER_BUFFER_SIZE 128
+#define DAC_BIT_DEPTH 12
+#define DAC_MAX_VALUE 4096
 
 class AudioDriver {
 public:
 
-
-    /**
-     * Type used for the audio buffer.
-     */
-    typedef unsigned short *AudioBuffer;
 
     /**
      * Gets an instance of the AudioDriver singleton.
@@ -52,26 +53,26 @@ public:
      *
      * @return AudioBuffer
      */
-    inline AudioBuffer getBuffer() { return audioBuffer; };
+    AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() { return audioBuffer; };
 
     /**
      * Getter method for the bufferSize.
      *
      * @return bufferSize
      */
-    inline unsigned int getBufferSize() { return bufferSize; };
+    inline unsigned int getBufferSize() const { return bufferSize; };
 
     /**
-     * Getter method for the sampleRate;
+     * Getter method for the sampleRate.
      *
      * @return sampleRate
      *
      * //TODO: change from double to float
      */
-    inline double getSampleRate() { return sampleRate; };
+    inline double getSampleRate() const { return sampleRate; };
 
     /**
-     * Destructor
+     * Destructor.
      */
     ~AudioDriver();
 
@@ -79,7 +80,17 @@ private:
     /**
      * This buffer can be used to write in the DAC.
      */
-    AudioBuffer audioBuffer;
+    AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> audioBuffer;
+
+    /**
+     * Left channel buffer, used to convert the float audioBuffer in uint_16
+     */
+    uint16_t *_bufferLeft;
+
+    /**
+    * Left channel buffer, used to convert the float audioBuffer in uint_16
+    */
+    uint16_t *_bufferRight;
 
     /**
      * Size of the buffer.
@@ -89,24 +100,24 @@ private:
     /**
      *
      */
-     double sampleRate;
+    double sampleRate;
 
     /**
      * Instance of an AudioProcessable used as a callback
      * to process the buffer
      */
-    AudioProcessable* audioProcessable;
+    AudioProcessable *audioProcessable;
 
     /**
      * Volume value of the audio driver.
      */
-     // TODO: implement volume attribute (maybe is better a float?)
+    // TODO: implement volume attribute (maybe is better a float?)
 //    int volume;
 
     /**
      * Setup of the sample rate from SampleRate enum class
      */
-     void setSampleRate(SampleRate::SR sampleRate);
+    void setSampleRate(SampleRate::SR sampleRate);
 
     /**
      * Private constructor, use getInstance() to get the singleton.
