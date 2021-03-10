@@ -61,7 +61,15 @@ public:
      *
      * @param buffer AudioBuffer to sum to this instance
      */
-    void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> buffer); // TODO: test it
+    void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer); // TODO: test it
+
+    /**
+     * Copy from a mono buffer on a certain channel.
+     *
+     * @param audioBuffer target buffer to copy
+     * @param channelNumber destination channel
+     */
+    void copyOnChannel(AudioBuffer<T, 1, BUFFER_LEN> &audioBuffer, size_t channelNumber); // TODO: test it
 
 private:
     /**
