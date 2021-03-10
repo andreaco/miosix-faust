@@ -18,7 +18,7 @@ SUBDIRS := $(KPATH)
 ##
 ## List here your source files (both .s, .c and .cpp)
 ##
-SRC := kemain.cpp audio/audio.cpp audio/cs43l22dac.cpp \
+SRC := main.cpp audio/audio.cpp audio/cs43l22dac.cpp \
 audio/audio_processor.cpp audio/audio_buffer.cpp
 
 ##
