@@ -3,6 +3,7 @@
 
 #include "miosix.h"
 #include "../miosix/util/software_i2c.h"
+
 /**
  * This class encapsulates the SR enum
  */

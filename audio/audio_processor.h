@@ -21,7 +21,7 @@ public:
 
     inline unsigned int getBufferSize() { return audioDriver.getBufferSize(); };
 
-    inline double getSampleRate() { return audioDriver.getSampleRate(); };
+    inline float getSampleRate() { return audioDriver.getSampleRate(); };
 
 private:
     /**
