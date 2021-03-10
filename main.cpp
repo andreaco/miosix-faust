@@ -1,8 +1,8 @@
 
 #include "miosix.h"
-#include "audio.h"
-#include "audio_processor.h"
-#include "audio_buffer.h"
+#include "audio/audio.h"
+#include "audio/audio_processor.h"
+#include "audio/audio_buffer.h"
 #include <functional>
 #include <math.h>
 #include <cstdint>

@@ -16,9 +16,14 @@
 #define DAC_BIT_DEPTH 12
 #define DAC_MAX_VALUE 4096
 
+/**
+ * This singleton class offers an interface to the low level audio
+ * functionalities of the system.
+ * It allows to set an AudioProcessable object to be called as a callback
+ * to handle the audio processing.
+ */
 class AudioDriver {
 public:
-
 
     /**
      * Gets an instance of the AudioDriver singleton.

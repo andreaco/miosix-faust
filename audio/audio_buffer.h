@@ -7,7 +7,7 @@
 
 #include <array>
 
-// TODO: limit the BUFFER_LEN to be even
+
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
 class AudioBuffer {
 public:

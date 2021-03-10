@@ -2,7 +2,7 @@
 #define MIOSIX_CS43L22DAC_H
 
 #include "miosix.h"
-#include "miosix/util/software_i2c.h"
+#include "../miosix/util/software_i2c.h"
 /**
  * This class encapsulates the SR enum
  */
