@@ -37,7 +37,7 @@ public:
 
 int main() {
     AudioProcessorTest audioProcessorTest;
-    audioProcessorTest.process();
+//    audioProcessorTest.process();
 
     // initializing the audio driver
     AudioDriver &audioDriver = AudioDriver::getInstance();

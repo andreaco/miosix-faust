@@ -31,8 +31,9 @@ static uint16_t *_bufferLeftIRQ;
 void refillDMA_IRQ(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsigned int bufferSize) {
     // TODO: stereo DMA
     DMA1_Stream5->CR = 0;
-    DMA1_Stream5->PAR = reinterpret_cast<uint32_t>(&SPI3->DR);
-    DMA1_Stream5->M0AR = reinterpret_cast<uint32_t>(bufferLeft);
+    DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
+    DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(bufferLeft);
+
     // TODO: assert overflow buffer size
     DMA1_Stream5->NDTR = bufferSize; // setting the buffer size
     DMA1_Stream5->CR = DMA_SxCR_PL_1 |      //High priority DMA stream
@@ -119,7 +120,10 @@ AudioDriver::AudioDriver()
     _bufferRightIRQ = _bufferRight;
 }
 
-AudioDriver::~AudioDriver() {}
+AudioDriver::~AudioDriver() {
+    delete[] _bufferLeft;
+    delete[] _bufferRight;
+}
 
 
 /**
@@ -142,14 +146,19 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
                   DMA_HIFCR_CDMEIF5 |
                   DMA_HIFCR_CFEIF5;
 
-    audioDriver.getAudioProcessable().process();
-
 
     unsigned int bufferSize = audioDriver.getBufferSize();
     auto& buffer = audioDriver.getBuffer();
 
     auto bufferLeftFloat = buffer.getReadPointer(0);
     auto bufferRightFloat = buffer.getReadPointer(1);
+
+
+    // refilling the DMA buffer
+    refillDMA_IRQ(_bufferLeftIRQ, _bufferRightIRQ, bufferSize);
+
+    // callback to the AudioProcessable to process the buffer
+    audioDriver.getAudioProcessable().process();
 
     // float to int conversion
     // TODO: find a better way to do it
@@ -158,12 +167,5 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
         _bufferRightIRQ[i] = static_cast<uint16_t>(((bufferRightFloat[i] + 1.0f) / 2) * DAC_MAX_VALUE);
     }
 
-    // refilling the DMA buffer
-    refillDMA_IRQ(_bufferLeftIRQ, _bufferRightIRQ, bufferSize);
-
-    // callback to the AudioProcessable to process the buffer
-
-//    AudioProcessable& audioProcessable = audioDriver.getAudioProcessable();
-//    audioProcessable.process();
 }
 

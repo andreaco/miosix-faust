@@ -1,6 +1,3 @@
-//
-// Created by mailf on 06/03/2021.
-//
 
 #ifndef MIOSIX_AUDIO_AUDIO_BUFFER_H
 #define MIOSIX_AUDIO_AUDIO_BUFFER_H
