@@ -37,3 +37,10 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyOnChannel(AudioBuffer<T, 1, BU
     const T* buffer2 = audioBuffer.getReadPointer(0);
     std::copy(buffer2, buffer2 + BUFFER_LEN, buffer1);
 }
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::clear() {
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+       bufferContainer[channelNumber].fill(0);
+    }
+}

@@ -25,7 +25,6 @@ public:
         for (unsigned int i = 0; i < getBufferSize(); ++i) {
             leftChannel[i] = sinTable[i];
         }
-        buffer.applyGain(0);
     }
 
 
@@ -49,10 +48,10 @@ int main() {
     for (uint32_t i = 0; i < audioBuffer1.getBufferLength(); i++) {
         audioBufferRaw1[i] = static_cast<float>(i);
     }
-//    audioBuffer2.copyOnChannel(audioBuffer1, 0);
-//    audioBuffer2.add(audioBuffer1);
-//    audioBuffer2.applyGain(0.5);
-
+    audioBuffer2.copyOnChannel(audioBuffer1, 0);
+    audioBuffer2.add(audioBuffer1);
+    audioBuffer2.applyGain(0.5);
+    audioBuffer2.clear();
 
     // infinite loop
     for (;;) {
