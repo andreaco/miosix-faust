@@ -16,7 +16,6 @@ public:
 
     virtual void process() = 0;
 
-    // TODO: find an way to define the buffer len
     inline AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() { return audioDriver.getBuffer();};
 
     inline unsigned int getBufferSize() { return audioDriver.getBufferSize(); };
