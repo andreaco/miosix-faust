@@ -3,6 +3,7 @@
 #include "audio/audio.h"
 #include "audio/audio_processor.h"
 #include "audio/audio_buffer.hpp"
+#include "audio/audio_math.h"
 #include <functional>
 #include <math.h>
 #include <cstdint>
@@ -20,7 +21,7 @@ public:
     }
 
     void process() override {
-        auto& buffer = getBuffer();
+        auto &buffer = getBuffer();
         auto leftChannel = buffer.getWritePointer(0);
         for (unsigned int i = 0; i < getBufferSize(); ++i) {
             leftChannel[i] = sinTable[i];
@@ -44,7 +45,7 @@ int main() {
     // AudioBuffer copy test
     AudioBuffer<float, 1, 10> audioBuffer1;
     AudioBuffer<float, 1, 10> audioBuffer2;
-    float* audioBufferRaw1 = audioBuffer1.getWritePointer(0);
+    float *audioBufferRaw1 = audioBuffer1.getWritePointer(0);
     for (uint32_t i = 0; i < audioBuffer1.getBufferLength(); i++) {
         audioBufferRaw1[i] = static_cast<float>(i);
     }
@@ -52,6 +53,17 @@ int main() {
     audioBuffer2.add(audioBuffer1);
     audioBuffer2.applyGain(0.5);
     audioBuffer2.clear();
+
+    // test LUT
+    AudioMath::LookupTable<16> sineLUT([](float x){return std::sin(x);},
+                                        0.0f, 2.0f * static_cast<float>(M_PI),
+                                        AudioMath::LookupTableEdges::PERIODIC);
+    sineLUT(0.0);
+    sineLUT(M_PI);
+    sineLUT(2 * M_PI);
+    sineLUT(-1);
+    sineLUT(4 * M_PI);
+
 
     // infinite loop
     for (;;) {
