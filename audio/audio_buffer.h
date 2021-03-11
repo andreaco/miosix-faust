@@ -4,7 +4,14 @@
 
 #include <array>
 
-
+/**
+ * This template class define a multi channel buffer that can be used to
+ * store and process audio.
+ *
+ * @tparam T type stored in the buffer
+ * @tparam CHANNEL_NUM number of channels of the buffer
+ * @tparam BUFFER_LEN length of each channel of the buffer
+ */
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
 class AudioBuffer {
 public:
