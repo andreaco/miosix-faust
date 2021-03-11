@@ -2,10 +2,11 @@
 miosix/_doc/doxygen/html/*
 
 # Exclude temporary files
-main.elf
-main.bin
-main.hex
-main.map
+*.elf
+*.bin
+*.hex
+*.map
+*.exe
 *.o
 *.a
 *.d
