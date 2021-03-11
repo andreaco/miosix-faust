@@ -21,6 +21,7 @@ public:
      */
     AudioBuffer() {
         static_assert((BUFFER_LEN % 2) == 0, "The AudioBuffer BUFFER_LEN must be even");
+        clear();
     };
 
     /**
@@ -57,6 +58,13 @@ public:
     inline T *getWritePointer(unsigned int channelNumber) { return bufferContainer[channelNumber].data(); };
 
     /**
+     * Returns the std::array that contains the channels data.
+     *
+     * @return array containing arrays of data
+     */
+    inline std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() { return bufferContainer; };
+
+    /**
      * Applies a constant gain to the AudioBuffer.
      *
      * @param gain multiplicative factor
@@ -70,6 +78,8 @@ public:
      */
     void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
 
+    void copyFrom(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer);
+
     /**
      * Copy from a mono buffer on a certain channel.
      *
@@ -82,6 +92,7 @@ public:
      * Clear the buffer by filling it with zeroes
      */
     void clear();
+
 private:
     /**
      * Data structure containing the buffer data.

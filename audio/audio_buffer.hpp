@@ -1,5 +1,4 @@
 
-#include "miosix.h"
 #include "audio_buffer.h"
 #include <algorithm>
 
@@ -36,6 +35,17 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyOnChannel(AudioBuffer<T, 1, BU
     T* buffer1 = getWritePointer(channelNumber);
     const T* buffer2 = audioBuffer.getReadPointer(0);
     std::copy(buffer2, buffer2 + BUFFER_LEN, buffer1);
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyFrom(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer) {
+    T *buffer1;
+    const T *buffer2;
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        buffer1 = getWritePointer(channelNumber);
+        buffer2 = audioBuffer.getReadPointer(channelNumber);
+        std::copy(buffer2, buffer2 + BUFFER_LEN, buffer1);
+    }
 }
 
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
