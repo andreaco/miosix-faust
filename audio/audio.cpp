@@ -2,6 +2,7 @@
 #include "cs43l22dac.h"
 #include "miosix.h"
 #include "audio_processor.h"
+#include "audio_buffer.hpp"
 #include <functional>
 #include <algorithm>
 #include <memory>
