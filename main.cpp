@@ -4,6 +4,7 @@
 #include "audio/audio_processor.h"
 #include "audio/audio_buffer.hpp"
 #include "audio/audio_math.h"
+#include "audio/midi.h"
 #include <functional>
 #include <math.h>
 #include <cstdint>
@@ -29,11 +30,12 @@ public:
     }
 
 
+
     float sinTable[AUDIO_DRIVER_BUFFER_SIZE];
 };
 
 int main() {
-    
+
     // initializing the audio driver
     AudioDriver &audioDriver = AudioDriver::getInstance();
     audioDriver.getBuffer();
@@ -41,6 +43,8 @@ int main() {
     audioDriver.setAudioProcessable(audioProcessorTest);
     audioDriver.init(SampleRate::_44100Hz);
 
+    // midi test
+    Midi::testParser();
 
     for (;;) {
 
