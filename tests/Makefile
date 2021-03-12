@@ -49,7 +49,10 @@ SRCDIRS               := \
 .
 
 # TODO: implement single imports in test Makefile
-SRC_SINGLE_FILES :=
+SRC_SINGLE_FILES := \
+../audio/midiXparser.cpp \
+../audio/midi.cpp
+
 
 # OS specific.
 EXTRA_CFLAGS_MACOS     =
@@ -111,6 +114,7 @@ ifeq ($(SRCDIRS),)
 	SRCDIRS := $(shell find $(SRCDIRS) -type d)
 endif
 SOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
+SOURCES += $(SRC_SINGLE_FILES)
 HEADERS = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(HDREXTS))))
 SRC_CXX = $(filter-out %.c,$(SOURCES))
 OBJS    = $(addsuffix .o, $(basename $(SOURCES)))
