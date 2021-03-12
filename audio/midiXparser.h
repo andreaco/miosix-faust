@@ -26,6 +26,8 @@
 
    Licence : MIT.
 */
+
+// TODO: refactor enum -> enum class
 #pragma once
 
 #ifndef midiXparser_h
