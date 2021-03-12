@@ -5,7 +5,9 @@
 #include "audio/audio_buffer.hpp"
 #include "audio/audio_math.h"
 #include "audio/midi.h"
+#include "tests/midi_test_data.h"
 #include <functional>
+#include <algorithm>
 #include <math.h>
 #include <cstdint>
 
@@ -44,7 +46,12 @@ int main() {
     audioDriver.init(SampleRate::_44100Hz);
 
     // midi test
-    Midi::testParser();
+    uint8_t *p = noteTest;
+    Midi::Parser parser;
+    parser.maskChannel(2);
+    while (p != std::end(noteTest)) {
+        parser.parse(p);
+    }
 
     for (;;) {
 
