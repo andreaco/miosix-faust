@@ -31,3 +31,7 @@ uint8_t controlChangeCh7[] = {
 uint8_t pitchBendCh3[] = {
         0xE3, 0, 50,
 };
+
+uint8_t midiNotesValuesInAEolian[] = {
+        57, 53, 77, 57, 48, 83, 77, 47
+};
