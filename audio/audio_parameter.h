@@ -3,6 +3,8 @@
 #ifndef STM32_MONOSYNTH_AUDIO_PARAMETER_H
 #define STM32_MONOSYNTH_AUDIO_PARAMETER_H
 
+#include "audio_math.h"
+
 /**
  * Default number of samples to pass
  * from lastValue to currentValue
@@ -14,7 +16,8 @@
  * an AudioModule or similar classes.
  * It allows to store the current and last values for a parameter in order
  * to provide a smooth interpolation during the processing.
- * @tparam T
+ *
+ * @tparam T type
  */
 template<typename T>
 class AudioParameter {
@@ -43,6 +46,10 @@ public:
      */
     inline T getLastValue() { return lastValue; };
 
+    inline T getInterpolatedValue() {
+        return AudioMath::linearInterpolation(getLastValue(), currentValue, getTransitionIndex());
+    };
+
     /**
      * Returns a value between 0.0 and 1.0 that indicates
      * the progress of the transition.
@@ -61,7 +68,7 @@ public:
      * @param newValue
      */
     inline void setValue(T newValue) {
-        lastValue = currentValue;
+        lastValue = getInterpolatedValue();
         currentValue = newValue;
         passedTransitionSamples = 0;
     };
