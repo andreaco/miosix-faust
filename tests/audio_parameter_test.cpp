@@ -28,6 +28,7 @@ TEST_CASE("AudioParameter", "[audio]") {
             parameter.updateSampleCount(5);
             REQUIRE(parameter.transitionIsComplete() == true);
             REQUIRE(parameter.getTransitionIndex() == Approx(1));
+            REQUIRE(parameter.getInterpolatedValue() == Approx(60));
         }
 
         SECTION("overflow") {
