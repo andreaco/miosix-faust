@@ -1,4 +1,4 @@
-/*
+/**
 
   midXparser
   A small footprint midi parser.
@@ -36,94 +36,109 @@
 #if ARDUINO
 #include <Arduino.h>
 #else
+
 #include <inttypes.h>
+
 typedef uint8_t byte;
 #endif
+
 #include <stdlib.h>
 
 class midiXparser {
-  uint8_t  m_midiMsg[3];
-  uint8_t  m_midiMsgRealTime; // Used for real time only
-  uint8_t  m_indexMsgLen = 0;
-  uint8_t  m_expectedMsgLen = 0;
-  bool     m_sysExMode = false;
-  bool     m_sysExError = false;
-  unsigned m_sysExMsgLen = 0;
-  unsigned m_sysExindexMsgLen = 0;
-  bool     m_isByteCaptured=false;
-  byte     m_readByte = 0;
-  bool     m_runningStatusPossible=false;
-  uint8_t  m_midiMsgTypeFilterMsk = noneMsgTypeMsk;
-  uint8_t  m_midiParsedMsgType    = noneMsgTypeMsk;
-  uint8_t  m_midiCurrentMsgType   = noneMsgTypeMsk;
+    uint8_t m_midiMsg[3];
+    uint8_t m_midiMsgRealTime; // Used for real time only
+    uint8_t m_indexMsgLen = 0;
+    uint8_t m_expectedMsgLen = 0;
+    bool m_sysExMode = false;
+    bool m_sysExError = false;
+    unsigned m_sysExMsgLen = 0;
+    unsigned m_sysExindexMsgLen = 0;
+    bool m_isByteCaptured = false;
+    byte m_readByte = 0;
+    bool m_runningStatusPossible = false;
+    uint8_t m_midiMsgTypeFilterMsk = noneMsgTypeMsk;
+    uint8_t m_midiParsedMsgType = noneMsgTypeMsk;
+    uint8_t m_midiCurrentMsgType = noneMsgTypeMsk;
 
-  static const  uint8_t m_systemCommonMsglen[8];
-  static const  uint8_t m_channelVoiceMsgMsglen[7];
+    static const uint8_t m_systemCommonMsglen[8];
+    static const uint8_t m_channelVoiceMsgMsglen[7];
 
 
-
-  public:
+public:
     // Midi messages type
     enum midiMsgTypeMaskValue {
-        noneMsgTypeMsk          = 0B0000,
-        channelVoiceMsgTypeMsk  = 0B0001,
-        systemCommonMsgTypeMsk  = 0B0010,
-        realTimeMsgTypeMsk      = 0B0100,
-        sysExMsgTypeMsk         = 0B1000,
-        allMsgTypeMsk           = 0B1111
+        noneMsgTypeMsk = 0B0000,
+        channelVoiceMsgTypeMsk = 0B0001,
+        systemCommonMsgTypeMsk = 0B0010,
+        realTimeMsgTypeMsk = 0B0100,
+        sysExMsgTypeMsk = 0B1000,
+        allMsgTypeMsk = 0B1111
     };
 
-  enum midiStatusValue {
+    enum midiStatusValue {
         // CHANNEL VOICE
-        noteOffStatus         = 0X80,
-        noteOnStatus          = 0X90,
+        noteOffStatus = 0X80,
+        noteOnStatus = 0X90,
         polyKeyPressureStatus = 0XA0,
-        controlChangeStatus   = 0XB0,
-        programChangeStatus   = 0XC0,
+        controlChangeStatus = 0XB0,
+        programChangeStatus = 0XC0,
         channelPressureStatus = 0XD0,
-        pitchBendStatus       = 0XE0,
+        pitchBendStatus = 0XE0,
         // SYSTEM COMMON
-        soxStatus             = 0XF0,
-        midiTimeCodeStatus    = 0XF1,
-        songPosPointerStatus  = 0XF2,
-        songSelectStatus      = 0XF3,
-        reserved1Status       = 0XF4,
-        reserved2Status       = 0XF5,
-        tuneRequestStatus     = 0XF6,
-        eoxStatus             = 0XF7,
+        soxStatus = 0XF0,
+        midiTimeCodeStatus = 0XF1,
+        songPosPointerStatus = 0XF2,
+        songSelectStatus = 0XF3,
+        reserved1Status = 0XF4,
+        reserved2Status = 0XF5,
+        tuneRequestStatus = 0XF6,
+        eoxStatus = 0XF7,
         // REAL TIME
-        timingClockStatus     = 0XF8,
-        reserved3Status       = 0XF9,
-        startStatus           = 0XFA,
-        continueStatus        = 0XFB,
-        stopStatus            = 0XFC,
-        reserved4Status       = 0XFD,
-        activeSensingStatus   = 0XFE,
-        systemResetStatus     = 0XFF
+        timingClockStatus = 0XF8,
+        reserved3Status = 0XF9,
+        startStatus = 0XFA,
+        continueStatus = 0XFB,
+        stopStatus = 0XFC,
+        reserved4Status = 0XFD,
+        activeSensingStatus = 0XFE,
+        systemResetStatus = 0XFF
     };
 
     // Constructor
     midiXparser();
 
     // Methods
-    bool        isSysExMode() ;
-    bool        wasSysExMode() ;
-    bool        isSysExError();
-    bool        isByteCaptured() ;
-    bool        isMidiStatus(midiStatusValue );
-    uint8_t     getMidiMsgType() ;
-    uint8_t     getMidiCurrentMsgType() ;
-    uint8_t     getMidiMsgLen();
-    uint8_t *   getMidiMsg();
-    byte        getByte() ;
-    unsigned    getSysExMsgLen() ;
-    void        setMidiMsgFilter(uint8_t );
-    bool        parse(byte );
-    static uint8_t     getMidiStatusMsgTypeMsk(uint8_t ) ;
-    static uint8_t     getMidiStatusMsgLen(uint8_t );
+    bool isSysExMode();
+
+    bool wasSysExMode();
+
+    bool isSysExError();
+
+    bool isByteCaptured();
+
+    bool isMidiStatus(midiStatusValue);
+
+    uint8_t getMidiMsgType();
+
+    uint8_t getMidiCurrentMsgType();
+
+    uint8_t getMidiMsgLen();
+
+    uint8_t *getMidiMsg();
+
+    byte getByte();
+
+    unsigned getSysExMsgLen();
+
+    void setMidiMsgFilter(uint8_t);
+
+    bool parse(byte);
+
+    static uint8_t getMidiStatusMsgTypeMsk(uint8_t);
+
+    static uint8_t getMidiStatusMsgLen(uint8_t);
 
 };
-
 
 
 #endif

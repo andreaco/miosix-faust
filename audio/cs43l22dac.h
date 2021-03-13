@@ -4,6 +4,8 @@
 #include "miosix.h"
 #include "../miosix/util/software_i2c.h"
 
+#define CS43L22DAC_DEFAULT_VOLUME_DB -20
+
 /**
  * This class encapsulates the SR enum
  */

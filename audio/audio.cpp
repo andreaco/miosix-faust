@@ -3,6 +3,7 @@
 #include "miosix.h"
 #include "audio_processor.h"
 #include "audio_buffer.hpp"
+#include "audio_math.h"
 #include <functional>
 #include <algorithm>
 #include <memory>
@@ -30,7 +31,7 @@ static uint16_t *_bufferLeftIRQ;
  * @param bufferSize buffer size
  */
 void refillDMA_IRQ(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsigned int bufferSize) {
-    // TODO: stereo DMA
+    // TODO: stereo DMA @andreaco
     DMA1_Stream5->CR = 0;
     DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
     DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(bufferLeft);
@@ -56,6 +57,44 @@ void refillDMA_IRQ(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsi
 void refillDMA(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsigned int bufferSize) {
     FastInterruptDisableLock lock;
     refillDMA_IRQ(bufferLeft, bufferRight, bufferSize);
+}
+
+
+AudioDriver::AudioDriver()
+        :
+        bufferSize(AUDIO_DRIVER_BUFFER_SIZE),
+        audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
+
+    // initializing uint16_t buffers for right and left channels
+    _bufferLeft = new uint16_t[AUDIO_DRIVER_BUFFER_SIZE];
+    _bufferRight = new uint16_t[AUDIO_DRIVER_BUFFER_SIZE];
+    std::fill(_bufferLeft, _bufferLeft + AUDIO_DRIVER_BUFFER_SIZE, 0);
+    std::fill(_bufferRight, _bufferRight + AUDIO_DRIVER_BUFFER_SIZE, 0);
+
+    // saving the pointer for the interrupts
+    _bufferLeftIRQ = _bufferLeft;
+    _bufferRightIRQ = _bufferRight;
+}
+
+AudioDriver::~AudioDriver() {
+    delete[] _bufferLeft;
+    delete[] _bufferRight;
+}
+
+void AudioDriver::init(SampleRate::SR sampleRate) {
+    // Set up sample rate variable
+    setSampleRate(sampleRate);
+
+    // Init DAC with desired SR
+    Cs43l22dac::init(sampleRate);
+
+    // default volume
+    setVolume(0.7);
+
+    // Refill DMA with empty audioBuffer
+    refillDMA(_bufferLeft, _bufferRight, bufferSize);
+
+    // TODO: set the volume based on the volume attribute
 }
 
 AudioDriver &AudioDriver::getInstance() {
@@ -92,40 +131,19 @@ void AudioDriver::setSampleRate(SampleRate::SR sampleRate) {
     }
 }
 
-void AudioDriver::init(SampleRate::SR sampleRate) {
-    // Set up sample rate variable
-    setSampleRate(sampleRate);
+void AudioDriver::setVolume(float newVolume) {
+    // clipping between 0 and 1
+    newVolume = std::min(newVolume, 1.0f);
+    newVolume = std::max(newVolume, 0.0f);
 
-    // Init DAC with desired SR
-    Cs43l22dac::init(sampleRate);
+    // saving the value
+    volume = newVolume;
 
-    // Refill DMA with empty audioBuffer
-    refillDMA(_bufferLeft, _bufferRight, bufferSize);
-
-    // TODO: set the volume based on the volume attribute
+    // mapping the float value to the range of the DAC
+    // TODO: fine tune the range
+    newVolume = AudioMath::linearMap(newVolume, 0, 1, -102, 0);
+    Cs43l22dac::setVolume(static_cast<int>(newVolume));
 }
-
-AudioDriver::AudioDriver()
-        :
-        bufferSize(AUDIO_DRIVER_BUFFER_SIZE),
-        audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
-
-    // initializing uint16_t buffers for right and left channels
-    _bufferLeft = new uint16_t[AUDIO_DRIVER_BUFFER_SIZE];
-    _bufferRight = new uint16_t[AUDIO_DRIVER_BUFFER_SIZE];
-    std::fill(_bufferLeft, _bufferLeft + AUDIO_DRIVER_BUFFER_SIZE, 0);
-    std::fill(_bufferRight, _bufferRight + AUDIO_DRIVER_BUFFER_SIZE, 0);
-
-    // saving the pointer for the interrupts
-    _bufferLeftIRQ = _bufferLeft;
-    _bufferRightIRQ = _bufferRight;
-}
-
-AudioDriver::~AudioDriver() {
-    delete[] _bufferLeft;
-    delete[] _bufferRight;
-}
-
 
 /**
  * DMA end of transfer interrupt
@@ -149,7 +167,7 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
 
 
     unsigned int bufferSize = audioDriver.getBufferSize();
-    auto& buffer = audioDriver.getBuffer();
+    auto &buffer = audioDriver.getBuffer();
 
     auto bufferLeftFloat = buffer.getReadPointer(0);
     auto bufferRightFloat = buffer.getReadPointer(1);

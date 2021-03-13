@@ -45,6 +45,15 @@ public:
      */
     inline float getSampleRate() { return audioProcessor.getSampleRate(); };
 
+    /**
+    * Disabling copy constructor.
+    */
+    AudioModule<CHANNEL_NUM>(const AudioModule<CHANNEL_NUM> &) = delete;
+
+    /**
+     * Disabling move operator.
+     */
+    AudioModule<CHANNEL_NUM> &operator=(AudioModule<CHANNEL_NUM> &) = delete;
 
 private:
     /**
@@ -52,15 +61,6 @@ private:
      */
     AudioProcessor &audioProcessor;
 
-    /**
-    * Disabling copy constructor.
-    */
-    AudioModule<CHANNEL_NUM>(const AudioModule<CHANNEL_NUM> &);
-
-    /**
-     * Disabling move operator.
-     */
-    AudioModule<CHANNEL_NUM> &operator=(AudioModule<CHANNEL_NUM> &);
 };
 
 #endif //STM32_MONOSYNTH_AUDIO_MODULE_H

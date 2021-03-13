@@ -10,11 +10,17 @@
 #include <vector>
 #include <cstdint>
 
-// TODO: add noexcepts
+// TODO: setting in a common header
 
+/**
+ * Size of the stereo DAC buffer.
+ */
 #define AUDIO_DRIVER_BUFFER_SIZE 128
-#define DAC_BIT_DEPTH 12
-#define DAC_MAX_VALUE 4096
+
+/**
+ * Max value for DAC conversion ((2 ^ BIT_DEPTH) - 1)
+ */
+#define DAC_MAX_VALUE 4095
 
 /**
  * This singleton class offers an interface to the low level audio
@@ -75,6 +81,18 @@ public:
     inline float getSampleRate() const { return sampleRate; };
 
     /**
+     * Sets the volume in a value between 0 and 1.
+     * This value is mapped to the full decibel range of
+     * the DAC.
+     *
+     * @param newVolume new volume value between 0 and 1
+     */
+    void setVolume(float newVolume);
+
+    inline float getVolume() { return volume; };
+
+
+    /**
      * Destructor.
      */
     ~AudioDriver();
@@ -114,8 +132,7 @@ private:
     /**
      * Volume value of the audio driver.
      */
-    // TODO: implement volume attribute (maybe is better a float?)
-//    int volume;
+    float volume;
 
     /**
      * Setup of the sample rate from SampleRate enum class

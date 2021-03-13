@@ -1,5 +1,6 @@
 #include "cs43l22dac.h"
 #include "miosix.h"
+#include <algorithm>
 
 /**
  * Left Right Clock:
@@ -153,7 +154,7 @@ void Cs43l22dac::init(SampleRate::SR sampleRate) {
     send(0x06, 0x04); //I2S Mode
 
     // Initial default volume
-    setVolume(-20);
+    setVolume(CS43L22DAC_DEFAULT_VOLUME_DB);
 
     SPI3->CR2 = SPI_CR2_TXDMAEN;
     SPI3->I2SPR = SPI_I2SPR_MCKOE | (i2sodd << 8) | i2sdiv;

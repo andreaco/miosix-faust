@@ -5,8 +5,8 @@ TEST_CASE("AudioBuffer", "[audio]") {
 
     SECTION("buffer index check") {
         AudioBuffer<int, 4, 128> buffer;
-        int* bufferRaw = buffer.getWritePointer(buffer.getNumChannels()-1);
-        REQUIRE_NOTHROW(bufferRaw[buffer.getBufferLength()-1]);
+        int *bufferRaw = buffer.getWritePointer(buffer.getNumChannels() - 1);
+        REQUIRE_NOTHROW(bufferRaw[buffer.getBufferLength() - 1]);
         REQUIRE(buffer.getNumChannels() == buffer.getBufferContainer().size());
         REQUIRE(buffer.getBufferLength() == buffer.getBufferContainer()[0].size());
     }
@@ -17,6 +17,7 @@ TEST_CASE("AudioBuffer", "[audio]") {
         int *bufferRaw1L = buffer1.getWritePointer(0);
         int *bufferRaw1R = buffer1.getWritePointer(1);
 
+        // writing some values on buffer1
         for (int i = 0; i < 128; i++) {
             bufferRaw1L[i] = i;
             bufferRaw1R[i] = i * 2;
