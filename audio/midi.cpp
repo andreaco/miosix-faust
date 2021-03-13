@@ -9,11 +9,10 @@
 
 #define TEST_MESSAGE noteTest
 
-static std::function<float(float)> pow2 = [](float x) { return std::pow(2.0, x); };
-static AudioMath::LookupTable<128> exp2LUT(pow2, 0, 127);
+static AudioMath::LookupTable<128> exp2LUT([](float x) { return std::pow(2.0, x); }, -5.75, 4.83333);
 
 float Midi::midi2freq(uint8_t midiNote) {
-    return exp2LUT((midiNote - 69.0) / 12.0) * 440.0;
+    return exp2LUT((static_cast<float>(midiNote) - 69.0) / 12.0) * 440.0;
 }
 
 Midi::Parser::Parser() : channelMask(0xFFFF) {
