@@ -75,7 +75,7 @@ namespace AudioMath {
          */
         LookupTable(std::function<float(float)> function, float argMin, float argMax,
                     LookupTableEdges edges = LookupTableEdges::EXTENDED)
-                : function(function), argMin(argMin), argMax(argMax), edges(edges) {
+                : argMin(argMin), argMax(argMax), edges(edges) {
 
             float x; // input value of the function
             for (uint32_t i = 0; i < SIZE; i++) {
@@ -115,6 +115,7 @@ namespace AudioMath {
                         break;
                 }
             } else {
+                // TODO: linear interpolation
                 index = static_cast<int>(linearMap(x, argMin, argMax, 0, SIZE));
                 y = table[index];
             }
@@ -122,7 +123,6 @@ namespace AudioMath {
         };
 
     private:
-        std::function<float(float)> function;
         float argMin;
         float argMax;
         LookupTableEdges edges;
