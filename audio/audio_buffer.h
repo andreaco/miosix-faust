@@ -69,7 +69,7 @@ public:
      *
      * @param gain multiplicative factor
      */
-    void applyGain(float gain); // TODO: test it
+    void applyGain(float gain);
 
     /**
      * Sums a second AudioBuffer to this AudioBuffer.
@@ -78,6 +78,11 @@ public:
      */
     void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
 
+    /**
+     * Performs a copy from another buffer of the same dimensions.
+     *
+     * @param audioBuffer buffer to copy from
+     */
     void copyFrom(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer);
 
     /**
