@@ -109,7 +109,7 @@ private:
     uint16_t *_bufferLeft;
 
     /**
-    * Left channel buffer, used to convert the float audioBuffer in uint_16.
+    * Right channel buffer, used to convert the float audioBuffer in uint_16.
     */
     uint16_t *_bufferRight;
 
