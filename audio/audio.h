@@ -18,9 +18,10 @@
 #define AUDIO_DRIVER_BUFFER_SIZE 128
 
 /**
- * Max value for DAC conversion ((2 ^ BIT_DEPTH) - 1)
+ * Max value for DAC conversion ((2 ^ (BIT_DEPTH-1)) - 1).
+ * Positive integer upper bound of the DAC values.
  */
-#define DAC_MAX_VALUE 4095
+#define DAC_MAX_POSITIVE_VALUE 32767
 
 /**
  * This singleton class offers an interface to the low level audio
@@ -44,6 +45,12 @@ public:
     void init(SampleRate::SR = SampleRate::_44100Hz);
 
     /**
+     * Blocking call that starts the audio driver and
+     * begins the audio processing.
+     */
+    void start();
+
+    /**
      * Getter for audioProcessable.
      *
      * @return audioProcessable
@@ -53,7 +60,10 @@ public:
     }
 
     /**
-     * Setter for audioProcessable.
+     * Set the audio processable, this method must be called
+     * after the init method.
+     *
+     * // TODO: check if it could be called after the start()
      */
     inline void setAudioProcessable(AudioProcessable &newAudioProcessable) {
         audioProcessable = &newAudioProcessable;
@@ -89,13 +99,28 @@ public:
      */
     void setVolume(float newVolume);
 
+    /**
+     * Getter for the volume of the DAC.
+     *
+     * @return a value between 0 and 1
+     */
     inline float getVolume() { return volume; };
-
 
     /**
      * Destructor.
      */
     ~AudioDriver();
+
+    /**
+     * The copy constructor is disabled.
+     */
+    AudioDriver(const AudioDriver &) = delete;
+
+    /**
+     * The move operator is disabled.
+     */
+    AudioDriver &operator=(const AudioDriver &) = delete;
+
 
 private:
     /**
@@ -144,15 +169,7 @@ private:
      */
     AudioDriver();
 
-    /**
-     * The copy constructor is disabled.
-     */
-    AudioDriver(const AudioDriver &);
 
-    /**
-     * The move operator is disabled.
-     */
-    AudioDriver &operator=(const AudioDriver &);
 };
 
 

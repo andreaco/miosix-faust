@@ -10,8 +10,6 @@
 #include <cstdint>
 
 
-// TODO: Remove using declarations
-using namespace miosix;
 
 // singleton instance of the AudioDriver
 static AudioDriver &audioDriver = AudioDriver::getInstance();
@@ -20,8 +18,10 @@ static AudioDriver &audioDriver = AudioDriver::getInstance();
 static AudioProcessableDummy audioProcessableDummy;
 
 // pointers to _bufferRight and _bufferLeft members of AudioDriver
-static uint16_t *_bufferRightIRQ;
-static uint16_t *_bufferLeftIRQ;
+// TODO: substitute with a miosix::BufferQueue of AUDIO_DRIVER_BUFFER_SIZE * 2
+// TODO: save the thread to be locked by the BufferQueue reader (Interrupt)
+static int16_t *_bufferRightIRQ;
+static int16_t *_bufferLeftIRQ;
 
 
 /**
@@ -55,7 +55,7 @@ void refillDMA_IRQ(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsi
  * @param bufferSize buffer size
  */
 void refillDMA(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsigned int bufferSize) {
-    FastInterruptDisableLock lock;
+    miosix::FastInterruptDisableLock lock;
     refillDMA_IRQ(bufferLeft, bufferRight, bufferSize);
 }
 
@@ -66,8 +66,8 @@ AudioDriver::AudioDriver()
         audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
 
     // initializing uint16_t buffers for right and left channels
-    _bufferLeft = new uint16_t[AUDIO_DRIVER_BUFFER_SIZE];
-    _bufferRight = new uint16_t[AUDIO_DRIVER_BUFFER_SIZE];
+    _bufferLeft = new int16_t[AUDIO_DRIVER_BUFFER_SIZE];
+    _bufferRight = new int16_t[AUDIO_DRIVER_BUFFER_SIZE];
     std::fill(_bufferLeft, _bufferLeft + AUDIO_DRIVER_BUFFER_SIZE, 0);
     std::fill(_bufferRight, _bufferRight + AUDIO_DRIVER_BUFFER_SIZE, 0);
 
@@ -93,8 +93,15 @@ void AudioDriver::init(SampleRate::SR sampleRate) {
 
     // Refill DMA with empty audioBuffer
     refillDMA(_bufferLeft, _bufferRight, bufferSize);
+}
 
-    // TODO: set the volume based on the volume attribute
+void AudioDriver::start() {
+    // TODO: implement it
+    while (true) {
+        // tryGet() on BufferQueue
+
+        // write on the buffer
+    }
 }
 
 AudioDriver &AudioDriver::getInstance() {
@@ -180,10 +187,10 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
     audioDriver.getAudioProcessable().process();
 
     // float to int conversion
-    // TODO: find a better way to do it
+    // TODO: this should not be done in the interrupt and it must be synchronized !!!
     for (unsigned int i = 0; i < bufferSize; i++) {
-        _bufferLeftIRQ[i] = static_cast<uint16_t>(((bufferLeftFloat[i] + 1.0f) / 2) * DAC_MAX_VALUE);
-        _bufferRightIRQ[i] = static_cast<uint16_t>(((bufferRightFloat[i] + 1.0f) / 2) * DAC_MAX_VALUE);
+        _bufferLeftIRQ[i] = static_cast<int16_t>(((bufferLeftFloat[i]) * DAC_MAX_POSITIVE_VALUE);
+        _bufferRightIRQ[i] = static_cast<int16_t>(((bufferRightFloat[i]) * DAC_MAX_POSITIVE_VALUE);
     }
 
 }
