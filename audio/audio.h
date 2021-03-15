@@ -15,7 +15,7 @@
 /**
  * Size of the stereo DAC buffer.
  */
-#define AUDIO_DRIVER_BUFFER_SIZE 128
+#define AUDIO_DRIVER_BUFFER_SIZE 512
 
 /**
  * Max value for DAC conversion ((2 ^ (BIT_DEPTH-1)) - 1).
@@ -127,16 +127,6 @@ private:
      * This buffer can be used to write in the DAC.
      */
     AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> audioBuffer;
-
-    /**
-     * Left channel buffer, used to convert the float audioBuffer in uint_16.
-     */
-    uint16_t *_bufferLeft;
-
-    /**
-    * Right channel buffer, used to convert the float audioBuffer in uint_16.
-    */
-    uint16_t *_bufferRight;
 
     /**
      * Size of the buffer.

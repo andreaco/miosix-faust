@@ -1,15 +1,17 @@
 #include "audio.h"
 #include "cs43l22dac.h"
 #include "miosix.h"
+#include "../miosix/kernel/scheduler/scheduler.h"
 #include "audio_processor.h"
 #include "audio_buffer.hpp"
 #include "audio_math.h"
 #include <functional>
 #include <algorithm>
 #include <memory>
-#include <cstdint>
 
+#define DOUBLE_BUFFER_BUFFERS 4
 
+// TODO: static is not good
 
 // singleton instance of the AudioDriver
 static AudioDriver &audioDriver = AudioDriver::getInstance();
@@ -18,10 +20,8 @@ static AudioDriver &audioDriver = AudioDriver::getInstance();
 static AudioProcessableDummy audioProcessableDummy;
 
 // pointers to _bufferRight and _bufferLeft members of AudioDriver
-// TODO: substitute with a miosix::BufferQueue of AUDIO_DRIVER_BUFFER_SIZE * 2
-// TODO: save the thread to be locked by the BufferQueue reader (Interrupt)
-static int16_t *_bufferRightIRQ;
-static int16_t *_bufferLeftIRQ;
+static miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2,DOUBLE_BUFFER_BUFFERS > *doubleBuffer;
+static miosix::Thread *writerThread;
 
 
 /**
@@ -30,14 +30,23 @@ static int16_t *_bufferLeftIRQ;
  * @param buffer AudioBuffer to move with DMA
  * @param bufferSize buffer size
  */
-void refillDMA_IRQ(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsigned int bufferSize) {
-    // TODO: stereo DMA @andreaco
+void refillDMA_IRQ(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *bufferQueue,
+                   unsigned int bufferSize) {
+
+    const int16_t *rawBuffer = nullptr;
+    unsigned int size = 0;
+    if (bufferQueue->tryGetReadableBuffer(rawBuffer, size) == false) {
+        // TODO: error no buffer error
+        return;
+    }
+
     DMA1_Stream5->CR = 0;
     DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
-    DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(bufferLeft);
+    DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(rawBuffer);
 
-    // TODO: assert overflow buffer size
-    DMA1_Stream5->NDTR = bufferSize; // setting the buffer size
+    // TODO: assert buffer size don't overflow the limit
+    // TODO change bufferSize*2 -> size
+    DMA1_Stream5->NDTR =bufferSize * 2; // setting the buffer size (stereo buffer size)
     DMA1_Stream5->CR = DMA_SxCR_PL_1 |      //High priority DMA stream
                        DMA_SxCR_MSIZE_0 |   //Read  16bit at a time from RAM
                        DMA_SxCR_PSIZE_0 |   //Write 16bit at a time to SPI
@@ -54,9 +63,11 @@ void refillDMA_IRQ(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsi
  * @param buffer AudioBuffer to move with DMA
  * @param bufferSize buffer size
  */
-void refillDMA(const uint16_t *bufferLeft, const uint16_t *bufferRight, unsigned int bufferSize) {
+void refillDMA(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *bufferQueue,
+               unsigned int bufferSize) { // TODO: remove bufferSize
+
     miosix::FastInterruptDisableLock lock;
-    refillDMA_IRQ(bufferLeft, bufferRight, bufferSize);
+    refillDMA_IRQ(bufferQueue, bufferSize);
 }
 
 
@@ -65,23 +76,23 @@ AudioDriver::AudioDriver()
         bufferSize(AUDIO_DRIVER_BUFFER_SIZE),
         audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
 
-    // initializing uint16_t buffers for right and left channels
-    _bufferLeft = new int16_t[AUDIO_DRIVER_BUFFER_SIZE];
-    _bufferRight = new int16_t[AUDIO_DRIVER_BUFFER_SIZE];
-    std::fill(_bufferLeft, _bufferLeft + AUDIO_DRIVER_BUFFER_SIZE, 0);
-    std::fill(_bufferRight, _bufferRight + AUDIO_DRIVER_BUFFER_SIZE, 0);
+    doubleBuffer = new miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS>();
 
-    // saving the pointer for the interrupts
-    _bufferLeftIRQ = _bufferLeft;
-    _bufferRightIRQ = _bufferRight;
+    // disabling interrupts
+    miosix::FastInterruptDisableLock lock;
+
+    // initializing the double buffer
+    doubleBuffer->reset();
+    doubleBuffer->bufferFilled(doubleBuffer->bufferMaxSize());
+
 }
 
 AudioDriver::~AudioDriver() {
-    delete[] _bufferLeft;
-    delete[] _bufferRight;
+    delete doubleBuffer;
 }
 
 void AudioDriver::init(SampleRate::SR sampleRate) {
+
     // Set up sample rate variable
     setSampleRate(sampleRate);
 
@@ -91,16 +102,56 @@ void AudioDriver::init(SampleRate::SR sampleRate) {
     // default volume
     setVolume(0.7);
 
-    // Refill DMA with empty audioBuffer
-    refillDMA(_bufferLeft, _bufferRight, bufferSize);
+    // saving the writer thread
+    writerThread = miosix::Thread::getCurrentThread();
+    writerThread->setPriority(miosix::PRIORITY_MAX); // TODO: note to fedetft, setPriority not set_priority
+
+
 }
 
 void AudioDriver::start() {
-    // TODO: implement it
+    int16_t *writableRawBuffer;
+
+    // Refill DMA with empty doubleBuffer
+    refillDMA(doubleBuffer, bufferSize);
+
     while (true) {
-        // tryGet() on BufferQueue
+
+        {
+            // disable interrupts for synchronization
+            miosix::FastInterruptDisableLock dLock;
+
+            // looping until the writableRawBuffer is obtained
+            while (doubleBuffer->tryGetWritableBuffer(writableRawBuffer) == false) {
+                writerThread->IRQwait();
+                {
+                    // enabling back the interrupts because the writableRawBuffer
+                    // is not available yet
+                    miosix::FastInterruptEnableLock eLock(dLock);
+                    miosix::Thread::yield();
+                }
+            }
+        }
 
         // write on the buffer
+        // callback to the AudioProcessable to process the buffer
+        audioDriver.getAudioProcessable().process();
+
+        unsigned int bufferSize = audioDriver.getBufferSize();
+        auto &buffer = audioDriver.getBuffer();
+
+        auto bufferLeftFloat = buffer.getReadPointer(0);
+        auto bufferRightFloat = buffer.getReadPointer(1);
+
+        // float to int conversion
+        for (unsigned int i = 0; i < bufferSize; i++) {
+            writableRawBuffer[i * 2] = static_cast<int16_t>(((bufferLeftFloat[i]) * DAC_MAX_POSITIVE_VALUE));
+            writableRawBuffer[i * 2 + 1] = static_cast<int16_t>(((bufferRightFloat[i]) * DAC_MAX_POSITIVE_VALUE));
+        }
+
+        // signaling the doubleBuffer is now filled
+        doubleBuffer->bufferFilled(doubleBuffer->bufferMaxSize());
+
     }
 }
 
@@ -172,26 +223,17 @@ void __attribute__((used)) I2SdmaHandlerImpl() {
                   DMA_HIFCR_CDMEIF5 |
                   DMA_HIFCR_CFEIF5;
 
-
-    unsigned int bufferSize = audioDriver.getBufferSize();
-    auto &buffer = audioDriver.getBuffer();
-
-    auto bufferLeftFloat = buffer.getReadPointer(0);
-    auto bufferRightFloat = buffer.getReadPointer(1);
-
-
     // refilling the DMA buffer
-    refillDMA_IRQ(_bufferLeftIRQ, _bufferRightIRQ, bufferSize);
+    doubleBuffer->bufferEmptied(); // TODO: discover why this is not below
+    refillDMA_IRQ(doubleBuffer, audioDriver.getBufferSize());
+//    doubleBuffer->bufferEmptied();
 
-    // callback to the AudioProcessable to process the buffer
-    audioDriver.getAudioProcessable().process();
+    // waking up the reader
+    writerThread->IRQwakeup();
 
-    // float to int conversion
-    // TODO: this should not be done in the interrupt and it must be synchronized !!!
-    for (unsigned int i = 0; i < bufferSize; i++) {
-        _bufferLeftIRQ[i] = static_cast<int16_t>(((bufferLeftFloat[i]) * DAC_MAX_POSITIVE_VALUE);
-        _bufferRightIRQ[i] = static_cast<int16_t>(((bufferRightFloat[i]) * DAC_MAX_POSITIVE_VALUE);
-    }
+    // forcing the scheduler to run the writerThread
+    if (writerThread->IRQgetPriority() > miosix::Thread::IRQgetCurrentThread()->IRQgetPriority())
+        miosix::Scheduler::IRQfindNextThread();
 
 }
 
