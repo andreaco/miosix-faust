@@ -16,7 +16,7 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::applyGain(float gain) {
 }
 
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
-void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
     for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
         // iterating for each channelBuffer1
         T* channelBuffer1 = getWritePointer(channelNumber);
@@ -29,7 +29,7 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(AudioBuffer<T, CHANNEL_NUM, BU
 }
 
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
-void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyOnChannel(AudioBuffer<T, 1, BUFFER_LEN> &audioBuffer,
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyOnChannel(const AudioBuffer<T, 1, BUFFER_LEN> &audioBuffer,
                                                             size_t channelNumber) {
 
     T* buffer1 = getWritePointer(channelNumber);
@@ -38,7 +38,7 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyOnChannel(AudioBuffer<T, 1, BU
 }
 
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
-void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyFrom(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer) {
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyFrom(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer) {
     T *buffer1;
     const T *buffer2;
     for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {

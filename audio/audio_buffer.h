@@ -29,7 +29,7 @@ public:
      *
      * @return number of channels of the buffer
      */
-    inline size_t getNumChannels() { return bufferContainer.size(); };
+    inline size_t getNumChannels() const { return bufferContainer.size(); };
 
     /**
      * Returns the length of the buffers (that is the same for
@@ -37,7 +37,7 @@ public:
      *
      * @return buffer length
      */
-    inline size_t getBufferLength() { return bufferContainer[0].size(); };
+    inline size_t getBufferLength() const { return bufferContainer[0].size(); };
 
     /**
      * Returns a raw pointer to the data array of a certain channel
@@ -46,7 +46,7 @@ public:
      * @param channelNumber target channel
      * @return read pointer to the channel data
      */
-    inline const T *getReadPointer(unsigned int channelNumber) { return bufferContainer[channelNumber].data(); };
+    inline const T *getReadPointer(const unsigned int channelNumber) const { return bufferContainer[channelNumber].data(); };
 
     /**
      * Returns a raw pointer to the data array of a certain channel
@@ -55,14 +55,14 @@ public:
      * @param channelNumber target channel
      * @return write pointer to the channel data
      */
-    inline T *getWritePointer(unsigned int channelNumber) { return bufferContainer[channelNumber].data(); };
+    inline T *getWritePointer(const unsigned int channelNumber) { return bufferContainer[channelNumber].data(); };
 
     /**
      * Returns the std::array that contains the channels data.
      *
      * @return array containing arrays of data
      */
-    inline std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() { return bufferContainer; };
+    inline std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() const { return bufferContainer; };
 
     /**
      * Applies a constant gain to the AudioBuffer.
@@ -76,14 +76,14 @@ public:
      *
      * @param buffer AudioBuffer to sum to this instance
      */
-    void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
+    void add(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
 
     /**
      * Performs a copy from another buffer of the same dimensions.
      *
      * @param audioBuffer buffer to copy from
      */
-    void copyFrom(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer);
+    void copyFrom(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer);
 
     /**
      * Copy from a mono buffer on a certain channel.
@@ -91,7 +91,7 @@ public:
      * @param audioBuffer target buffer to copy
      * @param channelNumber destination channel
      */
-    void copyOnChannel(AudioBuffer<T, 1, BUFFER_LEN> &audioBuffer, size_t channelNumber);
+    void copyOnChannel(const AudioBuffer<T, 1, BUFFER_LEN> &audioBuffer, size_t channelNumber);
 
     /**
      * Clear the buffer by filling it with zeroes
