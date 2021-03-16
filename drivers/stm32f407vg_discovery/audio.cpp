@@ -1,10 +1,10 @@
 #include "audio.h"
 #include "cs43l22dac.h"
 #include "miosix.h"
-#include "../miosix/kernel/scheduler/scheduler.h"
-#include "audio_processor.h"
-#include "audio_buffer.hpp"
-#include "audio_math.h"
+#include "kernel/scheduler/scheduler.h"
+#include "audio/audio_processor.h"
+#include "audio/audio_buffer.hpp"
+#include "audio/audio_math.h"
 #include <functional>
 #include <algorithm>
 #include <memory>

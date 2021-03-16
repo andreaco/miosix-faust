@@ -4,8 +4,8 @@
 
 #include "miosix.h"
 #include "cs43l22dac.h"
-#include "audio_processable.h"
-#include "audio_buffer.h"
+#include "audio/audio_processable.h"
+#include "audio/audio_buffer.h"
 #include <functional>
 #include <vector>
 #include <cstdint>

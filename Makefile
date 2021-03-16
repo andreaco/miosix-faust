@@ -20,11 +20,11 @@ SUBDIRS := $(KPATH)
 ##
 SRC := \
 main.cpp \
-audio/audio.cpp \
-audio/cs43l22dac.cpp \
+drivers/stm32f407vg_discovery/audio.cpp \
+drivers/stm32f407vg_discovery/cs43l22dac.cpp \
 audio/audio_processor.cpp \
-audio/midiXparser.cpp \
-audio/midi.cpp
+midi/midiXparser.cpp \
+midi/midi.cpp
 
 ##
 ## List here additional static libraries with relative path

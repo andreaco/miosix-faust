@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "midi_test_data.h"
-#include "../audio/midi.h"
+#include "../midi/midi.h"
 #include <algorithm>
 #include <array>
 
