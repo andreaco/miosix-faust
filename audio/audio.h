@@ -155,11 +155,14 @@ private:
     void setSampleRate(SampleRate::SR sampleRate);
 
     /**
+     * Utility method to copy current float buffers to the DAC integer output buffer
+     */
+    void writeToOutputBuffer(int16_t *writableRawBuffer) const;
+
+    /**
      * Private constructor, use getInstance() to get the singleton.
      */
     AudioDriver();
-
-
 };
 
 

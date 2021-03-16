@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <memory>
 
-#define DOUBLE_BUFFER_BUFFERS 4
+#define DOUBLE_BUFFER_BUFFERS 2
 
 // TODO: static is not good
 
@@ -109,6 +109,26 @@ void AudioDriver::init(SampleRate::SR sampleRate) {
 
 }
 
+static int16_t* tryGetWritableBuffer(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *bufferQueue) {
+    int16_t *writableRawBuffer;
+
+    // disable interrupts for synchronization
+    miosix::FastInterruptDisableLock dLock;
+
+    // looping until the writableRawBuffer is obtained
+    while (bufferQueue->tryGetWritableBuffer(writableRawBuffer) == false) {
+        writerThread->IRQwait();
+        {
+            // enabling back the interrupts because the writableRawBuffer
+            // is not available yet
+            miosix::FastInterruptEnableLock eLock(dLock);
+            miosix::Thread::yield();
+        }
+    }
+
+    return writableRawBuffer;
+}
+
 void AudioDriver::start() {
     int16_t *writableRawBuffer;
 
@@ -117,43 +137,35 @@ void AudioDriver::start() {
 
     while (true) {
 
-        {
-            // disable interrupts for synchronization
-            miosix::FastInterruptDisableLock dLock;
-
-            // looping until the writableRawBuffer is obtained
-            while (doubleBuffer->tryGetWritableBuffer(writableRawBuffer) == false) {
-                writerThread->IRQwait();
-                {
-                    // enabling back the interrupts because the writableRawBuffer
-                    // is not available yet
-                    miosix::FastInterruptEnableLock eLock(dLock);
-                    miosix::Thread::yield();
-                }
-            }
-        }
+        writableRawBuffer = tryGetWritableBuffer(doubleBuffer);
 
         // write on the buffer
         // callback to the AudioProcessable to process the buffer
         audioDriver.getAudioProcessable().process();
 
-        unsigned int bufferSize = audioDriver.getBufferSize();
-        auto &buffer = audioDriver.getBuffer();
-
-        auto bufferLeftFloat = buffer.getReadPointer(0);
-        auto bufferRightFloat = buffer.getReadPointer(1);
-
-        // float to int conversion
-        for (unsigned int i = 0; i < bufferSize; i++) {
-            writableRawBuffer[i * 2] = static_cast<int16_t>(((bufferLeftFloat[i]) * DAC_MAX_POSITIVE_VALUE));
-            writableRawBuffer[i * 2 + 1] = static_cast<int16_t>(((bufferRightFloat[i]) * DAC_MAX_POSITIVE_VALUE));
-        }
+        // Convert current float buffers to the int16_t buffer
+        writeToOutputBuffer(writableRawBuffer);
 
         // signaling the doubleBuffer is now filled
         doubleBuffer->bufferFilled(doubleBuffer->bufferMaxSize());
 
     }
 }
+
+void AudioDriver::writeToOutputBuffer(int16_t *writableOutputRawBuffer) const {
+    unsigned int bufferSize = audioDriver.getBufferSize();
+    auto &buffer = audioDriver.getBuffer();
+
+    auto bufferLeftFloat = buffer.getReadPointer(0);
+    auto bufferRightFloat = buffer.getReadPointer(1);
+
+    // float to int conversion
+    for (unsigned int i = 0; i < bufferSize; i++) {
+        writableOutputRawBuffer[i * 2] = static_cast<int16_t>(((bufferLeftFloat[i]) * DAC_MAX_POSITIVE_VALUE));
+        writableOutputRawBuffer[i * 2 + 1] = static_cast<int16_t>(((bufferRightFloat[i]) * DAC_MAX_POSITIVE_VALUE));
+    }
+}
+
 
 AudioDriver &AudioDriver::getInstance() {
     static AudioDriver instance;
@@ -182,9 +194,6 @@ void AudioDriver::setSampleRate(SampleRate::SR sampleRate) {
             break;
         case SampleRate::_44100Hz:
             this->sampleRate = 44100.0;
-            break;
-        default:
-            this->sampleRate = 0.0;
             break;
     }
 }
