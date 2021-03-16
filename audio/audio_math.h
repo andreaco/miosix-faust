@@ -86,6 +86,21 @@ namespace AudioMath {
                 // storing f(x) in the table
                 table[i] = function(x);
             }
+
+            switch (edges) {
+                case LookupTableEdges::PERIODIC:
+                    // Set last position (table size is SIZE+1) equal to the first
+                    table[SIZE] = table[0];
+                    break;
+                case LookupTableEdges::EXTENDED:
+                    // Set last position equal to last (extending it)
+                    table[SIZE] = table[SIZE - 1];
+                    break;
+                case LookupTableEdges::ZEROED:
+                    // Set last position to 0 (zero padding it)
+                    table[SIZE] = 0;
+                    break;
+            }
         };
 
         /**
@@ -97,7 +112,6 @@ namespace AudioMath {
          */
         inline float operator()(float x) {
             float y;
-            int index;
             if ((x < argMin) | (x >= argMax)) {
                 switch (edges) {
                     case LookupTableEdges::ZEROED:
@@ -115,9 +129,18 @@ namespace AudioMath {
                         break;
                 }
             } else {
-                // TODO: linear interpolation
-                index = static_cast<int>(linearMap(x, argMin, argMax, 0, SIZE));
-                y = table[index];
+                // Extract index as a float
+                float floatIndex = linearMap(x, argMin, argMax, 0, SIZE);
+
+                // Cast float index to the nearest integers
+                int index0 = static_cast<int>(floatIndex);
+                int index1 = index0 + 1;
+
+                float interpolationFactor = floatIndex - index0;
+                float value0 = table[index0];
+                float value1 = table[index1];
+
+                y = linearInterpolation(value0, value1, interpolationFactor);
             }
             return y;
         };
@@ -126,7 +149,7 @@ namespace AudioMath {
         float argMin;
         float argMax;
         LookupTableEdges edges;
-        std::array<float, SIZE> table;
+        std::array<float, SIZE + 1> table;
 
         LookupTable(const LookupTable &);
 
