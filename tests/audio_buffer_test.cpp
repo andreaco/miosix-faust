@@ -40,6 +40,11 @@ TEST_CASE("AudioBuffer", "[audio]") {
             REQUIRE(buffer1.getBufferContainer() == buffer2.getBufferContainer());
         }
 
+        SECTION("multiplying") {
+            buffer1.multiply(buffer2);
+            REQUIRE(buffer1.getBufferContainer() == buffer2.getBufferContainer());
+        }
+
         SECTION("gain") {
             buffer2.copyFrom(buffer1);
             buffer2.applyGain(-1.0);
