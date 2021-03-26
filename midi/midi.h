@@ -84,6 +84,7 @@ namespace Midi {
      */
     class Parser {
     public:
+        // TODO: remove it
         static void testParser() {};
 
         /**
@@ -161,6 +162,7 @@ namespace Midi {
         /**
          * Bitmask used to enable the channels.
          */
+         // TODO: set in the constructor
         uint16_t channelMask;
 
         /**
