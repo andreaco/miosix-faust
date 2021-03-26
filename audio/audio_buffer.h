@@ -3,6 +3,8 @@
 #define MIOSIX_AUDIO_AUDIO_BUFFER_H
 
 #include <array>
+#include <algorithm>
+
 
 /**
  * This template class define a multi channel buffer that can be used to
@@ -37,8 +39,11 @@ public:
      *
      * @return buffer length
      */
+    // TODO: put in a interface
     inline size_t getBufferLength() const { return bufferContainer[0].size(); };
 
+
+    // TODO: iterators in the interface
     /**
      * Returns a raw pointer to the data array of a certain channel
      * of the buffer. The access is read only.
@@ -77,20 +82,21 @@ public:
      *
      * @param buffer AudioBuffer to sum to this instance
      */
-    void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
+    void add(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
 
     /**
      * Multiplies a second AudioBuffer to this AudioBuffer.
      *
      * @param buffer AudioBuffer to sum to this instance
      */
-    void multiply(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
+    void multiply(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
 
     /**
      * Performs a copy from another buffer of the same dimensions.
      *
      * @param audioBuffer buffer to copy from
      */
+    // TODO: put in a interface
     void copyFrom(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer);
 
     /**
@@ -104,6 +110,7 @@ public:
     /**
      * Clear the buffer by filling it with zeroes
      */
+    // TODO: put in a interface
     void clear();
 
 private:
@@ -122,5 +129,71 @@ private:
      */
     AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &operator=(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &);
 };
+
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::applyGain(float gain) {
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        // iterating for each channel
+        T *channel = getWritePointer(channelNumber);
+        for (uint32_t i = 0; i < BUFFER_LEN; i++) {
+            // applying the gain to each sample of the channel
+            channel[i] *= gain;
+        }
+    }
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        // iterating for each channelBuffer1
+        T *channelBuffer1 = getWritePointer(channelNumber);
+        const T *channelBuffer2 = buffer.getReadPointer(channelNumber);
+        for (uint32_t sampleIndex = 0; sampleIndex < BUFFER_LEN; sampleIndex++) {
+            // summing AudioBuffer2 on AudioBuffer1
+            channelBuffer1[sampleIndex] += channelBuffer2[sampleIndex];
+        }
+    }
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::multiply(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        // iterating for each channelBuffer1
+        T *channelBuffer1 = getWritePointer(channelNumber);
+        const T *channelBuffer2 = buffer.getReadPointer(channelNumber);
+        for (uint32_t sampleIndex = 0; sampleIndex < BUFFER_LEN; sampleIndex++) {
+            // summing AudioBuffer2 on AudioBuffer1
+            channelBuffer1[sampleIndex] *= channelBuffer2[sampleIndex];
+        }
+    }
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyOnChannel(const AudioBuffer<T, 1, BUFFER_LEN> &audioBuffer,
+                                                            size_t channelNumber) {
+
+    T *buffer1 = getWritePointer(channelNumber);
+    const T *buffer2 = audioBuffer.getReadPointer(0);
+    std::copy(buffer2, buffer2 + BUFFER_LEN, buffer1);
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyFrom(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer) {
+    T *buffer1;
+    const T *buffer2;
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        buffer1 = getWritePointer(channelNumber);
+        buffer2 = audioBuffer.getReadPointer(channelNumber);
+        std::copy(buffer2, buffer2 + BUFFER_LEN, buffer1);
+    }
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::clear() {
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        bufferContainer[channelNumber].fill(0);
+    }
+}
 
 #endif //MIOSIX_AUDIO_AUDIO_BUFFER_H
