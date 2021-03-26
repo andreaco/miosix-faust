@@ -46,7 +46,8 @@ public:
      * @param channelNumber target channel
      * @return read pointer to the channel data
      */
-    inline const T *getReadPointer(const unsigned int channelNumber) const { return bufferContainer[channelNumber].data(); };
+    inline const T *
+    getReadPointer(const unsigned int channelNumber) const { return bufferContainer[channelNumber].data(); };
 
     /**
      * Returns a raw pointer to the data array of a certain channel
@@ -62,7 +63,7 @@ public:
      *
      * @return array containing arrays of data
      */
-    inline std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() const { return bufferContainer; };
+    inline std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() { return bufferContainer; };
 
     /**
      * Applies a constant gain to the AudioBuffer.
@@ -76,7 +77,14 @@ public:
      *
      * @param buffer AudioBuffer to sum to this instance
      */
-    void add(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
+    void add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
+
+    /**
+     * Multiplies a second AudioBuffer to this AudioBuffer.
+     *
+     * @param buffer AudioBuffer to sum to this instance
+     */
+    void multiply(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer);
 
     /**
      * Performs a copy from another buffer of the same dimensions.

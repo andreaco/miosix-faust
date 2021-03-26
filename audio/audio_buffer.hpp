@@ -16,7 +16,7 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::applyGain(float gain) {
 }
 
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
-void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
     for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
         // iterating for each channelBuffer1
         T* channelBuffer1 = getWritePointer(channelNumber);
@@ -24,6 +24,19 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::add(const AudioBuffer<T, CHANNEL_N
         for (uint32_t sampleIndex = 0; sampleIndex < BUFFER_LEN; sampleIndex++) {
             // summing AudioBuffer2 on AudioBuffer1
             channelBuffer1[sampleIndex] += channelBuffer2[sampleIndex];
+        }
+    }
+}
+
+template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
+void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::multiply(AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &buffer) {
+    for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
+        // iterating for each channelBuffer1
+        T* channelBuffer1 = getWritePointer(channelNumber);
+        T* channelBuffer2 = buffer.getWritePointer(channelNumber);
+        for (uint32_t sampleIndex = 0; sampleIndex < BUFFER_LEN; sampleIndex++) {
+            // summing AudioBuffer2 on AudioBuffer1
+            channelBuffer1[sampleIndex] *= channelBuffer2[sampleIndex];
         }
     }
 }
