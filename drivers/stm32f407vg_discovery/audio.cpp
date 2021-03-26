@@ -3,7 +3,7 @@
 #include "miosix.h"
 #include "kernel/scheduler/scheduler.h"
 #include "audio/audio_processor.h"
-#include "audio/audio_buffer.hpp"
+#include "audio/audio_buffer.h"
 #include "audio/audio_math.h"
 #include <functional>
 #include <algorithm>

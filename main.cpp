@@ -2,7 +2,7 @@
 #include "miosix.h"
 #include "drivers/stm32f407vg_discovery/audio.h"
 #include "audio/audio_processor.h"
-#include "audio/audio_buffer.hpp"
+#include "audio/audio_buffer.h"
 #include "audio/audio_math.h"
 #include "midi/midi.h"
 #include "tests/midi_test_data.h"
