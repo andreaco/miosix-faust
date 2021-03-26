@@ -123,6 +123,7 @@ namespace AudioMath {
                     case LookupTableEdges::PERIODIC:
                         // wrapping the value to the correct range
                         // and calling again operator()
+                        // TODO: warning on phase wrapping
                         while (x < argMin) x += (argMax-argMin);
                         while (x >= argMax) x -= (argMax-argMin);
                         y = this->operator()(x);
