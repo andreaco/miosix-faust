@@ -6,6 +6,7 @@
 #include "audio/audio_math.h"
 #include "midi/midi.h"
 #include "tests/midi_test_data.h"
+#include "containers/circular_buffer.h"
 #include <functional>
 #include <algorithm>
 #include <math.h>
@@ -44,9 +45,9 @@ public:
         auto &buffer = getBuffer();
         float *left = buffer.getWritePointer(0);
         float *right = buffer.getWritePointer(1);
-        static float linearCount = 0.0;
+//        static float linearCount = 0.0;
 
-        for (auto i = 0; i < getBufferSize(); i += 1) {
+        for (uint32_t i = 0; i < getBufferSize(); i += 1) {
             left[i] = 0.8 * sineLUT(phase);
             right[i] = left[i];
             phase += phaseDelta;
