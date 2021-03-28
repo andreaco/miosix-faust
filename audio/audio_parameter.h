@@ -29,6 +29,7 @@ public:
      * @param value
      */
     AudioParameter(T value) : totalTransitionSamples(AUDIO_PARAMETER_DEFAULT_TRANSITION_SAMPLES),
+                              passedTransitionSamples(0),
                               currentValue(value),
                               lastValue(value) {};
 
@@ -47,7 +48,7 @@ public:
     inline T getLastValue() { return lastValue; };
 
     inline T getInterpolatedValue() {
-        return AudioMath::linearInterpolation(getLastValue(), currentValue, getTransitionIndex());
+        return AudioMath::linearInterpolation(lastValue, currentValue, getTransitionIndex());
     };
 
     /**
