@@ -10,7 +10,7 @@
  * This template class define a multi channel buffer that can be used to
  * store and process audio.
  *
- * @tparam T type stored in the buffer
+ * @tparam T type stored in the buffer // TODO: restrict T for numeric types
  * @tparam CHANNEL_NUM number of channels of the buffer
  * @tparam BUFFER_LEN length of each channel of the buffer
  */
@@ -39,11 +39,8 @@ public:
      *
      * @return buffer length
      */
-    // TODO: put in a interface
     inline size_t getBufferLength() const { return bufferContainer[0].size(); };
 
-
-    // TODO: iterators in the interface
     /**
      * Returns a raw pointer to the data array of a certain channel
      * of the buffer. The access is read only.
@@ -96,7 +93,6 @@ public:
      *
      * @param audioBuffer buffer to copy from
      */
-    // TODO: put in a interface
     void copyFrom(const AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN> &audioBuffer);
 
     /**
@@ -110,7 +106,6 @@ public:
     /**
      * Clear the buffer by filling it with zeroes
      */
-    // TODO: put in a interface
     void clear();
 
 private:
@@ -192,7 +187,7 @@ void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::copyFrom(const AudioBuffer<T, CHAN
 template<typename T, size_t CHANNEL_NUM, size_t BUFFER_LEN>
 void AudioBuffer<T, CHANNEL_NUM, BUFFER_LEN>::clear() {
     for (uint32_t channelNumber = 0; channelNumber < CHANNEL_NUM; channelNumber++) {
-        bufferContainer[channelNumber].fill(0);
+        bufferContainer[channelNumber].fill(0); // TODO: manage templating generalization
     }
 }
 
