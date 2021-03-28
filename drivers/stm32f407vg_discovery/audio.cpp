@@ -20,7 +20,7 @@ static AudioDriver &audioDriver = AudioDriver::getInstance();
 static AudioProcessableDummy audioProcessableDummy;
 
 // pointers to _bufferRight and _bufferLeft members of AudioDriver
-static miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2,DOUBLE_BUFFER_BUFFERS > *doubleBuffer;
+static miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *doubleBuffer;
 static miosix::Thread *writerThread;
 
 
@@ -46,7 +46,7 @@ void refillDMA_IRQ(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DO
 
     // TODO: assert buffer size don't overflow the limit
     // TODO change bufferSize*2 -> size
-    DMA1_Stream5->NDTR =bufferSize * 2; // setting the buffer size (stereo buffer size)
+    DMA1_Stream5->NDTR = bufferSize * 2; // setting the buffer size (stereo buffer size)
     DMA1_Stream5->CR = DMA_SxCR_PL_1 |      //High priority DMA stream
                        DMA_SxCR_MSIZE_0 |   //Read  16bit at a time from RAM
                        DMA_SxCR_PSIZE_0 |   //Write 16bit at a time to SPI
@@ -109,7 +109,8 @@ void AudioDriver::init(SampleRate::SR sampleRate) {
 
 }
 
-static int16_t* tryGetWritableBuffer(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *bufferQueue) {
+static int16_t *
+tryGetWritableBuffer(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *bufferQueue) {
     int16_t *writableRawBuffer;
 
     // disable interrupts for synchronization
