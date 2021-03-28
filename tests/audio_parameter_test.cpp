@@ -10,9 +10,10 @@ TEST_CASE("AudioParameter", "[audio]") {
     }
 
     SECTION("updating the value") {
-        parameter.setValue(50.0);
-        REQUIRE(parameter.getValue() == Approx(50.0));
-        REQUIRE(parameter.getLastValue() == Approx(30.0));
+        AudioParameter<float> parameter2(30.0);
+        parameter2.setValue(50.0);
+        REQUIRE(parameter2.getValue() == Approx(50.0));
+        REQUIRE(parameter2.getLastValue() == Approx(30.0));
     }
 
     SECTION("transition sample test") {
