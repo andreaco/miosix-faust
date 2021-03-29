@@ -1,8 +1,8 @@
 uint8_t noteTest[] = {
-        //  || note on || midi note || velocity ||
+        //  || note on/off || midi note || velocity ||
 
-        0x90, 61, 0x78, // CH0
-        0x80, 61, 0x78,
+        0x90, 61, 19, // CH0
+        0x80, 61, 28,
         0x90, 30, 0x78,
         0x90, 30, 0x00,
 
@@ -10,6 +10,11 @@ uint8_t noteTest[] = {
         0x82, 61, 0x78,
         0x92, 30, 0x78,
         0x92, 30, 0x00,
+};
+
+uint8_t noteOnDouble[] = {
+        0x90, 61, 19,
+        0x90, 60, 20
 };
 
 uint8_t noteOnCh0[] = {
