@@ -18,64 +18,73 @@ float Midi::midi2freq(uint8_t midiNote) {
     return exp2LUT((static_cast<float>(midiNote) - 69.0) / 12.0) * 440.0;
 }
 
-Midi::Parser::Parser() : channelMask(0xFFFF) {
+Midi::MidiParser::MidiParser() : channelMask(0xFFFF) {
     midiParser.setMidiMsgFilter(midiXparser::channelVoiceMsgTypeMsk);
 }
 
-Midi::MidiMessage Midi::Parser::parse(uint8_t *&message) {
-    bool messageReadComplete = false;
+void Midi::MidiParser::parse(std::queue <uint8_t> &rawMidiQueue) {
     uint8_t currentByte;
     uint8_t statusByte;
-    midiMessage = MidiMessage::NOT_SUPPORTED; // default fallback
+    std::array<uint8_t, 2> dataBytes;
+    uint8_t *messagePtr;
+    Midi::MidiMessageType midiMessageType = Midi::MidiMessageType::NOT_SUPPORTED; // default fallback
 
-    while (!messageReadComplete) {
-        currentByte = *message;
-        message++;
+    while (rawMidiQueue.empty() == false) {
+        currentByte = rawMidiQueue.front(); // input read
+        rawMidiQueue.pop();
         if (midiParser.parse(currentByte)) {
-            messageReadComplete = true; // a message has been parsed
             messagePtr = midiParser.getMidiMsg();
             statusByte = messagePtr[0];
             dataBytes[0] = messagePtr[1];
             dataBytes[1] = messagePtr[2];
 
-            // checking the channel
+            // checking the channel first
             if (!channelIsEnabled(statusByte & 0xf)) {
                 // channel is masked, breaking out the while
-                midiMessage = MidiMessage::MASKED;
-                break;
-            }
+                midiMessageType = Midi::MidiMessageType::MASKED;
 
-            // note message
-            if (midiParser.isMidiStatus(midiXparser::noteOnStatus) ||
-                midiParser.isMidiStatus(midiXparser::noteOffStatus)) {
-                note = Note(messagePtr);
-
+                // note message -------
+            } else if (midiParser.isMidiStatus(midiXparser::noteOnStatus) ||
+                       midiParser.isMidiStatus(midiXparser::noteOffStatus)) {
+                Note note(dataBytes[0], dataBytes[1]);
                 if (midiParser.isMidiStatus(midiXparser::noteOffStatus) || // noteOn with 0 velocity is a noteOff
                     (midiParser.isMidiStatus(midiXparser::noteOnStatus) && note.getVelocity() == 0)) {
                     // note off
-                    midiMessage = MidiMessage::NOTE_OFF;
+                    midiMessageType = Midi::MidiMessageType::NOTE_OFF;
                 } else {
                     // note on
-                    midiMessage = MidiMessage::NOTE_ON;
+                    midiMessageType = Midi::MidiMessageType::NOTE_ON;
                 }
-                break;
-            }
 
-            // control change
-            if (midiParser.isMidiStatus(midiXparser::controlChangeStatus)) {
-                controllerNumber = dataBytes[0];
-                controllerValue = dataBytes[1];
-                midiMessage = MidiMessage::CONTROL_CHANGE;
-                break;
-            }
+                // control change -------
+            } else if (midiParser.isMidiStatus(midiXparser::controlChangeStatus)) {
+                midiMessageType = Midi::MidiMessageType::CONTROL_CHANGE;
 
-            // pitch bend
-            if (midiParser.isMidiStatus(midiXparser::pitchBendStatus)) {
-                pitchBendValue = (dataBytes[0] << 7) | dataBytes[1];
-                midiMessage = MidiMessage::PITCH_BEND;
-                break;
-            }
+                // pitch bend -------
+            } else if (midiParser.isMidiStatus(midiXparser::pitchBendStatus)) {
+                midiMessageType = Midi::MidiMessageType::PITCH_BEND;
+
+            } // end of message parsing
+
+            // constructing the new MidiMessage
+            Midi::MidiMessage midiMessage = {dataBytes, midiMessageType};
+            messageQueue.push(midiMessage); // the element is pushed into the queue
         }
     }
-    return midiMessage;
+
+}
+
+
+Midi::Note Midi::MidiMessage::getNote() {
+    return Midi::Note(dataBytes[0], dataBytes[1]);
+}
+
+uint16_t Midi::MidiMessage::getPitchBendValue() {
+    return (dataBytes[0] << 7) | dataBytes[1];
+}
+
+Midi::MidiMessage Midi::MidiParser::popMidiMessage() {
+    Midi::MidiMessage message = messageQueue.front();
+    messageQueue.pop();
+    return message;
 }

@@ -4,6 +4,8 @@
 
 #include "midiXparser.h"
 #include <array>
+#include <list>
+#include <queue>
 
 /**
  * This namespace defines classes and functions to handle
@@ -32,11 +34,6 @@ namespace Midi {
          */
         Note(uint8_t midiNote = 48, uint8_t velocity = 120) : midiNote(midiNote), velocity(velocity) {};
 
-        /**
-         * Constructor.
-         *
-         * @param midiNoteMsg
-         */
         Note(uint8_t *midiNoteMsg) : midiNote(midiNoteMsg[1]), velocity(midiNoteMsg[2]) {};
 
         /**
@@ -68,7 +65,7 @@ namespace Midi {
     /**
      * Enumeration for the different midi messages.
      */
-    enum class MidiMessage {
+    enum class MidiMessageType {
         NOTE_ON,
         NOTE_OFF,
         CONTROL_CHANGE,
@@ -77,30 +74,58 @@ namespace Midi {
         NOT_SUPPORTED // TODO: implement all midi messages
     };
 
+    class MidiMessage {
+    public:
+        MidiMessage(std::array<uint8_t, 2> data, MidiMessageType type) :
+                dataBytes(data),
+                midiType(type) {};
+
+
+        MidiMessage() = delete;
+
+//        MidiMessage(const MidiMessage &copy) :
+//                dataBytes(copy.getDataBytes()),
+//                midiType(copy.getType()) {};
+//
+//        MidiMessage &operator=(const MidiMessage &copy) {
+//            dataBytes = copy.dataBytes;
+//            midiType = copy.midiType;
+//            return *this;
+//        };
+
+        inline MidiMessageType getType() const { return midiType; };
+
+        inline std::array<uint8_t, 2> getDataBytes() const { return dataBytes; };
+
+        Note getNote();
+
+        uint16_t getPitchBendValue();
+
+        inline uint8_t getControllerNumber() { return dataBytes[0]; };
+
+        inline uint8_t getControllerValue() { return dataBytes[1]; };
+
+    private:
+        std::array<uint8_t, 2> dataBytes;
+        MidiMessageType midiType;
+    };
+
     /**
      * Midi parser, based on midiXparser class.
-     * Parses one message at the time with the parse(message) function;
-     * after a message is read, the getter methods returns its information.
      */
-    class Parser {
+    class MidiParser {
     public:
-        // TODO: remove it
-        static void testParser() {};
 
         /**
          * Constructor.
          */
-        Parser();
+        MidiParser();
 
-        /**
-         * Parse a message from a pointer.
-         * The pointer is increased to the first byte
-         * of the next message.
-         *
-         * @param message pointer reference to a midi buffer
-         * @return midi message type
-         */
-        MidiMessage parse(uint8_t *&message);
+        void parse(std::queue <uint8_t> &rawMidiQueue);
+
+        MidiMessage popMidiMessage();
+
+        inline std::queue <MidiMessage> getMessageQueue() { return messageQueue; };
 
         /**
          * Masks a certain channel.
@@ -132,37 +157,14 @@ namespace Midi {
             return channelMask & (1 << channelNumber);
         }
 
-        /**
-         * Getter for the midiMessage attribute.
-         *
-         * @return midi message
-         */
-        inline MidiMessage getMidiMessage() { return midiMessage; };
-
-        /**
-         * Getter for the note
-         *
-         * @return note
-         */
-        inline Note getNote() { return note; };
-
-        inline uint16_t getPitchBendValue() { return pitchBendValue; };
-
-        inline uint8_t getControllerNumber() { return controllerNumber; };
-
-        inline uint8_t getControllerValue() { return controllerValue; };
-
-        /**
-         * Getter for the array dataByte
-         * @return
-         */
-        inline std::array<uint8_t, 2> getDataBytes() { return dataBytes; };
 
     private:
+
+        std::queue <MidiMessage> messageQueue;
+
         /**
          * Bitmask used to enable the channels.
          */
-         // TODO: set in the constructor
         uint16_t channelMask;
 
         /**
@@ -171,40 +173,6 @@ namespace Midi {
          */
         midiXparser midiParser;
 
-        /**
-         * Last parsed note.
-         */
-        Note note;
-
-        /**
-         * Last pitch bend value.
-         */
-        uint16_t pitchBendValue;
-
-        /**
-         * Last controller number from control change.
-         */
-        uint8_t controllerNumber;
-
-        /**
-        * Last controller value from control change
-        */
-        uint8_t controllerValue;
-
-        /**
-         * Pointer to the last parsed message.
-         */
-        uint8_t *messagePtr;
-
-        /**
-         * Data bytes of the last parsed message.
-         */
-        std::array<uint8_t, 2> dataBytes;
-
-        /**
-         * Last midi message.
-         */
-        MidiMessage midiMessage;
     };
 }
 
