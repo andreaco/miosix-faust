@@ -117,4 +117,54 @@ TEST_CASE("CircularBuffer", "[containers]") {
             REQUIRE(buffer.size() == 3);
         }
     }
+
+    SECTION("Iterator") {
+        SECTION("Explicit iterator use") {
+            CircularBuffer<double, 6, CircularBufferType::Overwrite> buffer;
+            double testValues[6] = {0, 1, 2, 3, 4, 5};
+
+            for (auto i = 0; i < 6; ++i) {
+                buffer.push_back(testValues[i]);
+            }
+            auto it = buffer.begin();
+            auto end = buffer.end();
+            auto i = 0;
+            for (; it != end; ++it, ++i) {
+                REQUIRE(*it == testValues[i]);
+            }
+        }
+
+        SECTION("For each") {
+            CircularBuffer<double, 6, CircularBufferType::Overwrite> buffer;
+            double testValues[6] = {0, 1, 2, 3, 4, 5};
+
+            for (auto i = 0; i < 6; ++i) {
+                buffer.push_back(testValues[i]);
+            }
+
+            auto i = 0;
+            for (auto item : buffer) {
+                REQUIRE(item == testValues[i]);
+                i++;
+            }
+        }
+
+        SECTION ("std copy") {
+            int ints[] = {10, 20, 30, 40, 50, 60};
+            std::vector<int> vector1 (6);
+            std::vector<int> vector2 (6);
+
+
+            CircularBuffer<double, 6, CircularBufferType::Overwrite> buffer;
+            for(auto i=0; i<6; ++i) {
+                buffer.push_back(ints[i]);
+            }
+
+            std::copy(ints, ints+6, vector1.begin());
+            std::copy(buffer.begin(), buffer.end(), vector2.begin());
+
+            REQUIRE(vector1 == vector2);
+        };
+
+    }
 }
