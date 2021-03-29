@@ -2,7 +2,7 @@
 #ifndef MIOSIX_AUDIO_CIRCULAR_BUFFER_H
 #define MIOSIX_AUDIO_CIRCULAR_BUFFER_H
 
-#include <array>
+#include <queue>
 
 
 
@@ -22,10 +22,7 @@ public:
     /**
      * Constructor.
      */
-    CircularBuffer() :
-            head(0),
-            tail(0),
-            currentCapacity(0){};
+    CircularBuffer() {};
 
     /**
      * This method must be implemented in a subclass
@@ -45,12 +42,9 @@ public:
      * @return oldest element
      */
     inline T get() {
-        T item = bufferContainer[head];
-        if (isEmpty()) return item; // undefined return behaviour in this case
-        head++;
-        head %= BUFFER_LEN;
-        currentCapacity--;
-        return item;
+        T item = front();
+        queue.pop();
+        return item; // undefined return behaviour if empty
     };
 
     /**
@@ -59,15 +53,14 @@ public:
      *
      * @return oldest element
      */
-    inline T front() { return bufferContainer[head]; }
+    inline T front() { return queue.front(); }
 
     /**
      * Resets the state of the buffer.
      */
     inline void clear() {
-        head = 0;
-        tail = 0;
-        currentCapacity = 0;
+        std::queue <T> tmp;
+        queue.swap(tmp);
     };
 
     /**
@@ -75,7 +68,7 @@ public:
      *
      * @return true if the buffer is empty
      */
-    bool isEmpty() const { return currentCapacity == 0; };
+    bool isEmpty() const { return getCurrentCapacity() == 0; };
 
     /**
      * Checks if the buffer is full.
@@ -83,7 +76,7 @@ public:
      * @return true if the buffer is full
      */
     bool isFull() const {
-        return currentCapacity == BUFFER_LEN;
+        return getCurrentCapacity() == BUFFER_LEN;
     };
 
     /**
@@ -92,8 +85,8 @@ public:
      *
      * @return number of inserted elements
      */
-    size_t getCurrentCapacity() const {
-        return currentCapacity;
+    inline size_t getCurrentCapacity() const {
+        return queue.size();
     };
 
     /**
@@ -104,10 +97,7 @@ public:
     size_t size() const { return BUFFER_LEN; };
 
 protected:
-    std::array <T, BUFFER_LEN> bufferContainer;
-    size_t head;
-    size_t tail;
-    size_t currentCapacity;
+    std::queue <T> queue;
 
 };
 
@@ -133,16 +123,9 @@ public:
     inline void put(T item) override {
         typedef CircularBuffer<T, BUFFER_LEN> P; // parent namespace
         if (P::isFull()) {
-            // overwriting the oldest element
-            P::head++;
-            P::head %= BUFFER_LEN;
-            P::currentCapacity--;
+            P::queue.pop();
         }
-        P::bufferContainer[P::tail] = item;
-        P::tail++;
-        P::tail %= BUFFER_LEN;
-        P::currentCapacity++;
-
+        P::queue.push(item);
     };
 };
 
@@ -168,10 +151,7 @@ public:
     inline void put(T item) override {
         typedef CircularBuffer<T, BUFFER_LEN> P; // parent namespace
         if (P::isFull()) return; // overflow
-        P::bufferContainer[P::tail] = item;
-        P::tail++;
-        P::tail %= BUFFER_LEN;
-        P::currentCapacity++;
+        P::queue.push(item);
     };
 };
 
