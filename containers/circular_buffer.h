@@ -30,12 +30,12 @@ namespace CircularBufferType
  * @tparam CircularBuffer
  */
 template <typename CircularBuffer>
-class ConstCircularBufferIterator : public std::iterator<std::bidirectional_iterator_tag, typename CircularBuffer::value_type>
+class ConstCircularBufferIterator : public std::iterator<std::bidirectional_iterator_tag, typename CircularBuffer::ValueType>
 {
 public:
     using ValueType = const typename CircularBuffer::ValueType;
-    using PointerType = const ValueType*;
-    using ReferenceType = const ValueType&;
+    using PointerType = const typename CircularBuffer::PointerType;
+    using ReferenceType = const typename CircularBuffer::ReferenceType;
 
 public:
     ConstCircularBufferIterator(CircularBuffer* circularBuffer, size_t startPosition)
@@ -45,7 +45,7 @@ public:
     * Equals comparison operator
     */
     bool operator== (const ConstCircularBufferIterator& other) const {
-        return _position == other._position;
+        return _position == other._position && _buffer == other._buffer;
     }
 
     /**
@@ -60,12 +60,12 @@ public:
      * Dereference operator
      * @return the value of the element this iterator is currently pointing at
      */
-    ReferenceType operator*() {
-        return _buffer[_position];
+    const ReferenceType operator*() {
+        return (*_buffer)[_position];
     }
 
     /**
-     * Prefix decrement operator (e.g., --it)
+     * Prefix decrement operator (--it)
      */
     ConstCircularBufferIterator &operator--(){
         --_position;
@@ -73,7 +73,7 @@ public:
     }
 
     /**
-     * Postfix decrement operator (e.g., it--)
+     * Postfix decrement operator (it--)
      */
     ConstCircularBufferIterator operator--(int){
         // Use operator--()
@@ -83,7 +83,7 @@ public:
     }
 
     /**
-     * Prefix increment operator (e.g., ++it)
+     * Prefix increment operator (++it)
      */
     ConstCircularBufferIterator &operator++(){\
         ++_position;
@@ -91,7 +91,7 @@ public:
     }
 
     /**
-     * Postfix increment operator (e.g., it++)
+     * Postfix increment operator (it++)
      */
     ConstCircularBufferIterator operator++(int){
         // Use operator++()
@@ -258,31 +258,19 @@ public:
      * Iterator begin
      * @return Begin iterator
      */
-    const_iterator cbegin()
+    const_iterator begin()
     {
-        return iterator(this, 0);
+        return const_iterator(this, 0);
     }
 
     /**
      * Iterator end
      * @return  End iterator
      */
-    const_iterator cend()
+    const_iterator end()
     {
-        return iterator(this, _size);
+        return const_iterator(this, _size);
     }
-
-    /**
-     * Random access operator, if undefined behaviour if index is out of bounds
-     * @param index Logical index of the chosen element
-     * @return Element at logical position index
-     */
-    const T &operator[](size_type index)
-    {
-        size_type i = (_head + index) % BufferSize;
-        return _buffer[i];
-    }
-
 
 private:
     /**
@@ -295,6 +283,17 @@ private:
         ++_size;
         if (_tail == BufferSize)
             _tail = 0;
+    }
+
+    /**
+    * Auxiliary random access operator, undefined behaviour if index is out of bounds
+    * @param index Logical index of the chosen element
+    * @return Element at logical position index
+    */
+    const ReferenceType operator[](size_type index)
+    {
+        size_type i = (_head + index) % BufferSize;
+        return _buffer[i];
     }
 
 private:
