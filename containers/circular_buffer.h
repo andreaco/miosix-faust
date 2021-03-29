@@ -1,178 +1,323 @@
-
 #ifndef MIOSIX_AUDIO_CIRCULAR_BUFFER_H
 #define MIOSIX_AUDIO_CIRCULAR_BUFFER_H
 
 #include <array>
 
 
+/**
+ * Collection of structs to be passed as a template argument to CircularBuffer
+ * to choose a policy for the overflow behaviour
+ */
+namespace CircularBufferType
+{
+    /**
+     * When adding an element to a full CircularBuffer, discard it
+     */
+    struct Discard {};
+
+    /**
+     * When adding an element to a full CircularBuffer, overwrite the head
+     */
+    struct Overwrite {};
+}
+
+
+
+
 
 /**
- * This class abstract class implements the basic functionalities
- * of a circular buffer, the put method can be overridden for
- * different overflow policies.
- *
- * @tparam T type to hold, it must implement the copy and default constructors
- * @tparam BUFFER_LEN length of the buffer
+ * Iterator used by CircularBuffer
+ * @tparam CircularBuffer
  */
- // TODO: add iterator
-template<typename T, size_t BUFFER_LEN>
-class CircularBuffer {
+template <typename CircularBuffer>
+class ConstCircularBufferIterator : public std::iterator<std::bidirectional_iterator_tag, typename CircularBuffer::value_type>
+{
 public:
+    using ValueType = const typename CircularBuffer::ValueType;
+    using PointerType = const ValueType*;
+    using ReferenceType = const ValueType&;
+
+public:
+    ConstCircularBufferIterator(CircularBuffer* circularBuffer, size_t startPosition)
+            :   _buffer(circularBuffer),
+                _position(startPosition) {}
+    /**
+    * Equals comparison operator
+    */
+    bool operator== (const ConstCircularBufferIterator& other) const {
+        return _position == other._position;
+    }
 
     /**
-     * Constructor.
+     * Not-equals comparison operator
+     * @see operator==(const ConstCircularBufferIterator&) const
      */
-    CircularBuffer() :
-            head(0),
-            tail(0),
-            currentCapacity(0){};
+    bool operator!= (const ConstCircularBufferIterator& other) const {
+        return !(*this == other);
+    }
 
     /**
-     * This method must be implemented in a subclass
-     * to put a new element in the buffer handling
-     * a possible overflow.
+     * Dereference operator
+     * @return the value of the element this iterator is currently pointing at
+     */
+    ReferenceType operator*() {
+        return _buffer[_position];
+    }
+
+    /**
+     * Prefix decrement operator (e.g., --it)
+     */
+    ConstCircularBufferIterator &operator--(){
+        --_position;
+        return *this;
+    }
+
+    /**
+     * Postfix decrement operator (e.g., it--)
+     */
+    ConstCircularBufferIterator operator--(int){
+        // Use operator--()
+        const ConstCircularBufferIterator old(*this);
+        --(*this);
+        return old;
+    }
+
+    /**
+     * Prefix increment operator (e.g., ++it)
+     */
+    ConstCircularBufferIterator &operator++(){\
+        ++_position;
+        return *this;
+    }
+
+    /**
+     * Postfix increment operator (e.g., it++)
+     */
+    ConstCircularBufferIterator operator++(int){
+        // Use operator++()
+        const ConstCircularBufferIterator old(*this);
+        ++(*this);
+        return old;
+    }
+
+private:
+    CircularBuffer *_buffer;
+    size_t  _position;
+};
+
+
+
+
+/**
+ * This class implements a circular buffer with different overflow policies
+ *
+ * @tparam T  Type to be used in the collection
+ * @tparam BufferSize Max Buffer size of the circular buffer
+ * @tparam OverflowPolicy Defaults to overwrite behaviour @see CircularBufferType for more options
+ */
+template<typename T, size_t BufferSize, typename OverflowPolicy = CircularBufferType::Overwrite>
+class CircularBuffer
+{
+public:
+    using ValueType = T;
+    using PointerType = T*;
+    using ReferenceType = T&;
+
+    typedef size_t      size_type;
+    typedef ptrdiff_t    difference_type;
+
+public:
+    /**
+     * Constructor
+     */
+    CircularBuffer() : _head(1), _tail(0), _size(0) {}
+
+
+    /**
+     * Function to get the first element of the CircularBuffer as const
      *
-     * @param item new element
+     * @return First element as const
      */
-    virtual inline void put(T item) = 0;
+    inline const ReferenceType front()
+    {
+        return _buffer[_head];
+    }
 
     /**
-     * Gets the oldest element available from the buffer
-     * increasing the head pointer.
-     * Getting an element from an empty buffer
-     * has an undefined behaviours.
+     * Function to get the last element of the CircularBuffer as const
      *
-     * @return oldest element
+     * @return Last element as const
      */
-    inline T get() {
-        T item = bufferContainer[head];
-        if (isEmpty()) return item; // undefined return behaviour in this case
-        head++;
-        head %= BUFFER_LEN;
-        currentCapacity--;
-        return item;
-    };
-
-    /**
-     * Gets the oldest element available from the buffer
-     * without increasing the head pointer.
-     *
-     * @return oldest element
-     */
-    inline T front() { return bufferContainer[head]; }
+    inline const ReferenceType back()
+    {
+        return _buffer[_tail];
+    }
 
     /**
      * Resets the state of the buffer.
      */
-    inline void clear() {
-        head = 0;
-        tail = 0;
-        currentCapacity = 0;
-    };
+    inline void clear()
+    {
+        _head = 1;
+        _tail = _size = 0;
+    }
+
+    /**
+     * Get the actual number of elements contained by the buffer
+     *
+     * @return Number of elements in the buffer
+     */
+    inline size_type size() const
+    {
+        return _size;
+    }
+
+    /**
+     * Maximum number of elements that can be contained by the CircularBuffer
+     *
+     * @return Maximum number of elements
+     */
+    inline size_type max_size() const
+    {
+        return BufferSize;
+    }
 
     /**
      * Checks if the buffer is empty.
      *
      * @return true if the buffer is empty
      */
-    bool isEmpty() const { return currentCapacity == 0; };
+    inline bool empty() const
+    {
+        return _size == 0;
+    }
 
     /**
-     * Checks if the buffer is full.
-     *
-     * @return true if the buffer is full
-     */
-    bool isFull() const {
-        return currentCapacity == BUFFER_LEN;
-    };
-
-    /**
-     * Gets the number of elements currently inserted
-     * in the buffer.
-     *
-     * @return number of inserted elements
-     */
-    size_t getCurrentCapacity() const {
-        return currentCapacity;
-    };
-
-    /**
-     * Gets the overall size of the buffer.
-     *
-     * @return BUFFER_LEN template parameter
-     */
-    size_t size() const { return BUFFER_LEN; };
-
-protected:
-    std::array <T, BUFFER_LEN> bufferContainer;
-    size_t head;
-    size_t tail;
-    size_t currentCapacity;
-
-};
-
-/**
- * Circular buffer implementation with an override policy
- * on overflow. If the put method is called when the buffer
- * is full, the oldest element is overridden.
- *
- * @tparam T type to hold, it must implement the copy constructor
- * @tparam BUFFER_LEN length of the buffer
- */
-template<typename T, size_t BUFFER_LEN>
-class OverridingCircularBuffer : public CircularBuffer<T, BUFFER_LEN> {
-public:
-
-    /**
-     * Puts a new element in the buffer.
+     * Pushes a new element in the buffer.
      * If the buffer overflows the new element
      * it overwrites the oldest element.
+     * Overwrite Template version, @see CircularBufferType::Overwrite
      *
      * @param item new element
      */
-    inline void put(T item) override {
-        typedef CircularBuffer<T, BUFFER_LEN> P; // parent namespace
-        if (P::isFull()) {
-            // overwriting the oldest element
-            P::head++;
-            P::head %= BUFFER_LEN;
-            P::currentCapacity--;
+    template <typename Q = OverflowPolicy>
+    typename std::enable_if<std::is_same<Q, CircularBufferType::Overwrite>::value, void>::type
+    push_back(ValueType item)
+    {
+        if (_size == BufferSize)
+        {
+            pop_front();
         }
-        P::bufferContainer[P::tail] = item;
-        P::tail++;
-        P::tail %= BUFFER_LEN;
-        P::currentCapacity++;
+        advance_tail();
+        _buffer[_tail] = item;
+    }
 
-    };
-};
+    /**
+     * Pushes a new element in the buffer.
+     * If the buffer overflows the new element
+     * it discards the element.
+     * Discard Template version, @see CircularBufferType::Discard
+     *
+     * @param item new element
+     */
+    template <typename Q = OverflowPolicy>
+    typename std::enable_if<std::is_same<Q, CircularBufferType::Discard>::value, void>::type
+    push_back(ValueType item)
+    {
+        if (_size == BufferSize)
+        {
+            return;
+        }
+        advance_tail();
+        _buffer[_tail] = item;
+    }
 
-/**
- * Circular buffer implementation with discarding policy
- * on overflow. If the put method is called when the buffer
- * is full, the new element is discarded.
- *
- * @tparam T type to hold, it must implement the copy constructor
- * @tparam BUFFER_LEN length of the buffer
- */
-template<typename T, size_t BUFFER_LEN>
-class DiscardingCircularBuffer : public CircularBuffer<T, BUFFER_LEN> {
+    /**
+     * Removes the front element from the buffer
+     */
+    void pop_front()
+    {
+        if (_size == 0) return;
+
+        _buffer[_head] = 0;
+        ++_head;
+        --_size;
+        if (_head == BufferSize)
+            _head = 0;
+    }
+
+
 public:
 
     /**
-     * Puts a new element in the buffer.
-     * If the buffer overflows the new element
-     * is discarded.
-     *
-     * @param item new element
+     * Iterator
      */
-    inline void put(T item) override {
-        typedef CircularBuffer<T, BUFFER_LEN> P; // parent namespace
-        if (P::isFull()) return; // overflow
-        P::bufferContainer[P::tail] = item;
-        P::tail++;
-        P::tail %= BUFFER_LEN;
-        P::currentCapacity++;
-    };
+    typedef ConstCircularBufferIterator<CircularBuffer> const_iterator;
+
+    /**
+     * Iterator begin
+     * @return Begin iterator
+     */
+    const_iterator cbegin()
+    {
+        return iterator(this, 0);
+    }
+
+    /**
+     * Iterator end
+     * @return  End iterator
+     */
+    const_iterator cend()
+    {
+        return iterator(this, _size);
+    }
+
+    /**
+     * Random access operator, if undefined behaviour if index is out of bounds
+     * @param index Logical index of the chosen element
+     * @return Element at logical position index
+     */
+    const T &operator[](size_type index)
+    {
+        size_type i = (_head + index) % BufferSize;
+        return _buffer[i];
+    }
+
+
+private:
+    /**
+     * Auxiliary method to advance the tail and size pointers,
+     * usually used to add new items to the buffer
+     */
+    void advance_tail()
+    {
+        ++_tail;
+        ++_size;
+        if (_tail == BufferSize)
+            _tail = 0;
+    }
+
+private:
+    /**
+     * Underlying buffer to be used as circular
+     */
+    std::array<T, BufferSize> _buffer;
+
+    /**
+     * Head position
+     */
+    size_t _head;
+
+    /**
+     * Tail position
+     */
+    size_t _tail;
+
+    /**
+     * Number of elements actually contained by the buffer
+     */
+    size_t _size;
+
 };
 
 
