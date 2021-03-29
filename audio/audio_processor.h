@@ -16,11 +16,11 @@ public:
 
     virtual void process() = 0;
 
-    inline AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() { return audioDriver.getBuffer();};
+    inline AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() const { return audioDriver.getBuffer();};
 
-    inline unsigned int getBufferSize() { return audioDriver.getBufferSize(); };
+    inline unsigned int getBufferSize() const { return audioDriver.getBufferSize(); };
 
-    inline float getSampleRate() { return audioDriver.getSampleRate(); };
+    inline float getSampleRate() const { return audioDriver.getSampleRate(); };
 
 private:
     /**
