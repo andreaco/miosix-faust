@@ -253,6 +253,7 @@ public:
      * Iterator
      */
     typedef ConstCircularBufferIterator<CircularBuffer> const_iterator;
+    friend const_iterator;
 
     /**
      * Iterator begin
