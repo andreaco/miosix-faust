@@ -38,16 +38,16 @@ public:
      *
      * @return currentValue
      */
-    inline T getValue() { return currentValue; };
+    inline T getValue() const { return currentValue; };
 
     /**
      * Getter for lastValue.
      *
      * @return
      */
-    inline T getLastValue() { return lastValue; };
+    inline T getLastValue() const { return lastValue; };
 
-    inline T getInterpolatedValue() {
+    inline T getInterpolatedValue() const {
         return AudioMath::linearInterpolation(lastValue, currentValue, getTransitionIndex());
     };
 
@@ -57,7 +57,7 @@ public:
      *
      * @return float index
      */
-    inline float getTransitionIndex() {
+    inline float getTransitionIndex() const {
         return static_cast<float>(passedTransitionSamples) / static_cast<float>(totalTransitionSamples);
     }
 
@@ -109,7 +109,7 @@ public:
      *
      * @return boolean flag
      */
-    inline bool transitionIsComplete() {
+    inline bool transitionIsComplete() const {
         return passedTransitionSamples >= totalTransitionSamples;
     }
 
