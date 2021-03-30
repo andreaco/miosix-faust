@@ -7,18 +7,18 @@ TEST_CASE("CircularBuffer", "[containers]") {
         CircularBuffer<int, 4> buffer;
 
         SECTION("putting elements in the buffer") {
-            buffer.push_back(1);
+            buffer.push(1);
             REQUIRE(buffer.front() == 1);
 
-            buffer.push_back(2);
+            buffer.push(2);
             REQUIRE(buffer.front() == 1);
 
 
             SECTION("getting elements") {
                 REQUIRE(buffer.front() == 1);
-                buffer.pop_front();
+                buffer.pop();
                 REQUIRE(buffer.front() == 2);
-                buffer.pop_front();
+                buffer.pop();
                 REQUIRE(buffer.empty() == true);
             }
 
@@ -37,7 +37,7 @@ TEST_CASE("CircularBuffer", "[containers]") {
 
             SECTION("checking the current capacity") {
                 REQUIRE(buffer.size() == 2);
-                buffer.push_back(45);
+                buffer.push(45);
                 REQUIRE(buffer.size() == 3);
             }
         }
@@ -48,37 +48,37 @@ TEST_CASE("CircularBuffer", "[containers]") {
         SECTION("wrapping") {
             REQUIRE(buffer.empty() == true);
 
-            buffer.push_back(1);
-            buffer.push_back(2);
-            buffer.push_back(2.5);
+            buffer.push(1);
+            buffer.push(2);
+            buffer.push(2.5);
 
 
-            buffer.pop_front();
-            buffer.pop_front();
-            buffer.push_back(3.5);
+            buffer.pop();
+            buffer.pop();
+            buffer.push(3.5);
 
             REQUIRE(buffer.size() == 2);
 
-            buffer.push_back(3.6);
+            buffer.push(3.6);
 
-            buffer.push_back(3.9);
+            buffer.push(3.9);
 
-            buffer.pop_front();
-            buffer.pop_front();
+            buffer.pop();
+            buffer.pop();
 
             REQUIRE(buffer.front() == Approx(3.6));
-            buffer.pop_front();
+            buffer.pop();
             buffer.clear();
             REQUIRE(buffer.empty() == true);
             REQUIRE(buffer.size() == 0);
         }
 
         SECTION("overriding") {
-            buffer.push_back(1);
-            buffer.push_back(2);
-            buffer.push_back(2.5);
-            buffer.push_back(3.5);
-            buffer.push_back(4.5);
+            buffer.push(1);
+            buffer.push(2);
+            buffer.push(2.5);
+            buffer.push(3.5);
+            buffer.push(4.5);
             REQUIRE(buffer.front() == Approx(2));
         }
 
@@ -87,19 +87,19 @@ TEST_CASE("CircularBuffer", "[containers]") {
     SECTION("Discarding CircularBuffer test") {
         CircularBuffer<double, 4, CircularBufferType::Discard> buffer;
         SECTION("wrapping") {
-            buffer.push_back(1);
-            buffer.push_back(2);
-            buffer.push_back(2.5);
-            buffer.pop_front();
-            buffer.pop_front();
-            buffer.push_back(3.5);
+            buffer.push(1);
+            buffer.push(2);
+            buffer.push(2.5);
+            buffer.pop();
+            buffer.pop();
+            buffer.push(3.5);
             REQUIRE(buffer.size() == 2);
-            buffer.push_back(3.6);
-            buffer.push_back(3.9);
-            buffer.pop_front();
-            buffer.pop_front();
+            buffer.push(3.6);
+            buffer.push(3.9);
+            buffer.pop();
+            buffer.pop();
             REQUIRE(buffer.front() == 3.6);
-            buffer.pop_front();
+            buffer.pop();
             REQUIRE(buffer.size() == 1);
             buffer.clear();
             REQUIRE(buffer.empty() == true);
@@ -107,13 +107,13 @@ TEST_CASE("CircularBuffer", "[containers]") {
         }
 
         SECTION("overriding") {
-            buffer.push_back(1);
-            buffer.push_back(2);
-            buffer.push_back(2.5);
-            buffer.push_back(3.5);
-            buffer.push_back(4.5);
+            buffer.push(1);
+            buffer.push(2);
+            buffer.push(2.5);
+            buffer.push(3.5);
+            buffer.push(4.5);
             REQUIRE(buffer.front() == 1);
-            buffer.pop_front();
+            buffer.pop();
             REQUIRE(buffer.size() == 3);
         }
     }
@@ -124,7 +124,7 @@ TEST_CASE("CircularBuffer", "[containers]") {
             double testValues[6] = {0, 1, 2, 3, 4, 5};
 
             for (auto i = 0; i < 6; ++i) {
-                buffer.push_back(testValues[i]);
+                buffer.push(testValues[i]);
             }
             auto it = buffer.begin();
             auto end = buffer.end();
@@ -139,7 +139,7 @@ TEST_CASE("CircularBuffer", "[containers]") {
             double testValues[6] = {0, 1, 2, 3, 4, 5};
 
             for (auto i = 0; i < 6; ++i) {
-                buffer.push_back(testValues[i]);
+                buffer.push(testValues[i]);
             }
 
             auto i = 0;
@@ -157,7 +157,7 @@ TEST_CASE("CircularBuffer", "[containers]") {
 
             CircularBuffer<double, 6, CircularBufferType::Overwrite> buffer;
             for(auto i=0; i<6; ++i) {
-                buffer.push_back(ints[i]);
+                buffer.push(ints[i]);
             }
 
             std::copy(ints, ints+6, vector1.begin());
