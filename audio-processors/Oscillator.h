@@ -4,50 +4,33 @@
 #include <array>
 #include <cmath>
 #include <math.h> // sin
-#include <JuceHeader.h>
+#include "audio/audio_math.h"
 
 class Oscillator {
 public:
-    Oscillator() { }
+    Oscillator() : sineLUT([](float x) { return sin(x); }, 0, 2 * M_PI, AudioMath::LookupTableEdges::PERIODIC)
+    { }
     
     void prepare()
     {
-        auto size = waveTable.size()-1;
-        
-        for (auto i = 0; i < size; ++i)
-        {
-            waveTable[i] = sin(2 * M_PI * i / size);
-        }
-        waveTable[waveTable.size()-1] = waveTable[0];
-        
-        
-        phase = 0;
     }
     
     void setFrequency (float frequency, float sampleRate)
     {
-        auto tableSizeOverSampleRate = (float) tableSize / sampleRate;
-        tableDelta = frequency * tableSizeOverSampleRate;
+        auto phaseStep = 2 * M_PI / sampleRate;
+        phaseDelta = frequency * phaseStep;
     }
     
     
     
-    inline float getNextSample() noexcept
+    inline float getNextSample()
     {
-        auto index0 = (unsigned int) tableIndex;
-        auto index1 = index0 + 1;
 
-        auto frac = tableIndex - (float) index0;
+        float currentSample = sineLUT(phase);
+        phase += phaseDelta;
 
-        
-        auto value0 = waveTable[index0];
-        auto value1 = waveTable[index1];
-
-        
-        auto currentSample = value0 + frac * (value1 - value0);
-
-        if ((tableIndex += tableDelta) > (float) tableSize)
-            tableIndex -= (float) tableSize;
+        if (phase >= 2 * M_PI)
+            phase -= 2 * M_PI;
 
         return currentSample;
     }
@@ -55,12 +38,9 @@ public:
     
     
 private:
-    
-    float phase;
-    
-    std::array<float, 1025> waveTable;
-    const int tableSize = 1024;
-    
-    float tableIndex = 0.0f, tableDelta = 0.0f;
+
+    AudioMath::LookupTable<128> sineLUT;
+
+    float phase = 0.0f, phaseDelta = 0.0f;
     float freq;
 };

@@ -38,7 +38,7 @@ EXTRA_LDFLAGS          =
 INCLUDE                = -I../miosix
 
 # The C Preprocessor options (notice here "CPP" does not mean "C++"; man cpp for more info.). Actually $(INCLUDE) is included.
-CPPFLAGS               = -Wall -Wextra --std=c++11 -Wa,-mbig-obj   # helpful for writing better code (behavior-related)
+CPPFLAGS               = -Wall -Wextra --std=c++11 #-Wa,-mbig-obj   # helpful for writing better code (behavior-related)
 
 # The options used in linking as well as in any direct use of ld.
 LDFLAGS                =
