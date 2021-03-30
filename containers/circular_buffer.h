@@ -202,11 +202,11 @@ public:
      */
     template <typename Q = OverflowPolicy>
     typename std::enable_if<std::is_same<Q, CircularBufferType::Overwrite>::value, void>::type
-    push_back(ValueType item)
+    push(ValueType item)
     {
         if (_size == BufferSize)
         {
-            pop_front();
+            pop();
         }
         advance_tail();
         _buffer[_tail] = item;
@@ -222,7 +222,7 @@ public:
      */
     template <typename Q = OverflowPolicy>
     typename std::enable_if<std::is_same<Q, CircularBufferType::Discard>::value, void>::type
-    push_back(ValueType item)
+    push(ValueType item)
     {
         if (_size == BufferSize)
         {
@@ -235,11 +235,10 @@ public:
     /**
      * Removes the front element from the buffer
      */
-    void pop_front()
+    void pop()
     {
         if (_size == 0) return;
 
-        _buffer[_head] = 0;
         ++_head;
         --_size;
         if (_head == BufferSize)
