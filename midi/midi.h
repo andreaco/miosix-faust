@@ -82,7 +82,8 @@ namespace Midi {
                 dataBytes(data),
                 midiType(type) {};
 
-        MidiMessage() {}
+        MidiMessage() : dataBytes({0x0, 0x0}), midiType (MidiMessageType::NOT_SUPPORTED) {}
+
 //        MidiMessage(const MidiMessage &copy) :
 //                dataBytes(copy.getDataBytes()),
 //                midiType(copy.getType()) {};
