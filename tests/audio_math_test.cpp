@@ -61,4 +61,46 @@ TEST_CASE("LookupTable", "[audio]") {
             REQUIRE(tanhLUT(testValue) - std::tanh(testValue) < 0.0001);
         }
     }
+
+    SECTION("interpolation EXTENDED") {
+        auto f = [](float x) -> float { return x; };
+        AudioMath::LookupTable<5> linearLUT(f, 0, 5, AudioMath::LookupTableEdges::EXTENDED);
+
+        SECTION("values in between LUT") {
+            testValue = GENERATE(0.5, 1.5, 2.5, 3.5);
+            REQUIRE(linearLUT(testValue) == Approx(testValue));
+        }
+
+        SECTION("values at extremities") {
+            testValue = GENERATE(4.0, 4.2, 4.5, 5, 5.5);
+            REQUIRE(linearLUT(testValue) == Approx(4.0));
+        }
+    }
+
+    SECTION("interpolation PERIODIC & ZEROED") {
+        auto f = [](float x) -> float { return x; };
+        AudioMath::LookupTable<5> linearPeriodicLUT(f, 0, 5, AudioMath::LookupTableEdges::PERIODIC);
+        AudioMath::LookupTable<5> linearZeroedLUT(f, 0, 5, AudioMath::LookupTableEdges::ZEROED);
+
+
+        SECTION("values in between LUT") {
+            testValue = GENERATE(0.5, 1.5, 2.5, 3.5);
+            REQUIRE(linearPeriodicLUT(testValue) == Approx(testValue));
+            REQUIRE(linearZeroedLUT(testValue) == Approx(testValue));
+        }
+
+        SECTION("values at extremities") {
+            testValue = 4.5;
+            REQUIRE(linearPeriodicLUT(testValue) == Approx(2.0));
+            REQUIRE(linearZeroedLUT(testValue) == Approx(2.0));
+
+            testValue = 4.9;
+            REQUIRE(linearPeriodicLUT(testValue) == Approx(0.1*4));
+            REQUIRE(linearZeroedLUT(testValue) == Approx(0.1*4));
+
+            testValue = 5.0;
+            REQUIRE(linearPeriodicLUT(testValue) == Approx(0.0));
+            REQUIRE(linearZeroedLUT(testValue) == Approx(0.0));
+        }
+    }
 }

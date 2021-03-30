@@ -2,7 +2,7 @@
 #ifndef MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 #define MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 
-#include "audio.h"
+#include "drivers/stm32f407vg_discovery/audio.h"
 #include "audio_processable.h"
 #include "audio_buffer.h"
 
@@ -16,11 +16,11 @@ public:
 
     virtual void process() = 0;
 
-    inline AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() { return audioDriver.getBuffer();};
+    inline AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &getBuffer() const { return audioDriver.getBuffer();};
 
-    inline unsigned int getBufferSize() { return audioDriver.getBufferSize(); };
+    inline unsigned int getBufferSize() const { return audioDriver.getBufferSize(); };
 
-    inline float getSampleRate() { return audioDriver.getSampleRate(); };
+    inline float getSampleRate() const { return audioDriver.getSampleRate(); };
 
 private:
     /**

@@ -29,6 +29,7 @@ public:
      * @param value
      */
     AudioParameter(T value) : totalTransitionSamples(AUDIO_PARAMETER_DEFAULT_TRANSITION_SAMPLES),
+                              passedTransitionSamples(0),
                               currentValue(value),
                               lastValue(value) {};
 
@@ -37,17 +38,17 @@ public:
      *
      * @return currentValue
      */
-    inline T getValue() { return currentValue; };
+    inline T getValue() const { return currentValue; };
 
     /**
      * Getter for lastValue.
      *
      * @return
      */
-    inline T getLastValue() { return lastValue; };
+    inline T getLastValue() const { return lastValue; };
 
-    inline T getInterpolatedValue() {
-        return AudioMath::linearInterpolation(getLastValue(), currentValue, getTransitionIndex());
+    inline T getInterpolatedValue() const {
+        return AudioMath::linearInterpolation(lastValue, currentValue, getTransitionIndex());
     };
 
     /**
@@ -56,7 +57,7 @@ public:
      *
      * @return float index
      */
-    inline float getTransitionIndex() {
+    inline float getTransitionIndex() const {
         return static_cast<float>(passedTransitionSamples) / static_cast<float>(totalTransitionSamples);
     }
 
@@ -108,7 +109,7 @@ public:
      *
      * @return boolean flag
      */
-    inline bool transitionIsComplete() {
+    inline bool transitionIsComplete() const {
         return passedTransitionSamples >= totalTransitionSamples;
     }
 

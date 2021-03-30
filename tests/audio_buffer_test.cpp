@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "../audio/audio_buffer.hpp"
+#include "../audio/audio_buffer.h"
 
 TEST_CASE("AudioBuffer", "[audio]") {
 
@@ -37,6 +37,11 @@ TEST_CASE("AudioBuffer", "[audio]") {
 
         SECTION("summing") {
             buffer2.add(buffer1);
+            REQUIRE(buffer1.getBufferContainer() == buffer2.getBufferContainer());
+        }
+
+        SECTION("multiplying") {
+            buffer1.multiply(buffer2);
             REQUIRE(buffer1.getBufferContainer() == buffer2.getBufferContainer());
         }
 

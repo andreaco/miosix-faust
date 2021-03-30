@@ -4,8 +4,8 @@
 
 #include "miosix.h"
 #include "cs43l22dac.h"
-#include "audio_processable.h"
-#include "audio_buffer.h"
+#include "audio/audio_processable.h"
+#include "audio/audio_buffer.h"
 #include <functional>
 #include <vector>
 #include <cstdint>
@@ -15,12 +15,13 @@
 /**
  * Size of the stereo DAC buffer.
  */
-#define AUDIO_DRIVER_BUFFER_SIZE 128
+#define AUDIO_DRIVER_BUFFER_SIZE 512
 
 /**
- * Max value for DAC conversion ((2 ^ BIT_DEPTH) - 1)
+ * Max value for DAC conversion ((2 ^ (BIT_DEPTH-1)) - 1).
+ * Positive integer upper bound of the DAC values.
  */
-#define DAC_MAX_VALUE 4095
+#define DAC_MAX_POSITIVE_VALUE 32767
 
 /**
  * This singleton class offers an interface to the low level audio
@@ -44,6 +45,12 @@ public:
     void init(SampleRate::SR = SampleRate::_44100Hz);
 
     /**
+     * Blocking call that starts the audio driver and
+     * begins the audio processing.
+     */
+    void start();
+
+    /**
      * Getter for audioProcessable.
      *
      * @return audioProcessable
@@ -53,7 +60,10 @@ public:
     }
 
     /**
-     * Setter for audioProcessable.
+     * Set the audio processable, this method must be called
+     * after the init method.
+     *
+     * // TODO: check if it could be called after the start()
      */
     inline void setAudioProcessable(AudioProcessable &newAudioProcessable) {
         audioProcessable = &newAudioProcessable;
@@ -89,29 +99,34 @@ public:
      */
     void setVolume(float newVolume);
 
+    /**
+     * Getter for the volume of the DAC.
+     *
+     * @return a value between 0 and 1
+     */
     inline float getVolume() { return volume; };
-
 
     /**
      * Destructor.
      */
     ~AudioDriver();
 
+    /**
+     * The copy constructor is disabled.
+     */
+    AudioDriver(const AudioDriver &) = delete;
+
+    /**
+     * The move operator is disabled.
+     */
+    AudioDriver &operator=(const AudioDriver &) = delete;
+
+
 private:
     /**
      * This buffer can be used to write in the DAC.
      */
     AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> audioBuffer;
-
-    /**
-     * Left channel buffer, used to convert the float audioBuffer in uint_16.
-     */
-    uint16_t *_bufferLeft;
-
-    /**
-    * Left channel buffer, used to convert the float audioBuffer in uint_16.
-    */
-    uint16_t *_bufferRight;
 
     /**
      * Size of the buffer.
@@ -140,19 +155,14 @@ private:
     void setSampleRate(SampleRate::SR sampleRate);
 
     /**
+     * Utility method to copy current float buffers to the DAC integer output buffer
+     */
+    void writeToOutputBuffer(int16_t *writableRawBuffer) const;
+
+    /**
      * Private constructor, use getInstance() to get the singleton.
      */
     AudioDriver();
-
-    /**
-     * The copy constructor is disabled.
-     */
-    AudioDriver(const AudioDriver &);
-
-    /**
-     * The move operator is disabled.
-     */
-    AudioDriver &operator=(const AudioDriver &);
 };
 
 

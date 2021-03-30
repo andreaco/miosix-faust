@@ -50,8 +50,8 @@ SRCDIRS               := \
 
 # TODO: implement single imports in test Makefile
 SRC_SINGLE_FILES := \
-../audio/midiXparser.cpp \
-../audio/midi.cpp
+../midi/midiXparser.cpp \
+../midi/midi.cpp
 
 
 # OS specific.
