@@ -11,11 +11,14 @@
 #include <cstdint>
 
 // TODO: setting in a common header
+// TODO: create an abstract class to allow portability
 
 /**
  * Size of the stereo DAC buffer.
  */
+// TODO: fine tune the bufferSize
 #define AUDIO_DRIVER_BUFFER_SIZE 512
+//#define AUDIO_DRIVER_BUFFER_SIZE 2 TODO: why can I put the length so low without any problem?
 
 /**
  * Max value for DAC conversion ((2 ^ (BIT_DEPTH-1)) - 1).
@@ -47,6 +50,7 @@ public:
     /**
      * Blocking call that starts the audio driver and
      * begins the audio processing.
+     * In normal execution cases it never returns.
      */
     void start();
 
@@ -63,7 +67,6 @@ public:
      * Set the audio processable, this method must be called
      * after the init method.
      *
-     * // TODO: check if it could be called after the start()
      */
     inline void setAudioProcessable(AudioProcessable &newAudioProcessable) {
         audioProcessable = &newAudioProcessable;
@@ -124,7 +127,9 @@ public:
 
 private:
     /**
-     * This buffer can be used to write in the DAC.
+     * This stereo buffer is used by the audioProcessable for
+     * the sound processing. the values inside the buffer must
+     * be bounded in the interval [-1.0, 1.0].
      */
     AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> audioBuffer;
 

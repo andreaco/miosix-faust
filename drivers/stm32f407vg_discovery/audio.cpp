@@ -8,6 +8,7 @@
 #include <functional>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #define DOUBLE_BUFFER_BUFFERS 2
 
@@ -19,8 +20,22 @@ static AudioDriver &audioDriver = AudioDriver::getInstance();
 // instance of an AudioProcessable with an empty processor
 static AudioProcessableDummy audioProcessableDummy;
 
-// pointers to _bufferRight and _bufferLeft members of AudioDriver
+// TODO: move inside the header file
+/**
+ * double buffer containing an interleaved int values for a 16bit DAC.
+ * TODO: it could be useful to have the bit depth as a template for an abstract class
+ */
 static miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS> *doubleBuffer;
+
+/**
+ * An empty buffer that is used in case of errors in the audio processing.
+ * Used inside the function refillDMA_IRQ.
+ */
+static std::array<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2> emptyBuffer;
+
+/**
+ * A pointer to the producer thread that writes into the doubleBuffer.
+ */
 static miosix::Thread *writerThread;
 
 
@@ -37,7 +52,7 @@ void refillDMA_IRQ(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DO
     unsigned int size = 0;
     if (bufferQueue->tryGetReadableBuffer(rawBuffer, size) == false) {
         // TODO: error no buffer error
-        return;
+        rawBuffer = emptyBuffer.data();
     }
 
     DMA1_Stream5->CR = 0;
@@ -74,9 +89,11 @@ void refillDMA(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE
 AudioDriver::AudioDriver()
         :
         bufferSize(AUDIO_DRIVER_BUFFER_SIZE),
-        audioProcessable(&audioProcessableDummy) { // TODO: fine tune the bufferSize
+        audioProcessable(&audioProcessableDummy) {
 
     doubleBuffer = new miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS>();
+
+    // TODO: check if the emptyBuffer is, indeed, empty
 
     // disabling interrupts
     miosix::FastInterruptDisableLock lock;
