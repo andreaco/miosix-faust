@@ -151,7 +151,7 @@ void AudioDriver::start() {
     int16_t *writableRawBuffer;
 
     // Refill DMA with empty doubleBuffer
-    refillDMA(emptyBuffer, bufferSize);
+    refillDMA(doubleBuffer, bufferSize);
 
     while (true) {
 
