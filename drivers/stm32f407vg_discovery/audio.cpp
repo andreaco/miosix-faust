@@ -31,7 +31,7 @@ static miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_
  * An empty buffer that is used in case of errors in the audio processing.
  * Used inside the function refillDMA_IRQ.
  */
-static std::array<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2> emptyBuffer;
+static std::array<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2> *emptyBuffer;
 
 /**
  * A pointer to the producer thread that writes into the doubleBuffer.
@@ -52,7 +52,7 @@ void refillDMA_IRQ(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DO
     unsigned int size = 0;
     if (bufferQueue->tryGetReadableBuffer(rawBuffer, size) == false) {
         // TODO: error no buffer error
-        rawBuffer = emptyBuffer.data();
+        rawBuffer = emptyBuffer->data();
     }
 
     DMA1_Stream5->CR = 0;
@@ -92,6 +92,7 @@ AudioDriver::AudioDriver()
         audioProcessable(&audioProcessableDummy) {
 
     doubleBuffer = new miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS>();
+    emptyBuffer = new std::array<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2>();
 
     // TODO: check if the emptyBuffer is, indeed, empty
 
@@ -106,6 +107,7 @@ AudioDriver::AudioDriver()
 
 AudioDriver::~AudioDriver() {
     delete doubleBuffer;
+    delete emptyBuffer;
 }
 
 void AudioDriver::init(SampleRate::SR sampleRate) {
