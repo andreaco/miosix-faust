@@ -151,7 +151,7 @@ void AudioDriver::start() {
     int16_t *writableRawBuffer;
 
     // Refill DMA with empty doubleBuffer
-    refillDMA(doubleBuffer, bufferSize);
+    refillDMA(emptyBuffer, bufferSize);
 
     while (true) {
 
@@ -226,7 +226,7 @@ void AudioDriver::setVolume(float newVolume) {
 
     // mapping the float value to the range of the DAC
     // TODO: fine tune the range
-    newVolume = AudioMath::linearMap(newVolume, 0, 1, -102, 0);
+    newVolume = AudioMath::linearMap(newVolume, 0.0f, 1.0f, -102.0f, 0.0f);
     Cs43l22dac::setVolume(static_cast<int>(newVolume));
 }
 
@@ -243,7 +243,6 @@ void __attribute__((naked)) DMA1_Stream5_IRQHandler() {
  * DMA end of transfer interrupt actual implementation
  */
 void __attribute__((used)) I2SdmaHandlerImpl() {
-    // TODO: handle DMA errors (maybe cleaning the buffer?)
     // removing the interrupts flags
     DMA1->HIFCR = DMA_HIFCR_CTCIF5 |
                   DMA_HIFCR_CTEIF5 |
