@@ -17,7 +17,7 @@ namespace AudioMath {
      * @return linear interpolation between a and b based on mix
      */
     inline float linearInterpolation(float a, float b, float mix) {
-        return (a * (1.0 - mix)) + (b * mix);
+        return (a * (1.0f - mix)) + (b * mix);
     };
 
     /**
