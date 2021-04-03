@@ -51,7 +51,6 @@ void refillDMA_IRQ(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DO
     const int16_t *rawBuffer = nullptr;
     unsigned int size = 0;
     if (bufferQueue->tryGetReadableBuffer(rawBuffer, size) == false) {
-        // TODO: error no buffer error
         rawBuffer = emptyBuffer->data();
     }
 
@@ -59,8 +58,6 @@ void refillDMA_IRQ(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DO
     DMA1_Stream5->PAR = reinterpret_cast<unsigned int>(&SPI3->DR);
     DMA1_Stream5->M0AR = reinterpret_cast<unsigned int>(rawBuffer);
 
-    // TODO: assert buffer size don't overflow the limit
-    // TODO change bufferSize*2 -> size
     DMA1_Stream5->NDTR = bufferSize * 2; // setting the buffer size (stereo buffer size)
     DMA1_Stream5->CR = DMA_SxCR_PL_1 |      //High priority DMA stream
                        DMA_SxCR_MSIZE_0 |   //Read  16bit at a time from RAM
