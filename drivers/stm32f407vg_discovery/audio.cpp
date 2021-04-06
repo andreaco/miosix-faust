@@ -11,9 +11,6 @@
 #define DOUBLE_BUFFER_BUFFERS 2
 
 
-// singleton instance of the AudioDriver
-static AudioDriver &audioDriver = AudioDriver::getInstance();
-
 // instance of an AudioProcessable with an empty processor
 static AudioProcessableDummy audioProcessableDummy;
 
@@ -74,14 +71,19 @@ void refillDMA(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE
 }
 
 
-AudioDriver::AudioDriver()
+AudioDriver::AudioDriver(SampleRate sampleRateEnum)
         :
         bufferSize(AUDIO_DRIVER_BUFFER_SIZE),
-        audioProcessable(&audioProcessableDummy) {
+        audioProcessable(&audioProcessableDummy),
+        sampleRateEnum(sampleRateEnum){
 
+    // creating the buffers for the output
     doubleBuffer = new miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS>();
     emptyBuffer = new std::array<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2>();
     emptyBuffer->fill(0);
+
+    // Set up sample rate attribute
+    setSampleRate(sampleRateEnum);
 
     // disabling interrupts
     miosix::FastInterruptDisableLock lock;
@@ -97,13 +99,10 @@ AudioDriver::~AudioDriver() {
     delete emptyBuffer;
 }
 
-void AudioDriver::init(SampleRate::SR sampleRate) {
-
-    // Set up sample rate variable
-    setSampleRate(sampleRate);
+void AudioDriver::init() {
 
     // Init DAC with desired SR
-    Cs43l22dac::init(sampleRate);
+    Cs43l22dac::init(sampleRateEnum);
 
     // default volume
     setVolume(0.7);
@@ -148,7 +147,7 @@ void AudioDriver::start() {
 
         // write on the buffer
         // callback to the AudioProcessable to process the buffer
-        audioDriver.getAudioProcessable().process();
+        getAudioProcessable().process();
 
         // Convert current float buffers to the int16_t buffer
         writeToOutputBuffer(writableRawBuffer);
@@ -159,9 +158,9 @@ void AudioDriver::start() {
     }
 }
 
-void AudioDriver::writeToOutputBuffer(int16_t *writableOutputRawBuffer) const {
-    unsigned int bufferSize = audioDriver.getBufferSize();
-    auto &buffer = audioDriver.getBuffer();
+void AudioDriver::writeToOutputBuffer(int16_t *writableOutputRawBuffer) {
+    unsigned int bufferSize = getBufferSize();
+    AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> &buffer = getBuffer();
 
     auto bufferLeftFloat = buffer.getReadPointer(0);
     auto bufferRightFloat = buffer.getReadPointer(1);
@@ -174,12 +173,7 @@ void AudioDriver::writeToOutputBuffer(int16_t *writableOutputRawBuffer) const {
 }
 
 
-AudioDriver &AudioDriver::getInstance() {
-    static AudioDriver instance;
-    return instance;
-}
-
-void AudioDriver::setSampleRate(SampleRate::SR sampleRate) {
+void AudioDriver::setSampleRate(SampleRate sampleRate) {
     switch (sampleRate) {
         case SampleRate::_8000Hz:
             this->sampleRate = 8000.0;

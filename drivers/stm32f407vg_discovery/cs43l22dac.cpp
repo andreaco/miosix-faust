@@ -42,7 +42,7 @@ typedef miosix::SoftwareI2C<sda, scl> i2c;   //! Software I2C static object
 
 
 
-void Cs43l22dac::init(SampleRate::SR sampleRate) {
+void Cs43l22dac::init(SampleRate sampleRate) {
     int plli2sn;    // Multiplication factor for VCO
     int plli2sr;    // Division factor for I2S clocks
     int i2sdiv;     // I2S linear prescaler

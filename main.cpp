@@ -18,14 +18,15 @@ using namespace std;
 // testing an implementation of an AudioProcessor
 class AudioProcessorTest : public AudioProcessor {
 public:
-    AudioProcessorTest() : sineLUT([](float x) { return std::sin(x); }, 0, 2 * M_PI,
-                                   AudioMath::LookupTableEdges::PERIODIC) {}
+    AudioProcessorTest(AudioDriver &audioDriver) :
+            AudioProcessor(audioDriver),
+            sineLUT([](float x) { return std::sin(x); }, 0, 2 * M_PI,
+                    AudioMath::LookupTableEdges::PERIODIC) {}
 
     void process() override {
         auto &buffer = getBuffer();
         float *left = buffer.getWritePointer(0);
         float *right = buffer.getWritePointer(1);
-//        static float linearCount = 0.0;
 
         for (uint32_t i = 0; i < getBufferSize(); i += 1) {
             left[i] = 0.8 * sineLUT(phase);
@@ -46,10 +47,10 @@ public:
 int main() {
 
     // initializing the audio driver
-    AudioDriver &audioDriver = AudioDriver::getInstance();
+    AudioDriver audioDriver(SampleRate::_44100Hz);
     audioDriver.getBuffer();
-    AudioProcessorTest audioProcessorTestNew;
-    audioDriver.init(SampleRate::_44100Hz);
-    audioDriver.setAudioProcessable(audioProcessorTestNew);
+    AudioProcessorTest audioProcessorTest(audioDriver);
+    audioDriver.init();
+    audioDriver.setAudioProcessable(audioProcessorTest);
     audioDriver.start();
 }
