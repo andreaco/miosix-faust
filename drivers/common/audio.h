@@ -3,28 +3,11 @@
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
 #include "miosix.h"
-#include "cs43l22dac.h"
-#include "audio/audio_processable.h"
-#include "audio/audio_buffer.h"
-#include <functional>
-#include <vector>
-#include <cstdint>
+#include "audio_config.h"
+#include "../stm32f407vg_discovery/cs43l22dac.h"
+#include "../audio/audio_processable.h"
+#include "../audio/audio_buffer.h"
 
-// TODO: setting in a common header
-// TODO: create an abstract class to allow portability
-
-/**
- * Size of the stereo DAC buffer.
- */
-// TODO: fine tune the bufferSize
-#define AUDIO_DRIVER_BUFFER_SIZE 512
-//#define AUDIO_DRIVER_BUFFER_SIZE 2 TODO: why can I put the length so low without any problem?
-
-/**
- * Max value for DAC conversion ((2 ^ (BIT_DEPTH-1)) - 1).
- * Positive integer upper bound of the DAC values.
- */
-#define DAC_MAX_POSITIVE_VALUE 32767
 
 /**
  * This singleton class offers an interface to the low level audio
@@ -123,7 +106,6 @@ public:
      * The move operator is disabled.
      */
     AudioDriver &operator=(const AudioDriver &) = delete;
-
 
 private:
     /**
