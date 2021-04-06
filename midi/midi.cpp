@@ -7,10 +7,6 @@
 #include <functional>
 #include <cmath>
 
-#define TEST_MESSAGE noteTest
-
-
-// TODO: modify midi class
 
 static AudioMath::LookupTable<128> exp2LUT([](float x) { return std::pow(2.0, x); }, -5.75, 4.83333);
 

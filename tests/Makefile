@@ -48,7 +48,6 @@ LDFLAGS                =
 SRCDIRS               := \
 .
 
-# TODO: implement single imports in test Makefile
 SRC_SINGLE_FILES := \
 ../midi/midiXparser.cpp \
 ../midi/midi.cpp
