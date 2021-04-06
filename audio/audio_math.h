@@ -36,6 +36,20 @@ namespace AudioMath {
     }
 
     /**
+     * Clips the input in a specified range.
+     *
+     * @param x input
+     * @param min low clip bound
+     * @param max high clip bound
+     * @return clipped input
+     */
+    inline float clip(float x, float min, float max) {
+        x = (x < min)? min : x;
+        x = (x > max)? max : x;
+        return x;
+    }
+
+    /**
      * Enumeration describing the behaviour of
      * the LUT tables outside the max and argMin extremes.
      */
