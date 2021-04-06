@@ -1,5 +1,4 @@
-
-#include "drivers/stm32f407vg_discovery/audio.h"
+#include "drivers/common/audio.h"
 #include "audio_processor.h"
 
 AudioProcessor::AudioProcessor()

@@ -3,7 +3,7 @@
 #ifndef STM32_MONOSYNTH_AUDIO_MODULE_H
 #define STM32_MONOSYNTH_AUDIO_MODULE_H
 
-#include "../drivers/STM32f407vg_discovery/audio.h"
+#include "../drivers/common/audio.h"
 #include "audio_buffer.h"
 #include "audio_processor.h"
 

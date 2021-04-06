@@ -2,7 +2,7 @@
 #ifndef MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 #define MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 
-#include "drivers/stm32f407vg_discovery/audio.h"
+#include "drivers/common/audio.h"
 #include "audio_processable.h"
 #include "audio_buffer.h"
 
