@@ -71,11 +71,20 @@ void refillDMA(miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE
 }
 
 
-AudioDriver::AudioDriver(SampleRate sampleRateEnum)
+AudioDriver::AudioDriver()
         :
         bufferSize(AUDIO_DRIVER_BUFFER_SIZE),
-        audioProcessable(&audioProcessableDummy),
-        sampleRateEnum(sampleRateEnum){
+        audioProcessable(&audioProcessableDummy) {
+
+    // checking the correctness of the sample rate
+    static_assert(
+            AUDIO_DRIVER_SAMPLE_RATE == 8000 ||
+            AUDIO_DRIVER_SAMPLE_RATE == 16000 ||
+            AUDIO_DRIVER_SAMPLE_RATE == 32000 ||
+            AUDIO_DRIVER_SAMPLE_RATE == 48000 ||
+            AUDIO_DRIVER_SAMPLE_RATE == 96000 ||
+            AUDIO_DRIVER_SAMPLE_RATE == 22050 ||
+            AUDIO_DRIVER_SAMPLE_RATE == 44100, "The AUDIO_DRIVER_SAMPLE_RATE value is invalid");
 
     // creating the buffers for the output
     doubleBuffer = new miosix::BufferQueue<int16_t, AUDIO_DRIVER_BUFFER_SIZE * 2, DOUBLE_BUFFER_BUFFERS>();
@@ -83,7 +92,7 @@ AudioDriver::AudioDriver(SampleRate sampleRateEnum)
     emptyBuffer->fill(0);
 
     // Set up sample rate attribute
-    setSampleRate(sampleRateEnum);
+    setSampleRate(AUDIO_DRIVER_SAMPLE_RATE);
 
     // disabling interrupts
     miosix::FastInterruptDisableLock lock;
@@ -102,7 +111,7 @@ AudioDriver::~AudioDriver() {
 void AudioDriver::init() {
 
     // Init DAC with desired SR
-    Cs43l22dac::init(sampleRateEnum);
+    Cs43l22dac::init(AUDIO_DRIVER_SAMPLE_RATE);
 
     // default volume
     setVolume(0.7);
@@ -173,27 +182,27 @@ void AudioDriver::writeToOutputBuffer(int16_t *writableOutputRawBuffer) {
 }
 
 
-void AudioDriver::setSampleRate(SampleRate sampleRate) {
+void AudioDriver::setSampleRate(uint32_t sampleRate) {
     switch (sampleRate) {
-        case SampleRate::_8000Hz:
+        case 8000:
             this->sampleRate = 8000.0;
             break;
-        case SampleRate::_16000Hz:
+        case 16000:
             this->sampleRate = 16000.0;
             break;
-        case SampleRate::_32000Hz:
+        case 32000:
             this->sampleRate = 32000.0;
             break;
-        case SampleRate::_48000Hz:
+        case 48000:
             this->sampleRate = 48000.0;
             break;
-        case SampleRate::_96000Hz:
+        case 96000:
             this->sampleRate = 96000.0;
             break;
-        case SampleRate::_22050Hz:
+        case 22050:
             this->sampleRate = 22050.0;
             break;
-        case SampleRate::_44100Hz:
+        case 44100:
             this->sampleRate = 44100.0;
             break;
     }
