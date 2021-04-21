@@ -3,7 +3,6 @@
 
 #include "miosix.h"
 #include "util/software_i2c.h"
-#include "../common/sample_rate.h"
 
 #define CS43L22DAC_DEFAULT_VOLUME_DB -20
 
@@ -16,7 +15,7 @@ public:
      * Function that initialize the peripheral to play audio.
      * Call this function in the AudioDriver constructor after having set up the DMA
      */
-    static void init(SampleRate sampleRate);
+    static void init(uint32_t sampleRate);
 
     /**
      * Function used to write registers in the CS43L22 DAC periphereal

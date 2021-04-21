@@ -42,49 +42,49 @@ typedef miosix::SoftwareI2C<sda, scl> i2c;   //! Software I2C static object
 
 
 
-void Cs43l22dac::init(SampleRate sampleRate) {
+void Cs43l22dac::init(uint32_t sampleRate) {
     int plli2sn;    // Multiplication factor for VCO
     int plli2sr;    // Division factor for I2S clocks
     int i2sdiv;     // I2S linear prescaler
     int i2sodd;     // Odd factor for the prescaler
     switch(sampleRate) {
-        case SampleRate::_8000Hz:
+        case 8000:
             plli2sn = 256;
             plli2sr = 5;
             i2sdiv  = 122;
             i2sodd  = 1;
             break;
-        case SampleRate::_16000Hz:
+        case 16000:
             plli2sn = 213;
             plli2sr = 2;
             i2sdiv  = 13;
             i2sodd  = 0;
             break;
-        case SampleRate::_32000Hz:
+        case 32000:
             plli2sn = 213;
             plli2sr = 2;
             i2sdiv  = 6;
             i2sodd  = 1;
             break;
-        case SampleRate::_48000Hz:
+        case 48000:
             plli2sn = 258;
             plli2sr = 3;
             i2sdiv  = 3;
             i2sodd  = 1;
             break;
-        case SampleRate::_96000Hz:
+        case 96000:
             plli2sn = 344;
             plli2sr = 2;
             i2sdiv  = 3;
             i2sodd  = 1;
             break;
-        case SampleRate::_22050Hz:
+        case 22050:
             plli2sn = 429;
             plli2sr = 4;
             i2sdiv  = 9;
             i2sodd  = 1;
             break;
-        case SampleRate::_44100Hz:
+        case 44100:
             plli2sn = 271;
             plli2sr = 2;
             i2sdiv  = 6;
