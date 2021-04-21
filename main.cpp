@@ -47,7 +47,7 @@ public:
 int main() {
 
     // initializing the audio driver
-    AudioDriver audioDriver(SampleRate::_44100Hz);
+    AudioDriver audioDriver;
     audioDriver.getBuffer();
     AudioProcessorTest audioProcessorTest(audioDriver);
     audioDriver.init();
