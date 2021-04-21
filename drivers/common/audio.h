@@ -4,7 +4,6 @@
 
 #include "miosix.h"
 #include "audio_config.h"
-#include "sample_rate.h"
 #include "../audio/audio_processable.h"
 #include "../audio/audio_buffer.h"
 
@@ -20,10 +19,8 @@ public:
 
     /**
      * Constructor.
-     *
-     * @param sampleRateEnum sample rate of type SampleRate
      */
-    AudioDriver(SampleRate sampleRateEnum = SampleRate::_44100Hz);
+    AudioDriver();
 
     /**
      * Initializes the audio driver.
@@ -107,11 +104,6 @@ public:
      */
     AudioDriver &operator=(const AudioDriver &) = delete;
 
-    /**
-     * The default constructor is disabled.
-     */
-    AudioDriver() = delete;
-
 private:
 
     /**
@@ -124,11 +116,6 @@ private:
      * to process the buffer.
      */
     AudioProcessable *audioProcessable;
-
-    /**
-     * Sample rate of the DAC conversion as an enumeration.
-     */
-    SampleRate sampleRateEnum;
 
     /**
      * Sample rate of the DAC conversion in float.
@@ -150,7 +137,7 @@ private:
     /**
      * Setup of the sample rate from SampleRate enum class
      */
-    void setSampleRate(SampleRate sampleRate);
+    void setSampleRate(uint32_t sampleRate);
 
     /**
      * Utility method to copy current float buffers to the DAC integer output buffer
