@@ -207,7 +207,7 @@ namespace Midi {
         inline CircularBuffer<MidiMessage, BUFFER_MAX_SIZE> getMessageQueue() { return messageQueue; };
 
         /**
-         * Masks a certain channel.
+         * Masks a certain midi channel.
          * The parsing of a masked channel message
          * generates a MASKED MidiMessage.
          *
@@ -218,12 +218,26 @@ namespace Midi {
         }
 
         /**
-         * Enable a channel.
+         * Enable a midi channel.
          *
          * @param channelNumber
          */
         inline void enableChannel(uint8_t channelNumber) {
             channelMask |= 1 << channelNumber;
+        }
+
+        /**
+         * Masks all midi channels.
+         */
+        inline void maskAllChannels() {
+            channelMask = 0;
+        }
+
+        /**
+         * Enable all midi channels.
+         */
+        inline void enableAllChannels() {
+            channelMask = 0xFFFF;
         }
 
         /**
