@@ -1,4 +1,3 @@
-
 #include "miosix.h"
 #include "drivers/common/audio.h"
 #include "audio/audio_processor.h"
@@ -11,46 +10,49 @@
 #include <algorithm>
 #include <math.h>
 #include <cstdint>
+#include "TestAudioProcessor.h"
+#include "drivers/stm32f407vg_discovery/encoder.h"
+#include <util/lcd44780.h>
 
-using namespace miosix;
-using namespace std;
+typedef miosix::Gpio<GPIOB_BASE,12> d4;
+typedef miosix::Gpio<GPIOB_BASE,13> d5;
+typedef miosix::Gpio<GPIOB_BASE,14> d6;
+typedef miosix::Gpio<GPIOB_BASE,15> d7;
+typedef miosix::Gpio<GPIOC_BASE,1> rs;
+typedef miosix::Gpio<GPIOC_BASE,2> e;
 
-// testing an implementation of an AudioProcessor
-class AudioProcessorTest : public AudioProcessor {
-public:
-    AudioProcessorTest(AudioDriver &audioDriver) :
-            AudioProcessor(audioDriver),
-            sineLUT([](float x) { return std::sin(x); }, 0, 2 * M_PI,
-                    AudioMath::LookupTableEdges::PERIODIC) {}
+typedef Encoder<TIM4_BASE, GPIOD_BASE, 12, 13> encoder1;
 
-    void process() override {
-        auto &buffer = getBuffer();
-        float *left = buffer.getWritePointer(0);
-        float *right = buffer.getWritePointer(1);
+int main()
+{
+    // Display Setup
+    miosix::Lcd44780 display(rs::getPin(),e::getPin(),d4::getPin(),
+                             d5::getPin(),d6::getPin(),d7::getPin(),2,16);
+    encoder1::init();
 
-        for (uint32_t i = 0; i < getBufferSize(); i += 1) {
-            left[i] = 0.8 * sineLUT(phase);
-            right[i] = left[i];
-            phase += phaseDelta;
-            if (phase >= 2 * M_PI) phase -= 2 * M_PI;
-        }
+    for(;;) {
+        miosix::Thread::sleep(100);
+
+        display.clear();
+        display.go(0, 1);
+        display.printf("Encoder: %05d", encoder1::getValue());
 
     }
+}
 
-    AudioMath::LookupTable<128> sineLUT;
-
-    float phase = 0;
-    float phaseDelta = 440 * 2 * M_PI / 44100.0;
-};
-
-
+// AudioDriver Test
+#if 0
 int main() {
-
     // initializing the audio driver
     AudioDriver audioDriver;
     audioDriver.getBuffer();
     AudioProcessorTest audioProcessorTest(audioDriver);
     audioDriver.init();
     audioDriver.setAudioProcessable(audioProcessorTest);
+
+
+
     audioDriver.start();
 }
+
+#endif
