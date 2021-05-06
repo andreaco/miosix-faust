@@ -7,30 +7,6 @@
 #define CS43L22DAC_DEFAULT_VOLUME_DB -20
 
 /**
- * This class encapsulates the SR enum
- */
-class SampleRate
-{
-public:
-    /**
-     * Example usage:
-     * \code audioDriver.init(SampleRate::_44100Hz); \endcode
-     */
-    enum SR
-    {
-        _8000Hz,
-        _16000Hz,
-        _32000Hz,
-        _48000Hz,
-        _96000Hz,
-        _22050Hz,
-        _44100Hz
-    };
-private:
-    SampleRate(); // Wrapper class, disallow creating instances
-};
-
-/**
  * Class to control the CS43L22 on STM32F407VG_Discovery boards
  */
 class Cs43l22dac {
@@ -39,7 +15,7 @@ public:
      * Function that initialize the peripheral to play audio.
      * Call this function in the AudioDriver constructor after having set up the DMA
      */
-    static void init(SampleRate::SR sampleRate);
+    static void init(uint32_t sampleRate);
 
     /**
      * Function used to write registers in the CS43L22 DAC periphereal

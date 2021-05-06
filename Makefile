@@ -22,7 +22,6 @@ SRC := \
 main.cpp \
 drivers/stm32f407vg_discovery/audio.cpp \
 drivers/stm32f407vg_discovery/cs43l22dac.cpp \
-audio/audio_processor.cpp \
 midi/midiXparser.cpp \
 midi/midi.cpp
 

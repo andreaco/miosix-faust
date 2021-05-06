@@ -79,7 +79,7 @@ public:
      *
      * @param sampleNumber number of samples of the increase
      */
-    inline void updateSampleCount(size_t sampleNumber) {
+    inline void updateSampleCount(size_t sampleNumber = 1) {
         passedTransitionSamples += sampleNumber;
         if (passedTransitionSamples > totalTransitionSamples) {
             passedTransitionSamples = totalTransitionSamples;

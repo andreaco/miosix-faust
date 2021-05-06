@@ -35,6 +35,20 @@ TEST_CASE("linearMap", "[audio]") {
     }
 }
 
+TEST_CASE("clip", "[audio]") {
+    SECTION("test on normalized range") {
+        REQUIRE(AudioMath::clip(0.5, 0, 1) == Approx(0.5));
+        REQUIRE(AudioMath::clip(-1, 0, 1) == Approx(0));
+        REQUIRE(AudioMath::clip(2, 0, 1) == Approx(1));
+    }
+
+    SECTION("test on a larger range") {
+        REQUIRE(AudioMath::clip(5.1, -10, 10) == Approx(5.1));
+        REQUIRE(AudioMath::clip(-13.1, -10, 10) == Approx(-10));
+        REQUIRE(AudioMath::clip(204.5, -10, 10) == Approx(10));
+    }
+}
+
 TEST_CASE("LookupTable", "[audio]") {
     float testValue;
     SECTION("sine LUT") {

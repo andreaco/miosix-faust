@@ -3,25 +3,10 @@
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
 #include "miosix.h"
-#include "cs43l22dac.h"
-#include "audio/audio_processable.h"
-#include "audio/audio_buffer.h"
-#include <functional>
-#include <vector>
-#include <cstdint>
+#include "audio_config.h"
+#include "../audio/audio_processable.h"
+#include "../audio/audio_buffer.h"
 
-// TODO: setting in a common header
-
-/**
- * Size of the stereo DAC buffer.
- */
-#define AUDIO_DRIVER_BUFFER_SIZE 512
-
-/**
- * Max value for DAC conversion ((2 ^ (BIT_DEPTH-1)) - 1).
- * Positive integer upper bound of the DAC values.
- */
-#define DAC_MAX_POSITIVE_VALUE 32767
 
 /**
  * This singleton class offers an interface to the low level audio
@@ -33,20 +18,19 @@ class AudioDriver {
 public:
 
     /**
-     * Gets an instance of the AudioDriver singleton.
-     *
-     * @return AudioDriver singleton
+     * Constructor.
      */
-    static AudioDriver &getInstance();
+    AudioDriver();
 
     /**
      * Initializes the audio driver.
      */
-    void init(SampleRate::SR = SampleRate::_44100Hz);
+    void init();
 
     /**
      * Blocking call that starts the audio driver and
      * begins the audio processing.
+     * In normal execution cases it never returns.
      */
     void start();
 
@@ -63,7 +47,6 @@ public:
      * Set the audio processable, this method must be called
      * after the init method.
      *
-     * // TODO: check if it could be called after the start()
      */
     inline void setAudioProcessable(AudioProcessable &newAudioProcessable) {
         audioProcessable = &newAudioProcessable;
@@ -121,12 +104,7 @@ public:
      */
     AudioDriver &operator=(const AudioDriver &) = delete;
 
-
 private:
-    /**
-     * This buffer can be used to write in the DAC.
-     */
-    AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> audioBuffer;
 
     /**
      * Size of the buffer.
@@ -134,15 +112,22 @@ private:
     unsigned int bufferSize;
 
     /**
-     * Sample rate of the DAC conversion.
-     */
-    float sampleRate;
-
-    /**
      * Instance of an AudioProcessable used as a callback
      * to process the buffer.
      */
     AudioProcessable *audioProcessable;
+
+    /**
+     * Sample rate of the DAC conversion in float.
+     */
+    float sampleRate;
+
+    /**
+     * This stereo buffer is used by the audioProcessable for
+     * the sound processing. the values inside the buffer must
+     * be bounded in the interval [-1.0, 1.0].
+     */
+    AudioBuffer<float, 2, AUDIO_DRIVER_BUFFER_SIZE> audioBuffer;
 
     /**
      * Volume value of the audio driver.
@@ -152,17 +137,13 @@ private:
     /**
      * Setup of the sample rate from SampleRate enum class
      */
-    void setSampleRate(SampleRate::SR sampleRate);
+    void setSampleRate(uint32_t sampleRate);
 
     /**
      * Utility method to copy current float buffers to the DAC integer output buffer
      */
-    void writeToOutputBuffer(int16_t *writableRawBuffer) const;
+    void writeToOutputBuffer(int16_t *writableRawBuffer);
 
-    /**
-     * Private constructor, use getInstance() to get the singleton.
-     */
-    AudioDriver();
 };
 
 
