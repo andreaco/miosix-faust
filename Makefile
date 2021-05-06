@@ -23,7 +23,6 @@ main.cpp \
 drivers/stm32f407vg_discovery/audio.cpp \
 drivers/stm32f407vg_discovery/cs43l22dac.cpp \
 drivers/stm32f407vg_discovery/adc_reader.cpp \
-drivers/stm32f407vg_discovery/encoder.cpp \
 midi/midiXparser.cpp \
 midi/midi.cpp \
 
