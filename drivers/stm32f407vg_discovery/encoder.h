@@ -29,7 +29,6 @@ static void enableTIMRCC(TIM_TypeDef* TIM)
     if (TIM == TIM4)
         RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
 }
-#define TIM4 ((TIM_TypeDef *) TIM4_BASE)
 
 template <uint32_t TIM_BASE, uint32_t GPIO_BASE, int PIN1, int PIN2>
 class Encoder {
@@ -66,7 +65,7 @@ public:
 
     static int getValue()
     {
-        return TIM4->CNT >> 2;
+        return ((TIM_TypeDef*) TIM_BASE)->CNT >> 2;
     }
 
 private:
