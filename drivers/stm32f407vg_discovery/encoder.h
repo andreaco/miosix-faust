@@ -24,6 +24,7 @@ static void enableGPIORCC(GPIO_TypeDef* GPIO)
         RCC->AHB1ENR |= (1 << 8);
 }
 
+
 static int getAFR(TIM_TypeDef* TIM)
 {
     if (TIM == TIM1 || TIM == TIM2)
@@ -62,6 +63,7 @@ public:
         enableGPIORCC(GPIO);
         GPIO->MODER |= (2 << PIN1 * 2); // TIM Mode
         GPIO->MODER |= (2 << PIN2 * 2); // TIM Mode
+
 
         int afr = getAFR(TIM);
         GPIO->AFR[PIN1 / 8] |= (afr << (PIN1 % 8) * 4);
