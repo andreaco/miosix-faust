@@ -24,10 +24,30 @@ static void enableGPIORCC(GPIO_TypeDef* GPIO)
         RCC->AHB1ENR |= (1 << 8);
 }
 
+static int getAFR(TIM_TypeDef* TIM)
+{
+    if (TIM == TIM1 || TIM == TIM2)
+        return 1;
+    if (TIM == TIM3 || TIM == TIM4 || TIM == TIM5)
+        return 2;
+    if (TIM == TIM8 || TIM == TIM9 || TIM == TIM10 || TIM == TIM11)
+        return 3;
+    else
+        return 0;
+}
+
 static void enableTIMRCC(TIM_TypeDef* TIM)
 {
+    if (TIM == TIM1)
+        RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    if (TIM == TIM2)
+        RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+    if (TIM == TIM3)
+        RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
     if (TIM == TIM4)
         RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
+    if (TIM == TIM5)
+        RCC->APB1ENR |= RCC_APB1ENR_TIM5EN;
 }
 
 template <uint32_t TIM_BASE, uint32_t GPIO_BASE, int PIN1, int PIN2>
@@ -43,8 +63,9 @@ public:
         GPIO->MODER |= (2 << PIN1 * 2); // TIM Mode
         GPIO->MODER |= (2 << PIN2 * 2); // TIM Mode
 
-        GPIO->AFR[PIN1 / 8] |= (2 << (PIN1 % 8) * 4);
-        GPIO->AFR[PIN2 / 8] |= (2 << (PIN2 % 8) * 4);
+        int afr = getAFR(TIM);
+        GPIO->AFR[PIN1 / 8] |= (afr << (PIN1 % 8) * 4);
+        GPIO->AFR[PIN2 / 8] |= (afr << (PIN2 % 8) * 4);
 
         // Encoder Timer Setup
         enableTIMRCC(TIM);
