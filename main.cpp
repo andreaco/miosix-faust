@@ -3,6 +3,7 @@
 #include "drivers/stm32f407vg_discovery/encoder.h"
 #include "drivers/stm32f407vg_discovery/button.h"
 #include "audio/audio_processor.h"
+#include "drivers/stm32f407vg_discovery/adc_reader.h"
 #include "Synth/Synth.h"
 #include <cstdint>
 #include <util/lcd44780.h>
@@ -43,10 +44,12 @@ void hardwareUIThreadFunction() {
     // Variable Update
     while (true) {
         {
+            auto values = AdcReader::readAll();
             miosix::FastMutex mutex;
-            gate = button1::getState();
-            frequency = encoder1::getValue();
+            gate = button1::risingEdge();
+            frequency = values[0] + values[1] + values[2] + values[3];
             fm = encoder2::getValue();
+
 
             synth.setFrequency(frequency);
             synth.setFMFreq(fm);
@@ -65,6 +68,8 @@ void hardwareUIThreadFunction() {
 }
 
 int main() {
+    AdcReader::init();
+
     button1::init();
     encoder1::init();
     encoder2::init();
