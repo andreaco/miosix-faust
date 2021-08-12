@@ -3,6 +3,7 @@
 #include "../audio/audio_processor.h"
 #include "PolyBlepOscillator.h"
 #include "Envelope.h"
+#include "MorphingOscillator.h"
 
 
 class Synth : public AudioProcessor {
@@ -21,14 +22,14 @@ public:
         oscillator.setFrequency(freq);
     }
 
-    inline void setFMFreq(float fmfreq)
+    inline void setMorph(float morph)
     {
-        fmOsc.setFrequency(fmfreq);
+        oscillator.setState(morph);
     }
 
+
 private:
-    PolyBlepOscillator oscillator;
-    PolyBlepOscillator fmOsc;
+    MorphingOscillator oscillator;
     Envelope envelope;
 };
 #endif //MIOSIX_DRUM_SYNTH_H
