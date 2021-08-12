@@ -57,6 +57,14 @@ public:
      * Get next sample and updates phase variables
      */
     float nextSample();
+
+    /**
+     * Frequency getter
+     */
+     inline float getFrequency()
+    {
+         return frequency;
+    }
     
     /**
      * Default Constructor
