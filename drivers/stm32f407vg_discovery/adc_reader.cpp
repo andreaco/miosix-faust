@@ -27,21 +27,18 @@ void AdcReader::init()
     ADC1->CR2 |= (1 << 1);   // Continuous conversion mode
 
     //ADC1->SMPR2 &= ~((1<<3) | (1<<12)); // Sampling time for channel 1 and 4
-    ADC1->SMPR2 |= (7<<0) | (7<<3) | (7<<6); // Sampling time for channel 0, 1, 2
+    ADC1->SMPR2 |= (7<<0) | (7<<3) | (7<<6) | (7<<9); // Sampling time for channel 0, 1, 2
 
 
-    //ADC1->SQR1 |= (1<<2); // Sequence for 2 channel conversions
-    ADC1->SQR1 |= (7<<0); // Sequence for 8? channel conversions
+    ADC1->SQR1 |= (1<<2); // Sequence for 2 channel conversions
+    //ADC1->SQR1 |= (3<<0); // Sequence for 8? channel conversions
 
-
-    GPIOA->MODER |= (3 << 0 * 2); //PA1 analog mode
-    GPIOA->MODER |= (3 << 1 * 2); //PA1 analog mode
-    GPIOA->MODER |= (3 << 2 * 2); //PA2 analog mode
-    GPIOA->MODER |= (3 << 3 * 2); //PA3 analog mode
-    GPIOA->MODER |= (3 << 4 * 2); //PA4 analog mode
+    GPIOA->MODER |= (3 << 2 * 2); //PA4 analog mode
     GPIOA->MODER |= (3 << 5 * 2); //PA5 analog mode
     GPIOA->MODER |= (3 << 6 * 2); //PA6 analog mode
     GPIOA->MODER |= (3 << 7 * 2); //PA7 analog mode
+
+
 
     //End setup
 
@@ -49,27 +46,43 @@ void AdcReader::init()
     ADC1->CR2 |= 1 << 0;
 
     // Wait to stabilize adc
-    miosix::delayUs(10);
-
+    miosix::delayUs(100);
 }
 
 
-void AdcReader::readAll()
+AdcReader::ValueState& AdcReader::readAll()
 {
-    // For each channel
-    for (int i = 0; i < 8; ++i)
-    {
-        // Cumulative sum of consecutive reads
-        uint32_t avg = 0;
-        for (int j=0; j < ADC_AVG_SAMPLES; ++j)
-            avg += readChannel(i);
+    int N = 64;
+    uint32_t avg = 0;
+    for (int j=0; j < N; ++j)
+        avg += readChannel(2);
+    avg = avg / N;
 
-        // Averaging
-        avg = avg / ADC_AVG_SAMPLES;
+    values[0] = avg >> 5;
 
-        // 12 bits to 7 bits
-        values[i] = avg >> 5;
-    }
+
+    avg = 0;
+    for (int j=0; j < N; ++j)
+        avg += readChannel(5);
+    avg = avg / N;
+
+    values[1] = avg >> 5;
+
+    avg = 0;
+    for (int j=0; j < N; ++j)
+        avg += readChannel(6);
+    avg = avg / N;
+
+    values[2] = avg >> 5;
+
+    avg = 0;
+    for (int j=0; j < N; ++j)
+        avg += readChannel(7);
+    avg = avg / N;
+
+    values[3] = avg >> 5;
+
+    return values;
 }
 
 

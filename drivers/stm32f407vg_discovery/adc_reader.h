@@ -5,6 +5,12 @@
 #include <cmath>
 #include "../common/hw_config.h"
 
+#define ADC_GPIO GPIOA
+#define ADC_PIN1 4
+#define ADC_PIN2 5
+#define ADC_PIN3 6
+#define ADC_PIN4 7
+
 class AdcReader
 {
 public:
@@ -18,16 +24,8 @@ public:
     /**
      * Read values from the ADC and update the current state
      */
-    static void readAll();
+    static ValueState& readAll();
 
-    /**
-     * Function to return the last read values
-     * @return Last read values by readAll()
-     */
-    static inline ValueState& getValues()
-    {
-        return values;
-    }
 
 
 private:
