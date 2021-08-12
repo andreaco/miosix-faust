@@ -6,6 +6,7 @@
 #include "Synth/Synth.h"
 #include <cstdint>
 #include <util/lcd44780.h>
+#include <thread>
 
 
 
@@ -24,19 +25,50 @@ typedef Encoder<TIM5_BASE, GPIOA_BASE,  0,  1> encoder4;
 
 typedef Button<GPIOD_BASE, 1> button1;
 
+// LCD Initialization
+static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
+                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
+
 
 //Audio Driver and Synthesizer Objects
 static AudioDriver audioDriver;
 static Synth synth(audioDriver);
 
 
+void hardwareUIThreadFunction() {
+    float frequency;
+    float fm;
+    bool gate;
+
+    // Variable Update
+    while (true) {
+        {
+            miosix::FastMutex mutex;
+            gate = button1::getState();
+            frequency = encoder1::getValue();
+            fm = encoder2::getValue();
+
+            synth.setFrequency(frequency);
+            synth.setFMFreq(fm);
+            if(gate)
+                synth.gate();
+
+            display.clear();
+            display.go(0, 0);
+            display.printf("Gate: %0d", gate);
+
+            display.go(0, 1);
+            display.printf("F1: %d | F2: %d", (int)frequency,(int) fm);
+        }
+        miosix::Thread::sleep(500);
+    }
+}
 
 int main() {
     button1::init();
+    encoder1::init();
+    encoder2::init();
 
-    // LCD Initialization
-    miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
-                             d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
     display.clear();
     display.go(0, 0);
     display.printf("Miosix Synth 01");
@@ -44,6 +76,8 @@ int main() {
     // Audio Driver and Synth initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
-    audioDriver.start();
 
+    std::thread hardwareInterfaceThread(hardwareUIThreadFunction);
+
+    audioDriver.start();
 }
