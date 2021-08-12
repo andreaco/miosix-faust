@@ -1,16 +1,8 @@
 #include "miosix.h"
 #include "drivers/common/audio.h"
 #include "audio/audio_processor.h"
-#include "audio/audio_buffer.h"
-#include "audio/audio_math.h"
-#include "midi/midi.h"
-#include "tests/midi_test_data.h"
-#include "containers/circular_buffer.h"
-#include <functional>
-#include <algorithm>
-#include <math.h>
+#include "Synth.h"
 #include <cstdint>
-#include "TestAudioProcessor.h"
 #include "drivers/stm32f407vg_discovery/encoder.h"
 #include <util/lcd44780.h>
 
@@ -26,6 +18,18 @@ typedef Encoder<TIM3_BASE, GPIOB_BASE,  4,  5> encoder2;
 typedef Encoder<TIM4_BASE, GPIOD_BASE, 12, 13> encoder3;
 typedef Encoder<TIM5_BASE, GPIOA_BASE,  0,  1> encoder4;
 
+int main() {
+    // Audio Driver and Synth initialization
+    AudioDriver audioDriver;
+    audioDriver.getBuffer();
+    Synth synth(audioDriver);
+    audioDriver.init();
+    audioDriver.setAudioProcessable(synth);
+    audioDriver.start();
+}
+
+
+#if 0
 int main()
 {
     // Display Setup
@@ -48,20 +52,4 @@ int main()
 
     }
 }
-
-// AudioDriver Test
-#if 0
-int main() {
-    // initializing the audio driver
-    AudioDriver audioDriver;
-    audioDriver.getBuffer();
-    AudioProcessorTest audioProcessorTest(audioDriver);
-    audioDriver.init();
-    audioDriver.setAudioProcessable(audioProcessorTest);
-
-
-
-    audioDriver.start();
-}
-
 #endif
