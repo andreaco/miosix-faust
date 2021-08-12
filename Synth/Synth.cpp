@@ -28,7 +28,6 @@ void Synth::process()
     for (uint32_t i = 0; i < getBufferSize(); i++)
     {
         float env = envelope.nextSample();
-        //oscillator.setFrequency(oscillator.getFrequency() + 0.5 * oscillator.getFrequency()*fmOsc.nextSample());
         float sample = env * oscillator.nextSample();
         left[i]  = sample;
         right[i] = sample;
