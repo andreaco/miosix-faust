@@ -16,8 +16,19 @@ public:
         envelope.gate();
     }
 
+    inline void setFrequency(float freq)
+    {
+        oscillator.setFrequency(freq);
+    }
+
+    inline void setFMFreq(float fmfreq)
+    {
+        fmOsc.setFrequency(fmfreq);
+    }
+
 private:
     PolyBlepOscillator oscillator;
+    PolyBlepOscillator fmOsc;
     Envelope envelope;
 };
 #endif //MIOSIX_DRUM_SYNTH_H
