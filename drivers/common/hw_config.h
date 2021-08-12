@@ -10,7 +10,7 @@
 /**
  * Number of samples to be averaged by the ADC to stabilize the read value.
  */
-#define ADC_AVG_SAMPLES 256
+#define ADC_AVG_SAMPLES 64
 
 
 #endif //MIOSIX_AUDIO_HW_CONFIG_H
