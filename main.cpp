@@ -42,8 +42,8 @@ static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
 /**
  * Audio Driver and Synthesizer declaration
  */
-static AudioDriver audioDriver;
-static Synth synth(audioDriver);
+AudioDriver audioDriver;
+Synth synth(audioDriver);
 
 struct LCDParameter
 {
@@ -77,38 +77,31 @@ void lcdPage(miosix::Lcd44780& lcd,
  */
 void hardwareUIThreadFunction() {
     float frequency;
-    float fm;
+    float e2, e3, e4;
     bool gate;
 
     while (true) {
         {
             miosix::FastMutex mutex;
 
-            auto values = AdcReader::readAll();
+            //auto values = AdcReader::readAll();
             gate = button1::risingEdge();
-            frequency = values[0] + values[1] + values[2] + values[3];
-            fm = encoder2::getValue();
+            frequency = encoder1::getValue();
+            e2 = encoder2::getValue() / 100.0f;
+            e3 = encoder3::getValue();
+            e4 = encoder4::getValue();
 
-            LCDParameter p1 {"ATK", values[0]};
-            LCDParameter p2 {"DEC", values[1]};
-            LCDParameter p3 {"SUS", values[2]};
-            LCDParameter p4 {"REL", values[3]};
-
+            LCDParameter p1 {"FRQ", (int)frequency};
+            LCDParameter p2 {"WAV", (int)e2};
+            LCDParameter p3 {"NaN", (int)e3};
+            LCDParameter p4 {"NaN", (int)e4 };
 
             synth.setFrequency(frequency);
-            synth.setFMFreq(fm);
+            synth.setMorph(e2);
             if(gate)
                 synth.gate();
             LCDParameter lp;
             lcdPage(display, p1, p2, p3, p4);
-            /*
-            display.clear();
-            display.go(0, 0);
-            display.printf("Gate: %0d", gate);
-
-            display.go(0, 1);
-            display.printf("F1: %d | F2: %d", (int)frequency,(int) fm);
-            */
         }
         miosix::Thread::sleep(500);
     }
@@ -124,7 +117,8 @@ int main() {
     // Encoders Initialization
     encoder1::init();
     encoder2::init();
-
+    encoder3::init();
+    encoder4::init();
 
     // Audio Driver and Synth initialization
     audioDriver.init();
