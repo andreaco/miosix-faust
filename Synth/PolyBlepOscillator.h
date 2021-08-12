@@ -23,29 +23,42 @@ public:
      * Set the current mode
      * @param mode mode to be used
      */
-    void setMode(OscMode mode);
+    inline void setMode(OscMode mode)
+    {
+        oscMode = mode;
+    }
     
     /**
      * Set the current frequency of the oscillator
      * @param frequency frequency in Hz to be set
      */
-    void setFrequency(float frequency);
+    inline void setFrequency(float frequency)
+    {
+        frequency = fminf(fmaxf(frequency, 0), 20000);
+        this->frequency = frequency;
+        updatePhaseIncrement();
+    }
     
     /**
      * Set the current sample rate in use by the oscillator
      * @param sampleRate sample rate to be set
      */
-    void setSampleRate(float sampleRate);
+    inline void setSampleRate(float sampleRate)
+    {
+        this->sampleRate = sampleRate;
+        updatePhaseIncrement();
+    }
     
     /**
      * Set the pulse width used by the square wave
      */
-    void setPulseWidth(float pulseWidth);
-    
-    /**
-     * ?
-     */
-    void generate(float* buffer, int nFrames);
+    inline void setPulseWidth(float pulseWidth)
+    {
+        
+        pulseWidth = fmax(fmin(pulseWidth, 1), 0);
+        this->pulseWidth = pulseWidth;
+        
+    }
     
     /**
      * Function used to mute/unmute the oscillator.
@@ -84,7 +97,7 @@ public:
     /**
      * Reset the phase of the oscillator
      */
-    void reset() { phase = 0.0; }
+    inline void reset() { phase = 0.0; }
     
 private:
     /**
@@ -125,7 +138,11 @@ private:
     /**
      * Auxiliary function used to update the phase increment
      */
-    void updatePhaseIncrement();
+    void updatePhaseIncrement()
+    {
+        float clippedFreq = fmin(fmax(frequency, 0), sampleRate/2.0f);
+        phaseIncrement = clippedFreq / sampleRate;
+    }
     
     /**
      * Used to store the last computed output
