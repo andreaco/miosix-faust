@@ -5,9 +5,14 @@ class Envelope {
 public:
     Envelope() { }
 
-    void setAttackTime(float attackTimeMs, float sampleRate);
+    inline void setSampleRate(float sampleRate)
+    {
+        this->sampleRate = sampleRate;
+    }
 
-    void setReleaseTime(float releaseTimeMs, float sampleRate);
+    void setAttackTime(float attackTimeMs);
+
+    void setReleaseTime(float releaseTimeMs);
 
     void gate();
 
@@ -35,6 +40,8 @@ public:
 private:
     enum STATE { IDLE=0, ATTACK, RELEASE };
     STATE currentState;
+
+    float sampleRate;
 
     float attackTime, releaseTime;
     float output;
