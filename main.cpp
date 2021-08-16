@@ -72,38 +72,76 @@ void lcdPage(miosix::Lcd44780& lcd,
                    p4.value);
 }
 
+miosix::FastMutex m;
+
 /**
  * Hardware UI Thread Function
  */
 void hardwareUIThreadFunction() {
-    float frequency;
-    float e2, e3, e4;
+    uint16_t frequency;
+    float morph;
+    float attackTimeMs;
+    float releaseTimeMs;
+    float e3, e4;
     bool gate;
 
-    while (true) {
+    while (true)
+    {
         {
-            miosix::FastMutex mutex;
+            miosix::Lock<miosix::FastMutex> l(m);
 
-            //auto values = AdcReader::readAll();
-            gate = button1::risingEdge();
-            frequency = encoder1::getValue();
-            e2 = encoder2::getValue() / 100.0f;
+            auto values = AdcReader::readAll();
+            attackTimeMs = 2 * values[0] / 127.0f;
+            releaseTimeMs = 2 * values[1] / 127.0f;
+
+            gate = button1::getState();
+            frequency = (float) encoder1::getValue();
+            morph = encoder2::getValue();
             e3 = encoder3::getValue();
             e4 = encoder4::getValue();
 
+
             LCDParameter p1 {"FRQ", (int)frequency};
-            LCDParameter p2 {"WAV", (int)e2};
-            LCDParameter p3 {"NaN", (int)e3};
-            LCDParameter p4 {"NaN", (int)e4 };
+            LCDParameter p2 {"WAV", (int)morph};
+            LCDParameter p3 {"Atk", (int)e3};
+            LCDParameter p4 {"Rel", (int)e4 };
 
             synth.setFrequency(frequency);
-            synth.setMorph(e2);
+            morph = morph/10.0f;
+            synth.setMorph(morph);
+            synth.setAttackTime(attackTimeMs);
+            synth.setReleaseTime(releaseTimeMs);
+
             if(gate)
                 synth.gate();
-            LCDParameter lp;
             lcdPage(display, p1, p2, p3, p4);
         }
-        miosix::Thread::sleep(500);
+        miosix::Thread::sleep(40);
+    }
+}
+
+void lcdThreadF()
+{
+
+    while(true) {
+        {
+            miosix::FastMutex mutex;
+
+            int e1 = encoder1::getValue();
+            int e2 = encoder2::getValue();
+            int e3 = encoder3::getValue();
+            int e4 = encoder4::getValue();
+
+            LCDParameter p1{"En1", (int) e1};
+            LCDParameter p2{"En2", (int) e2};
+            LCDParameter p3{"En3", (int) e3};
+            LCDParameter p4{"En4", (int) e4};
+
+            LCDParameter lp;
+            lcdPage(display, p1, p2, p3, p4);
+            miosix::Thread::sleep(1000);
+
+        }
     }
 }
 
@@ -126,7 +164,8 @@ int main() {
 
     // Hardware UI Thread
     std::thread hardwareInterfaceThread(hardwareUIThreadFunction);
-
+    //std::thread lcdThread(lcdThreadF);
+    usleep(1000);
     // Audio Thread
     audioDriver.start();
 }
