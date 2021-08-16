@@ -2,14 +2,15 @@
 #define MIOSIX_DRUM_MORPHINGOSCILLATOR_H
 #include "PolyBlepOscillator.h"
 #include "../audio/audio_math.h"
+#include "../audio/audio_buffer.h"
+
 
 class MorphingOscillator
 {
 public:
     MorphingOscillator()
     {
-        osc1.setMode(PolyBlepOscillator::OscMode::SINE);
-        osc2.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
+        setState(0);
     }
 
     void setMuted(bool isMuted)
@@ -43,7 +44,7 @@ public:
             osc1.setMode(PolyBlepOscillator::OscMode::SINE);
             osc2.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
         }
-        if (modesIndex == 1)
+        else if (modesIndex == 1)
         {
             osc1.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
             osc2.setMode(PolyBlepOscillator::OscMode::SAW);
@@ -56,15 +57,36 @@ public:
 
     }
 
+    inline float getFrequency()
+    {
+        return osc1.getFrequency();
+    }
+
     float nextSample()
     {
-        return (1-blend) * osc1.nextSample() + (blend) * osc2.nextSample();
+        return ((1-blend) * osc1.nextSample() + (blend) * osc2.nextSample())/2.0f;
     }
+
+    void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer)
+    {
+        osc1.process(osc1Buffer);
+        osc2.process(osc2Buffer);
+        osc1Buffer.applyGain(1-blend);
+        osc2Buffer.applyGain(blend);
+        osc1Buffer.add(osc2Buffer);
+        osc1Buffer.applyGain(0.5);
+        buffer.copyOnChannel(osc1Buffer, 0);
+    }
+
 
 
 private:
     PolyBlepOscillator osc1;
+    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> osc1Buffer;
+
     PolyBlepOscillator osc2;
+    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> osc2Buffer;
+
 
     float blend;
 };
