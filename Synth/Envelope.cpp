@@ -1,13 +1,13 @@
 #include "Envelope.h"
 
-void Envelope::setAttackTime(float attackTimeMs)
+void Envelope::setAttackTime(float attackTime)
 {
-    attackTime = attackTimeMs * sampleRate;
+    this->attackTime = attackTime * sampleRate;
 }
 
-void Envelope::setReleaseTime(float releaseTimeMs)
+void Envelope::setReleaseTime(float releaseTime)
 {
-    releaseTime = releaseTimeMs * sampleRate;
+    this->releaseTime = releaseTime * sampleRate;
 }
 
 void Envelope::gate()
