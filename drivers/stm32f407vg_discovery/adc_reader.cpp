@@ -17,8 +17,8 @@ void AdcReader::init()
 
     // Resolution
     ADC1->CR1 |= (1 << 8);  // Scan Mode
-    //ADC1->CR1 |= (2 << 24); // 8-bit resolution
-    ADC1->CR1 |= (0 << 24); // 12-bit resolution
+    ADC1->CR1 |= (2 << 24); // 8-bit resolution
+    //ADC1->CR1 |= (0 << 24); // 12-bit resolution
 
 
     // Data Alignment
@@ -27,7 +27,7 @@ void AdcReader::init()
     ADC1->CR2 |= (1 << 1);   // Continuous conversion mode
 
     //ADC1->SMPR2 &= ~((1<<3) | (1<<12)); // Sampling time for channel 1 and 4
-    ADC1->SMPR2 |= (7<<0) | (7<<3) | (7<<6) | (7<<9); // Sampling time for channel 0, 1, 2
+    ADC1->SMPR2 |= (1<<0) | (1<<3) | (1<<6) | (1<<9); // Sampling time for channel 0, 1, 2
 
 
     ADC1->SQR1 |= (1<<2); // Sequence for 2 channel conversions
@@ -52,13 +52,13 @@ void AdcReader::init()
 
 AdcReader::ValueState& AdcReader::readAll()
 {
-    int N = 64;
+    int N = 1;
     uint32_t avg = 0;
     for (int j=0; j < N; ++j)
         avg += readChannel(2);
     avg = avg / N;
 
-    values[0] = avg >> 5;
+    values[0] = avg >> 1;
 
 
     avg = 0;
@@ -66,21 +66,21 @@ AdcReader::ValueState& AdcReader::readAll()
         avg += readChannel(5);
     avg = avg / N;
 
-    values[1] = avg >> 5;
+    values[1] = avg >> 1;
 
     avg = 0;
     for (int j=0; j < N; ++j)
         avg += readChannel(6);
     avg = avg / N;
 
-    values[2] = avg >> 5;
+    values[2] = avg >> 1;
 
     avg = 0;
     for (int j=0; j < N; ++j)
         avg += readChannel(7);
     avg = avg / N;
 
-    values[3] = avg >> 5;
+    values[3] = avg >> 1;
 
     return values;
 }
