@@ -1,10 +1,17 @@
-#ifndef MICROAUDIO_OSCILLATOR
-#define MICROAUDIO_OSCILLATOR
+#ifndef POLYBLEPOSCILLATOR_H
+#define POLYBLEPOSCILLATOR_H
 
 #include <math.h>
 #include <array>
+#include "../audio/audio_buffer.h"
+#include "../drivers/common/audio_config.h"
 
 #define TABLE_SIZE 2048
+#define SIN_RMS 0.7071067811865476
+#define TRI_RMS 0.5773795568491479
+#define SAW_RMS 0.9004251044154165
+#define SQR_RMS 1.0000000000000000
+
 
 class PolyBlepOscillator {
 public:
@@ -48,18 +55,7 @@ public:
         this->sampleRate = sampleRate;
         updatePhaseIncrement();
     }
-    
-    /**
-     * Set the pulse width used by the square wave
-     */
-    inline void setPulseWidth(float pulseWidth)
-    {
-        
-        pulseWidth = fmax(fmin(pulseWidth, 1), 0);
-        this->pulseWidth = pulseWidth;
-        
-    }
-    
+
     /**
      * Function used to mute/unmute the oscillator.
      * The oscillator is always constructed as muted and needss to be unmuted manually
@@ -70,6 +66,19 @@ public:
      * Get next sample and updates phase variables
      */
     float nextSample();
+
+    /**
+     * Process an entire mono AudioBuffer
+     * @param buffer
+     */
+    void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer);
+
+    /**
+    * Process an entire mono AudioBuffer by using a frequency modulator
+    * @param buffer
+    */
+    void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer
+                 AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &modulation);
 
     /**
      * Frequency getter
@@ -87,8 +96,7 @@ public:
         isMuted(true),
         frequency(440.0f),
         phase(0.0f),
-        sampleRate(44100.0f),
-        pulseWidth(0.5f)
+        sampleRate(44100.0f)
     {
         updatePhaseIncrement();
         computeTables();
@@ -109,11 +117,6 @@ private:
      * Mute state variable
      */
     bool isMuted;
-    
-    /**
-     * Pulse width control
-     */
-    float pulseWidth;
     
     /**
      * Current frequency
@@ -138,7 +141,7 @@ private:
     /**
      * Auxiliary function used to update the phase increment
      */
-    void updatePhaseIncrement()
+    inline void updatePhaseIncrement()
     {
         float clippedFreq = fmin(fmax(frequency, 0), sampleRate/2.0f);
         phaseIncrement = clippedFreq / sampleRate;
@@ -167,4 +170,4 @@ private:
     
 };
 
-#endif // MICROAUDIO_OSCILLATOR
+#endif // POLYBLEPOSCILLATOR_H
