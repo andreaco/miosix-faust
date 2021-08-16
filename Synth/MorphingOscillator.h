@@ -5,32 +5,58 @@
 #include "../audio/audio_buffer.h"
 
 
+/**
+ * Oscillator that let cycle through different waveforms
+ * by interpolating them linearly
+ */
 class MorphingOscillator
 {
 public:
+    /**
+     * Constructor
+     */
     MorphingOscillator()
     {
         setState(0);
     }
 
+    /**
+     * Mutes the oscillator
+     * @param isMuted true if muting, false otherwise
+     */
     void setMuted(bool isMuted)
     {
-        osc1.setMuted(isMuted);
-        osc2.setMuted(isMuted);
+        oscA.setMuted(isMuted);
+        oscB.setMuted(isMuted);
     }
 
+    /**
+     * Setup of the sample rate
+     * @param sampleRate sample rate to be used
+     */
     void setSampleRate(float sampleRate)
     {
-        osc1.setSampleRate(sampleRate);
-        osc2.setSampleRate(sampleRate);
+        oscA.setSampleRate(sampleRate);
+        oscB.setSampleRate(sampleRate);
     }
 
+    /**
+     * Set the frequency
+     * @param frequency frequency to be set
+     */
     void setFrequency(float frequency)
     {
-        osc1.setFrequency(frequency);
-        osc2.setFrequency(frequency);
+        oscA.setFrequency(frequency);
+        oscB.setFrequency(frequency);
     }
 
+    /**
+     * Set the state of the morphing oscillator.
+     * From 0 to 1 is linear interpolation between a Sine and a Triangular oscillator.
+     * From 1 to 2 is linear interpolation between a Triangular and a Saw oscillator.
+     * From 2 to 3 is linear interpolation between a Saw oscillator and a Square oscillator.
+     * @param state value between 0 and 3
+     */
     void setState(float state)
     {
         state = AudioMath::clip(state, 0, 3);
@@ -41,51 +67,76 @@ public:
 
         if (modesIndex == 0)
         {
-            osc1.setMode(PolyBlepOscillator::OscMode::SINE);
-            osc2.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
+            oscA.setMode(PolyBlepOscillator::OscMode::SINE);
+            oscB.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
         }
         else if (modesIndex == 1)
         {
-            osc1.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
-            osc2.setMode(PolyBlepOscillator::OscMode::SAW);
+            oscA.setMode(PolyBlepOscillator::OscMode::TRIANGLE);
+            oscB.setMode(PolyBlepOscillator::OscMode::SAW);
         }
         else
         {
-            osc1.setMode(PolyBlepOscillator::OscMode::SAW);
-            osc2.setMode(PolyBlepOscillator::OscMode::SQUARE);
+            oscA.setMode(PolyBlepOscillator::OscMode::SAW);
+            oscB.setMode(PolyBlepOscillator::OscMode::SQUARE);
         }
 
     }
 
+    /**
+     * Get the current frequency in use by the oscillators
+     * @return frequency currently in use by the oscillators
+     */
     inline float getFrequency()
     {
-        return osc1.getFrequency();
+        return oscA.getFrequency();
     }
 
+    /**
+     * Function used to compute the oscillator output one sample at a time
+     * @return current sample output of the oscillator
+     */
     float nextSample()
     {
-        return ((1-blend) * osc1.nextSample() + (blend) * osc2.nextSample())/2.0f;
+        return ((1-blend) * oscA.nextSample() + (blend) * oscB.nextSample())/2.0f;
     }
 
+
+    /**
+     * Function used to compute in batch an entire buffer output of the oscillator
+     * @param buffer buffer in which the output of the oscillator will be stored
+     */
     void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer)
     {
-        osc1.process(osc1Buffer);
-        osc2.process(osc2Buffer);
-        osc1Buffer.applyGain(1-blend);
-        osc2Buffer.applyGain(blend);
-        osc1Buffer.add(osc2Buffer);
-        osc1Buffer.applyGain(0.5);
-        buffer.copyOnChannel(osc1Buffer, 0);
+        oscA.process(oscABuffer);
+        oscB.process(oscBBuffer);
+        oscABuffer.applyGain(1-blend);
+        oscBBuffer.applyGain(blend);
+        oscABuffer.add(oscBBuffer);
+        oscABuffer.applyGain(0.5);
+        buffer.copyOnChannel(oscABuffer, 0);
     }
-
-
-
+    
 private:
-    PolyBlepOscillator osc1;
-    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> osc1Buffer;
+    /**
+     * Oscillator A
+     */
+    PolyBlepOscillator oscA;
 
-    PolyBlepOscillator osc2;
-    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> osc2Buffer;
+    /**
+     * Buffer used to store and compute oscillator A
+     */
+    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> oscABuffer;
+
+    /**
+     * Oscillator B
+     */
+    PolyBlepOscillator oscB;
+
+    /**
+     * Buffer used to store and compute oscillator B
+     */
+    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> oscBBuffer;
 
 
     float blend;
