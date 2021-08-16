@@ -1,28 +1,29 @@
 #include "Synth.h"
+
 Synth::Synth(AudioDriver &audioDriver) :
-AudioProcessor(audioDriver)
+AudioProcessor(audioDriver), controlCounter(CONTROL_RATE)
 {
+    // Audio Rate
     oscillator.setSampleRate(getSampleRate());
     oscillator.setFrequency(440);
     oscillator.setMuted(false);
+    oscillator.setState(0);
 
-    envelope.setAttackTime(0.01, getSampleRate());
-    envelope.setReleaseTime(1.5, getSampleRate());
+    envelope.setSampleRate(getSampleRate());
+    envelope.setAttackTime(0.01);
+    envelope.setReleaseTime(0.3);
+
+    pitchEnv.setSampleRate(getSampleRate()/CONTROL_RATE);
+    pitchEnv.setAttackTime(0.001);
+    pitchEnv.setReleaseTime(0.1);
+
 }
-
 
 void Synth::process()
 {
-    auto &buffer = getBuffer();
-    float *left = buffer.getWritePointer(0);
-    float *right = buffer.getWritePointer(1);
-
-    for (uint32_t i = 0; i < getBufferSize(); i++)
-    {
-        float env = envelope.nextSample();
-        float sample = env * oscillator.nextSample();
-        left[i]  = sample;
-        right[i] = sample;
-    }
-
+    oscillator.process(oscillatorBuffer);
+    envelope.process(envelopeBuffer);
+    oscillatorBuffer.multiply(envelopeBuffer);
+    getBuffer().copyOnChannel(oscillatorBuffer, 0);
+    getBuffer().copyOnChannel(oscillatorBuffer, 1);
 }

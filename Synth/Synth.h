@@ -4,8 +4,10 @@
 #include "PolyBlepOscillator.h"
 #include "Envelope.h"
 #include "MorphingOscillator.h"
+#include "../drivers/stm32f407vg_discovery/encoder.h"
+#include "../drivers/stm32f407vg_discovery/button.h"
 
-
+#define CONTROL_RATE 10
 class Synth : public AudioProcessor {
 public:
     Synth(AudioDriver &audioDriver);
@@ -15,6 +17,17 @@ public:
     inline void gate()
     {
         envelope.gate();
+        pitchEnv.gate();
+    }
+
+    inline void setAttackTime(float attackTimeMs)
+    {
+        envelope.setAttackTime(attackTimeMs);
+    }
+
+    inline void setReleaseTime(float releaseTimeMs)
+    {
+        envelope.setReleaseTime(releaseTimeMs);
     }
 
     inline void setFrequency(float freq)
@@ -27,10 +40,25 @@ public:
         oscillator.setState(morph);
     }
 
+    void controlCallback()
+    {
+        controlCounter--;
+        if(controlCounter == 0)
+        {
+            controlCounter = CONTROL_RATE;
+        }
+    }
+
 
 private:
     MorphingOscillator oscillator;
+    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> oscillatorBuffer;
+
     Envelope envelope;
+    AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> envelopeBuffer;
+
+    Envelope pitchEnv;
+    int controlCounter;
 };
 #endif //MIOSIX_DRUM_SYNTH_H
 
