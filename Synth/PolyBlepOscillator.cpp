@@ -57,7 +57,8 @@ void PolyBlepOscillator::process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE>
     if (isMuted) return;
 
     float *writePointer = buffer.getWritePointer(0);
-    switch (oscMode) {
+    switch (oscMode)
+    {
         case OscMode::SINE:
             for (unsigned int i = 0; i < buffer.getBufferLength(); ++i)
             {
