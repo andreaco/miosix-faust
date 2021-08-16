@@ -15,7 +15,7 @@
 /**
  * Size of the stereo DAC buffer.
  */
-#define AUDIO_DRIVER_BUFFER_SIZE 1024
+#define AUDIO_DRIVER_BUFFER_SIZE 128
 
 /**
  * Bit depth of the DAC.
