@@ -1,6 +1,9 @@
 #ifndef MIOSIX_DRUM_ENVELOPE_H
 #define MIOSIX_DRUM_ENVELOPE_H
 
+#include "../audio/audio_buffer.h"
+#include "../drivers/common/audio_config.h"
+
 class Envelope {
 public:
     Envelope() { }
@@ -36,6 +39,7 @@ public:
         }
         return output;
     }
+    void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer);
 
 private:
     enum STATE { IDLE=0, ATTACK, RELEASE };
