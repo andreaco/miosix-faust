@@ -10,12 +10,12 @@
 /**
  * Sample rate of the DAC.
  */
-#define AUDIO_DRIVER_SAMPLE_RATE 48000
+#define AUDIO_DRIVER_SAMPLE_RATE 44100
 
 /**
  * Size of the stereo DAC buffer.
  */
-#define AUDIO_DRIVER_BUFFER_SIZE 256
+#define AUDIO_DRIVER_BUFFER_SIZE 1024
 
 /**
  * Bit depth of the DAC.
