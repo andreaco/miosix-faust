@@ -32,6 +32,9 @@ typedef Encoder<TIM5_BASE, GPIOA_BASE,  0,  1> encoder4;
  * Buttons Pin Definition
  */
 typedef Button<GPIOD_BASE, 1> button1;
+typedef Button<GPIOD_BASE, 2> button2;
+typedef Button<GPIOD_BASE, 3> button3;
+typedef Button<GPIOD_BASE, 4> button4;
 
 /**
  * LCD Initialization
@@ -78,6 +81,21 @@ miosix::FastMutex m;
  * Hardware UI Thread Function
  */
 void hardwareUIThreadFunction() {
+    // ADC Initialization
+    AdcReader::init();
+
+    // Buttons Initialization
+    button1::init();
+    button2::init();
+    button3::init();
+    button4::init();
+
+    // Encoders Initialization
+    encoder1::init();
+    encoder2::init();
+    encoder3::init();
+    encoder4::init();
+
     uint16_t frequency;
     float morph;
     float attackTimeMs;
@@ -85,11 +103,8 @@ void hardwareUIThreadFunction() {
     float e3, e4;
     bool gate;
 
-    while (true)
-    {
+    while (true) {
         {
-            miosix::Lock<miosix::FastMutex> l(m);
-
             auto values = AdcReader::readAll();
             attackTimeMs = 2 * values[0] / 127.0f;
             releaseTimeMs = 2 * values[1] / 127.0f;
@@ -99,24 +114,18 @@ void hardwareUIThreadFunction() {
             morph = encoder2::getValue();
             e3 = encoder3::getValue();
             e4 = encoder4::getValue();
-
-
-            LCDParameter p1 {"FRQ", (int)frequency};
-            LCDParameter p2 {"WAV", (int)morph};
-            LCDParameter p3 {"Atk", (int)e3};
-            LCDParameter p4 {"Rel", (int)e4 };
-
-            synth.setFrequency(frequency);
-            morph = morph/10.0f;
-            synth.setMorph(morph);
-            synth.setAttackTime(attackTimeMs);
-            synth.setReleaseTime(releaseTimeMs);
-
-            if(gate)
-                synth.gate();
-            lcdPage(display, p1, p2, p3, p4);
         }
-        miosix::Thread::sleep(40);
+
+        if (gate)
+            synth.gate();
+
+        synth.setFrequency(frequency);
+        morph = morph / 10.0f;
+        synth.setMorph(morph);
+        synth.setAttackTime(attackTimeMs);
+        synth.setReleaseTime(releaseTimeMs);
+
+        miosix::Thread::sleep(20);
     }
 }
 
@@ -125,12 +134,10 @@ void lcdThreadF()
 
     while(true) {
         {
-            miosix::FastMutex mutex;
-
-            int e1 = encoder1::getValue();
-            int e2 = encoder2::getValue();
-            int e3 = encoder3::getValue();
-            int e4 = encoder4::getValue();
+            int e1 = 1;
+            int e2 = 2;
+            int e3 = 3;
+            int e4 = 4;
 
             LCDParameter p1{"En1", (int) e1};
             LCDParameter p2{"En2", (int) e2};
@@ -140,24 +147,11 @@ void lcdThreadF()
             LCDParameter lp;
             lcdPage(display, p1, p2, p3, p4);
             miosix::Thread::sleep(1000);
-
         }
     }
 }
 
 int main() {
-    // ADC Initialization
-    AdcReader::init();
-
-    // Buttons Initialization
-    button1::init();
-
-    // Encoders Initialization
-    encoder1::init();
-    encoder2::init();
-    encoder3::init();
-    encoder4::init();
-
     // Audio Driver and Synth initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
@@ -165,7 +159,7 @@ int main() {
     // Hardware UI Thread
     std::thread hardwareInterfaceThread(hardwareUIThreadFunction);
     //std::thread lcdThread(lcdThreadF);
-    usleep(1000);
+
     // Audio Thread
     audioDriver.start();
 }
