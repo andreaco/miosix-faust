@@ -59,36 +59,42 @@ public:
         TIM_TypeDef* TIM = (TIM_TypeDef*) TIM_BASE;
         GPIO_TypeDef* GPIO = (GPIO_TypeDef*) GPIO_BASE;
 
-        // GPIO Setup
-        enableGPIORCC(GPIO);
-        GPIO->MODER |= (2 << PIN1 * 2); // TIM Mode
-        GPIO->MODER |= (2 << PIN2 * 2); // TIM Mode
+        {
+            miosix::FastInterruptDisableLock dLock;
+            // GPIO Setup
+            enableGPIORCC(GPIO);
+            GPIO->MODER |= (2 << PIN1 * 2); // TIM Mode
+            GPIO->MODER |= (2 << PIN2 * 2); // TIM Mode
 
 
-        int afr = getAFR(TIM);
-        GPIO->AFR[PIN1 / 8] |= (afr << (PIN1 % 8) * 4);
-        GPIO->AFR[PIN2 / 8] |= (afr << (PIN2 % 8) * 4);
+            int afr = getAFR(TIM);
+            GPIO->AFR[PIN1 / 8] |= (afr << (PIN1 % 8) * 4);
+            GPIO->AFR[PIN2 / 8] |= (afr << (PIN2 % 8) * 4);
 
-        // Encoder Timer Setup
-        enableTIMRCC(TIM);
+            // Encoder Timer Setup
+            enableTIMRCC(TIM);
 
-        // Value to count up to
-        TIM->ARR = 0xFFFF;
+            // Value to count up to
+            TIM->ARR = 0xFFFF;
 
-        // Setup (RM9000, pg. 616)
-        TIM->CCMR1 |= (TIM_CCMR1_CC1S_0 | TIM_CCMR1_CC2S_0);
-        TIM->CCER  |= ~(TIM_CCER_CC1P | TIM_CCER_CC2P);
-        TIM->SMCR  |= TIM_SMCR_SMS_0 | TIM_SMCR_SMS_1;
+            // Setup (RM9000, pg. 616)
+            TIM->CCMR1 |= (TIM_CCMR1_CC1S_0 | TIM_CCMR1_CC2S_0);
+            TIM->CCER |= ~(TIM_CCER_CC1P | TIM_CCER_CC2P);
+            TIM->SMCR |= TIM_SMCR_SMS_0 | TIM_SMCR_SMS_1;
 
 
-        TIM->CCMR1 |= (3 << 4); // filtering
+            TIM->CCMR1 |= (3 << 4); // filtering
 
-        TIM->CR1   |= TIM_CR1_CEN;
+            TIM->CR1 |= TIM_CR1_CEN;
+        }
     }
 
     static int getValue()
     {
-        return ((TIM_TypeDef*) TIM_BASE)->CNT >> 2;
+        {
+            miosix::FastInterruptDisableLock dLock;
+            return ((TIM_TypeDef *) TIM_BASE)->CNT >> 2;
+        }
     }
 
 private:
