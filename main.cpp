@@ -9,7 +9,6 @@
 #include <thread>
 #include "Synth/Faust_AudioProcessor.h"
 
-
 /**
  * Encoders Pin Definition
  */
@@ -35,9 +34,9 @@ Faust_AudioProcessor synth(audioDriver);
 
 
 /**
- * Hardware UI Thread Function
+ * Encoder UI Thread Function
  */
-void hardwareUIThreadFunction() {
+void encoderUI() {
     // Encoders Initialization
     encoder1::init();
     encoder2::init();
@@ -47,11 +46,31 @@ void hardwareUIThreadFunction() {
     while (true) {
         synth.setFrequency(encoder1::getValue());
         synth.setRatio(encoder2::getValue()/1000.0f);
-        miosix::Thread::sleep(30);
+        miosix::Thread::sleep(50);
     }
 }
 
-void gateThreadFunction() {
+/**
+ * Encoder UI Thread Function
+ */
+void buttonUI() {
+    // Buttons Initialization
+    button1::init();
+    button2::init();
+    button3::init();
+    button4::init();
+
+    float b1, b2, b3, b4;
+    while (true) {
+        //b1 = button1::getState();
+        //b2 = button2::getState();
+        //b3 = button3::getState();
+        //b4 = button4::getState();
+        miosix::Thread::sleep(100);
+    }
+}
+
+void gate() {
     while (true) {
         synth.gateOn();
         miosix::Thread::sleep(100);
@@ -68,10 +87,11 @@ int main() {
     audioDriver.setAudioProcessable(synth);
 
     // Hardware UI Thread
-    std::thread hardwareInterfaceThread(hardwareUIThreadFunction);
-    std::thread gateThread(gateThreadFunction);
-    //std::thread lcdThread(lcdThreadF);
+    std::thread encoderUIThread(encoderUI);
+    std::thread buttonUIThread(buttonUI);
 
+    // Debug Thread
+    std::thread gateThread(gate);
 
     // Audio Thread
     audioDriver.start();
