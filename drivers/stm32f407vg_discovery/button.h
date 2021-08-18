@@ -1,68 +1,69 @@
 #ifndef MIOSIX_DRUM_BUTTON_H
 #define MIOSIX_DRUM_BUTTON_H
+#include <miosix.h>
+#include "drivers/stm32f407vg_discovery/utility.h"
 
+/**
+ * Templated static class that allows to initialize
+ * and get the state of a button at a given time
+ * @tparam GPIO_BASE Which GPIO base to use
+ * @tparam PIN  Which pin of the GPIO base
+ */
 template <uint32_t GPIO_BASE, int PIN>
-class Button {
+class Button
+{
 public:
-    static void init() {
+    /**
+     * Function to be called to initialize the static class
+     */
+    static void init()
+    {
         {
             miosix::FastInterruptDisableLock dLock;
             GPIO_TypeDef *GPIO = (GPIO_TypeDef *) GPIO_BASE;
 
             // GPIO Setup
-            // TODO: GLOBAL ENABLEGPIO
-            enableGPIORCC(GPIO);
+            GPIOUtility::enableRCC(GPIO);
 
             GPIO->MODER &= ~(3 << (PIN * 2)); // setting the GPIO in input mode
             GPIO->PUPDR &= ~(3 << (PIN * 2)); // reset
-            GPIO->OTYPER &= ~(1 << PIN);       // reset
+            GPIO->OTYPER &= ~(1 << PIN);      // reset
             GPIO->PUPDR |= (2 << (PIN * 2));  // pull-down
         }
     }
 
-    static bool getState() {
-        GPIO_TypeDef *GPIO = (GPIO_TypeDef *) GPIO_BASE;
-        {
-            miosix::FastInterruptDisableLock dLock;
-            previousState = (GPIO->IDR & (1 << PIN)) >> PIN;
-        }
-        return previousState;
-    }
-
-    static bool risingEdge()
+    /**
+     * Get the current state of the button
+     * @return true if the button is being pressed, false otherwise
+     */
+    static bool getState()
     {
         bool currentState;
         GPIO_TypeDef *GPIO = (GPIO_TypeDef *) GPIO_BASE;
         {
             miosix::FastInterruptDisableLock dLock;
-            currentState = (GPIO->IDR & (1 << 1)) >> 1;
+            currentState = (GPIO->IDR & (1 << PIN)) >> PIN;
         }
-        bool isRising = false;
-        if (previousState == false && currentState == true)
-            isRising = true;
-        previousState = currentState;
-        return isRising;
+
+        return currentState;
     }
 
-    static bool fallingEdge()
-    {
-        GPIO_TypeDef *GPIO = (GPIO_TypeDef *) GPIO_BASE;
-        bool currentState;
-        {
-            miosix::FastInterruptDisableLock dLock;
-            currentState = (GPIO->IDR & (1 << 1)) >> 1;
-        }
-        bool isFalling = false;
-        if (previousState == true && currentState == false)
-            isFalling = true;
-        previousState = currentState;
-        return isFalling;
-    }
 private:
-    static bool previousState;
-};
 
-template <uint32_t GPIO_BASE, int PIN>
-bool Button<GPIO_BASE, PIN>::previousState = false;
+    /**
+     * Default constructor disabled
+     */
+    Button() = delete;
+
+    /**
+     * Copy constructor disabled
+     */
+    Button(const Button &) = delete;
+
+    /**
+     * Assignment operator disabled
+     */
+    Button &operator=(const Button &) = delete;
+};
 
 #endif //MIOSIX_DRUM_BUTTON_H
