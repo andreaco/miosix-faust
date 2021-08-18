@@ -58,7 +58,6 @@ namespace TIMUtility {
      * Function used to enable the RCC to the relative Timer
      * @param TIM Which Timer will get its clock enabled
      */
-    static
     static void enableRCC(TIM_TypeDef *TIM)
     {
         if (TIM == TIM1)
