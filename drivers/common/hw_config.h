@@ -20,7 +20,7 @@
  * if (2): 8-bit  (11 ADCCLK cycles)
  * if (3): 6-bit  ( 9 ADCCLK cycles)
  */
-#define ADC_RESOLUTION (8)
+#define ADC_RESOLUTION (2)
 
 
 #endif //MIOSIX_AUDIO_HW_CONFIG_H
