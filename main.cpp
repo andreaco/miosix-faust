@@ -20,10 +20,10 @@ typedef Encoder<TIM5_BASE, GPIOA_BASE,  0,  1> encoder4;
 /**
  * Buttons Pin Definition
  */
-typedef Button<GPIOD_BASE, 1> button1;
-typedef Button<GPIOD_BASE, 2> button2;
-typedef Button<GPIOD_BASE, 3> button3;
-typedef Button<GPIOD_BASE, 4> button4;
+typedef Button<GPIOD_BASE, 0> button1;
+typedef Button<GPIOD_BASE, 1> button2;
+typedef Button<GPIOD_BASE, 2> button3;
+typedef Button<GPIOD_BASE, 3> button4;
 
 
 /**
@@ -44,8 +44,10 @@ void encoderUI() {
     encoder4::init();
 
     while (true) {
-        synth.setFrequency(encoder1::getValue());
-        synth.setRatio(encoder2::getValue()/1000.0f);
+        synth.setFrequency(440+encoder1::getValue());
+        synth.setRatio(encoder2::getValue()/100.0f);
+        encoder3::getValue();
+        encoder4::getValue();
         miosix::Thread::sleep(50);
     }
 }
@@ -60,13 +62,15 @@ void buttonUI() {
     button3::init();
     button4::init();
 
-    float b1, b2, b3, b4;
     while (true) {
-        //b1 = button1::getState();
-        //b2 = button2::getState();
-        //b3 = button3::getState();
-        //b4 = button4::getState();
-        miosix::Thread::sleep(100);
+        if(button1::getState())
+            synth.gateOn();
+        else
+            synth.gateOff();
+        button2::getState();
+        button3::getState();
+        button4::getState();
+        miosix::Thread::sleep(10);
     }
 }
 
@@ -80,7 +84,6 @@ void gate() {
 }
 
 
-
 int main() {
     // Audio Driver and Synth initialization
     audioDriver.init();
@@ -91,7 +94,7 @@ int main() {
     std::thread buttonUIThread(buttonUI);
 
     // Debug Thread
-    std::thread gateThread(gate);
+    //std::thread gateThread(gate);
 
     // Audio Thread
     audioDriver.start();
@@ -146,7 +149,6 @@ void lcdPage(miosix::Lcd44780& lcd,
 
 void lcdThreadF()
 {
-
     while(true) {
         {
             int e1 = 1;
