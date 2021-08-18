@@ -1,13 +1,20 @@
+#include <cstdint>
+#include <thread>
 #include "miosix.h"
 #include "drivers/common/audio.h"
 #include "drivers/stm32f407vg_discovery/encoder.h"
 #include "drivers/stm32f407vg_discovery/button.h"
+#include "drivers/stm32f407vg_discovery/potentiometer.h"
 #include "audio/audio_processor.h"
-#include "drivers/stm32f407vg_discovery/adc_reader.h"
-#include "AudioProcessors/Synth.h"
-#include <cstdint>
-#include <thread>
 #include "Faust/FaustAudioProcessor.h"
+
+/**
+ * ADC Pin Definition
+ */
+typedef Potentiometer<GPIOA_BASE, 2, 2> slider1;
+typedef Potentiometer<GPIOA_BASE, 5, 5> slider2;
+typedef Potentiometer<GPIOA_BASE, 6, 6> slider3;
+typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 
 /**
  * Encoders Pin Definition
@@ -32,18 +39,37 @@ typedef Button<GPIOD_BASE, 3> button4;
 AudioDriver audioDriver;
 Faust_AudioProcessor synth(audioDriver);
 
+void sliderUI()
+{
+    slider1::init();
+    slider2::init();
+    slider3::init();
+    slider4::init();
+
+    while (true)
+    {
+        slider1::read();
+        slider2::read();
+        slider3::read();
+        slider4::read();
+        miosix::Thread::sleep(200);
+    }
+
+}
 
 /**
  * Encoder UI Thread Function
  */
-void encoderUI() {
+void encoderUI()
+{
     // Encoders Initialization
     encoder1::init();
     encoder2::init();
     encoder3::init();
     encoder4::init();
 
-    while (true) {
+    while (true)
+    {
         synth.setFrequency(440+encoder1::getValue());
         synth.setRatio(encoder2::getValue()/100.0f);
         encoder3::getValue();
@@ -55,14 +81,16 @@ void encoderUI() {
 /**
  * Encoder UI Thread Function
  */
-void buttonUI() {
+void buttonUI()
+{
     // Buttons Initialization
     button1::init();
     button2::init();
     button3::init();
     button4::init();
 
-    while (true) {
+    while (true)
+    {
         if(button1::getState())
             synth.gateOn();
         else
@@ -74,8 +102,10 @@ void buttonUI() {
     }
 }
 
-void gate() {
-    while (true) {
+void gate()
+{
+    while (true)
+    {
         synth.gateOn();
         miosix::Thread::sleep(100);
         synth.gateOff();
@@ -84,7 +114,8 @@ void gate() {
 }
 
 
-int main() {
+int main()
+{
     // Audio Driver and Faust initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
@@ -92,6 +123,7 @@ int main() {
     // Hardware UI Thread
     std::thread encoderUIThread(encoderUI);
     std::thread buttonUIThread(buttonUI);
+    std::thread sliderUIThread(sliderUI);
 
     // Debug Thread
     //std::thread gateThread(gate);
