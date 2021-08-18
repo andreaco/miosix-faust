@@ -24,7 +24,7 @@ public:
         GPIO_TypeDef *GPIO = (GPIO_TypeDef *) GPIO_BASE;
         {
             miosix::FastInterruptDisableLock dLock;
-            previousState = (GPIO->IDR & (1 << 1)) >> 1;
+            previousState = (GPIO->IDR & (1 << PIN)) >> PIN;
         }
         return previousState;
     }
