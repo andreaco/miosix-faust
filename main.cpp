@@ -6,19 +6,9 @@
 #include "drivers/stm32f407vg_discovery/adc_reader.h"
 #include "Synth/Synth.h"
 #include <cstdint>
-#include <util/lcd44780.h>
 #include <thread>
+#include "Synth/Faust_AudioProcessor.h"
 
-
-/**
- * LCD Pin Definition
- */
-typedef miosix::Gpio<GPIOB_BASE, 12> d4;
-typedef miosix::Gpio<GPIOB_BASE, 13> d5;
-typedef miosix::Gpio<GPIOB_BASE, 14> d6;
-typedef miosix::Gpio<GPIOB_BASE, 15> d7;
-typedef miosix::Gpio<GPIOC_BASE, 1> rs;
-typedef miosix::Gpio<GPIOC_BASE, 2> e;
 
 /**
  * Encoders Pin Definition
@@ -36,17 +26,74 @@ typedef Button<GPIOD_BASE, 2> button2;
 typedef Button<GPIOD_BASE, 3> button3;
 typedef Button<GPIOD_BASE, 4> button4;
 
-/**
- * LCD Initialization
- */
-static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
-                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
 
 /**
  * Audio Driver and Synthesizer declaration
  */
 AudioDriver audioDriver;
-Synth synth(audioDriver);
+Faust_AudioProcessor synth(audioDriver);
+
+
+/**
+ * Hardware UI Thread Function
+ */
+void hardwareUIThreadFunction() {
+    // Encoders Initialization
+    encoder1::init();
+    encoder2::init();
+    encoder3::init();
+    encoder4::init();
+
+    while (true) {
+        synth.setFrequency(encoder1::getValue());
+        synth.setRatio(encoder2::getValue()/1000.0f);
+        miosix::Thread::sleep(30);
+    }
+}
+
+void gateThreadFunction() {
+    while (true) {
+        synth.gateOn();
+        miosix::Thread::sleep(100);
+        synth.gateOff();
+        miosix::Thread::sleep(500);
+    }
+}
+
+
+
+int main() {
+    // Audio Driver and Synth initialization
+    audioDriver.init();
+    audioDriver.setAudioProcessable(synth);
+
+    // Hardware UI Thread
+    std::thread hardwareInterfaceThread(hardwareUIThreadFunction);
+    std::thread gateThread(gateThreadFunction);
+    //std::thread lcdThread(lcdThreadF);
+
+
+    // Audio Thread
+    audioDriver.start();
+}
+
+#if 0
+#include <util/lcd44780.h>
+/**
+ * LCD Pin Definition
+ */
+typedef miosix::Gpio<GPIOB_BASE, 12> d4;
+typedef miosix::Gpio<GPIOB_BASE, 13> d5;
+typedef miosix::Gpio<GPIOB_BASE, 14> d6;
+typedef miosix::Gpio<GPIOB_BASE, 15> d7;
+typedef miosix::Gpio<GPIOC_BASE, 1> rs;
+typedef miosix::Gpio<GPIOC_BASE, 2> e;
+
+/**
+ * LCD Initialization
+ */
+static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
+                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
 
 struct LCDParameter
 {
@@ -75,59 +122,7 @@ void lcdPage(miosix::Lcd44780& lcd,
                    p4.value);
 }
 
-miosix::FastMutex m;
 
-/**
- * Hardware UI Thread Function
- */
-void hardwareUIThreadFunction() {
-    // ADC Initialization
-    AdcReader::init();
-
-    // Buttons Initialization
-    button1::init();
-    button2::init();
-    button3::init();
-    button4::init();
-
-    // Encoders Initialization
-    encoder1::init();
-    encoder2::init();
-    encoder3::init();
-    encoder4::init();
-
-    uint16_t frequency;
-    float morph;
-    float attackTimeMs;
-    float releaseTimeMs;
-    float e3, e4;
-    bool gate;
-
-    while (true) {
-        {
-            auto values = AdcReader::readAll();
-            attackTimeMs = 2 * values[0] / 127.0f;
-            releaseTimeMs = 2 * values[1] / 127.0f;
-
-            gate = button1::getState();
-            frequency = (float) encoder1::getValue();
-            morph = encoder2::getValue();
-            e3 = encoder3::getValue();
-            e4 = encoder4::getValue();
-        }
-
-        if (gate)
-            synth.gate();
-
-        synth.setFrequency(frequency);
-        morph = morph / 10.0f;
-        synth.setMorph(morph);
-        synth.setAttackTime(attackTimeMs);
-        synth.setReleaseTime(releaseTimeMs);
-
-        miosix::Thread::sleep(20);
-    }
-}
 
 void lcdThreadF()
 {
@@ -150,16 +145,4 @@ void lcdThreadF()
         }
     }
 }
-
-int main() {
-    // Audio Driver and Synth initialization
-    audioDriver.init();
-    audioDriver.setAudioProcessable(synth);
-
-    // Hardware UI Thread
-    std::thread hardwareInterfaceThread(hardwareUIThreadFunction);
-    //std::thread lcdThread(lcdThreadF);
-
-    // Audio Thread
-    audioDriver.start();
-}
+#endif
