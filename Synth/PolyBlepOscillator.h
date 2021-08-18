@@ -77,7 +77,7 @@ public:
     * Process an entire mono AudioBuffer by using a frequency modulator
     * @param buffer
     */
-    void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer
+    void process(AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &buffer,
                  AudioBuffer<float, 1, AUDIO_DRIVER_BUFFER_SIZE> &modulation);
 
     /**
