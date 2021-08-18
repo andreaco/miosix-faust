@@ -1,7 +1,6 @@
 #ifndef MIOSIX_DRUM_SYNTH_H
 #define MIOSIX_DRUM_SYNTH_H
 #include "../audio/audio_processor.h"
-#include "PolyBlepOscillator.h"
 #include "Envelope.h"
 #include "MorphingOscillator.h"
 

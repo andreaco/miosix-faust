@@ -3,7 +3,7 @@
 #include "../audio/audio_processor.h"
 #include "../drivers/common/audio_config.h"
 
-#include "../FaustSynth.h"
+#include "FaustSynth.h"
 
 
 class Faust_AudioProcessor : public AudioProcessor {
