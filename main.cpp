@@ -4,10 +4,10 @@
 #include "drivers/stm32f407vg_discovery/button.h"
 #include "audio/audio_processor.h"
 #include "drivers/stm32f407vg_discovery/adc_reader.h"
-#include "Synth/Synth.h"
+#include "AudioProcessors/Synth.h"
 #include <cstdint>
 #include <thread>
-#include "Synth/Faust_AudioProcessor.h"
+#include "Faust/Faust_AudioProcessor.h"
 
 /**
  * Encoders Pin Definition
@@ -85,7 +85,7 @@ void gate() {
 
 
 int main() {
-    // Audio Driver and Synth initialization
+    // Audio Driver and Faust initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
 

@@ -23,12 +23,6 @@ main.cpp \
 drivers/stm32f407vg_discovery/audio.cpp \
 drivers/stm32f407vg_discovery/cs43l22dac.cpp \
 drivers/stm32f407vg_discovery/adc_reader.cpp \
-Synth/Synth.cpp\
-Synth/PolyBlepOscillator.cpp \
-Synth/Envelope.cpp \
-midi/midiXparser.cpp \
-midi/midi.cpp \
-
 ##
 ## List here additional static libraries with relative path
 ##
