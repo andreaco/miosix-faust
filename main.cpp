@@ -7,7 +7,7 @@
 #include "AudioProcessors/Synth.h"
 #include <cstdint>
 #include <thread>
-#include "Faust/Faust_AudioProcessor.h"
+#include "Faust/FaustAudioProcessor.h"
 
 /**
  * Encoders Pin Definition
