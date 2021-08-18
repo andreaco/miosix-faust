@@ -10,7 +10,8 @@
 /**
  * Sample rate of the DAC.
  */
-#define AUDIO_DRIVER_SAMPLE_RATE 44100
+//TODO: FIX to faust precomputed SR
+#define AUDIO_DRIVER_SAMPLE_RATE 48000
 
 /**
  * Size of the stereo DAC buffer.
