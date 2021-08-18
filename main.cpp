@@ -39,6 +39,9 @@ typedef Button<GPIOD_BASE, 3> button4;
 AudioDriver audioDriver;
 Faust_AudioProcessor synth(audioDriver);
 
+/**
+ * Slider UI Thread Function
+ */
 void sliderUI()
 {
     slider1::init();
@@ -102,16 +105,6 @@ void buttonUI()
     }
 }
 
-void gate()
-{
-    while (true)
-    {
-        synth.gateOn();
-        miosix::Thread::sleep(100);
-        synth.gateOff();
-        miosix::Thread::sleep(500);
-    }
-}
 
 
 int main()
