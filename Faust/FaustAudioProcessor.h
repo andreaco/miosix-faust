@@ -16,13 +16,6 @@ public:
 
         synth.init(currentSampleRate); // initializing the Faust module
         synth.buildUserInterface(&control); // linking the Faust module to the controler
-
-        // setting default values for the Faust module parameters
-        control.setParamValue("/FaustSynth/freq",440);
-        control.setParamValue("/FaustSynth/gain",1);
-        control.setParamValue("/FaustSynth/gate", 1);
-        control.setParamValue("/FaustSynth/A", 0.01);
-        control.setParamValue("/FaustSynth/R", 1.4);
     }
 
     void process() override
