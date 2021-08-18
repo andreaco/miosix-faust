@@ -3,9 +3,21 @@
 #include <miosix.h>
 #include "drivers/stm32f407vg_discovery/utility.h"
 
+/**
+ * /**
+ * Templated static class that allows to initialize
+ * and get the state of an encoder at any given time
+ * @tparam TIM_BASE Timer to be used
+ * @tparam GPIO_BASE GPIO base for pin 1 and 2
+ * @tparam PIN1 Pin 1
+ * @tparam PIN2 Pin 2
+ */
 template <uint32_t TIM_BASE, uint32_t GPIO_BASE, int PIN1, int PIN2>
 class Encoder {
 public:
+    /**
+     * Function to be called to initialize the static class
+     */
     static void init()
     {
         TIM_TypeDef* TIM = (TIM_TypeDef*) TIM_BASE;
@@ -13,12 +25,13 @@ public:
 
         {
             miosix::FastInterruptDisableLock dLock;
+
             // GPIO Setup
             GPIOUtility::enableRCC(GPIO);
             GPIO->MODER |= (2 << PIN1 * 2); // TIM Mode
             GPIO->MODER |= (2 << PIN2 * 2); // TIM Mode
 
-
+            // Set Alternate Function RegisterS
             uint8_t AFR = TIMUtility::getAFR(TIM);
             GPIO->AFR[PIN1 / 8] |= (AFR << (PIN1 % 8) * 4);
             GPIO->AFR[PIN2 / 8] |= (AFR << (PIN2 % 8) * 4);
@@ -34,13 +47,18 @@ public:
             TIM->CCER |= ~(TIM_CCER_CC1P | TIM_CCER_CC2P);
             TIM->SMCR |= TIM_SMCR_SMS_0 | TIM_SMCR_SMS_1;
 
+            // filtering
+            TIM->CCMR1 |= (3 << 4);
 
-            TIM->CCMR1 |= (3 << 4); // filtering
-
+            // Enable
             TIM->CR1 |= TIM_CR1_CEN;
         }
     }
 
+    /**
+     * Get the current value held by the encoder
+     * @return Current value
+     */
     static int getValue()
     {
         {
@@ -70,5 +88,4 @@ template <uint32_t GPIO_BASE, int PIN>
 bool Button<GPIO_BASE, PIN>::previousState = false;
 
 */
-
 #endif //MIOSIX_DRUM_ENCODER_H
