@@ -73,10 +73,8 @@ void encoderUI()
 
     while (true)
     {
-        synth.setFrequency(440+encoder1::getValue());
-        synth.setRatio(encoder2::getValue()/100.0f);
-        encoder3::getValue();
-        encoder4::getValue();
+        synth.setFrequency(880*encoder1::getValue());
+        synth.setRatio(encoder2::getValue()*100.0f);
         miosix::Thread::sleep(50);
     }
 }
