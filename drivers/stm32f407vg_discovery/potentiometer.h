@@ -5,7 +5,25 @@
 #include "../common/hw_config.h"
 #include "utility.h"
 
+#if ADC_RESOLUTION == 0
+    #define ADC_MAX_VALUE 4096.0f
+#elif ADC_RESOLUTION == 1
+    #define ADC_MAX_VALUE 1024.0f
+#elif ADC_RESOLUTION == 2
+    #define ADC_MAX_VALUE 256.0f
+#elif ADC_RESOLUTION == 3
+    #define ADC_MAX_VALUE 64.0f
+#else
+    #error ADC_RESOLUTION not valid!
+#endif
 
+/**
+ * Templated static class that allows to initialize
+ * and get the state of an ADC channel from a pin at any given time
+ * @tparam GPIO_BASE GPIO base for ADC pin
+ * @tparam PIN GPIO pin to be used as ADC input
+ * @tparam ADC_CHANNEL ADC channel related to the pin (See Datasheet)
+ */
 template <uint32_t GPIO_BASE, uint16_t PIN, uint8_t ADC_CHANNEL>
 class Potentiometer
 {
@@ -31,8 +49,7 @@ public:
 
             // Resolution
             ADC1->CR1 |= (1 << 8);  // Scan Mode
-            ADC1->CR1 |= (2 << 24); // 8-bit resolution
-            //ADC1->CR1 |= (0 << 24); // 12-bit resolution
+            ADC1->CR1 |= (ADC_RESOLUTION << 24); // 8-bit resolution
 
             // Data Alignment
             ADC1->CR2 &= ~(1 << 11); // Left aligned
@@ -58,18 +75,20 @@ public:
 
     /**
      * Read values from the ADC and update the current state
+     * @return Data read from the ADC channel, averaged to filter out some noise
      */
-    static uint16_t read()
+    static float read()
     {
-        uint32_t result = 0;
+        // Averaging
+        float result = 0;
         for (int i = 0; i < ADC_AVG_SAMPLES; ++i)
         {
             miosix::FastInterruptDisableLock dLock;
             result += readChannel();
         }
-        result = result / (float) ADC_AVG_SAMPLES;
-
-        return result >> 1;
+        result /= (float) ADC_AVG_SAMPLES;
+        result /= ADC_MAX_VALUE;
+        return result;
     }
 
 private:
@@ -97,7 +116,7 @@ private:
         while (!(ADC1->SR & (1<<1)));
 
         //Extract val from DataRegister
-        return  (ADC1->DR) ;
+        return  (ADC1->DR);
     }
 
     /**
