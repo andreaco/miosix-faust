@@ -4,8 +4,6 @@
 #include "PolyBlepOscillator.h"
 #include "Envelope.h"
 #include "MorphingOscillator.h"
-#include "../drivers/stm32f407vg_discovery/encoder.h"
-#include "../drivers/stm32f407vg_discovery/button.h"
 
 #define CONTROL_RATE 10
 class Synth : public AudioProcessor {
