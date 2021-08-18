@@ -4,7 +4,6 @@
 #include "drivers/stm32f407vg_discovery/utility.h"
 
 /**
- * /**
  * Templated static class that allows to initialize
  * and get the state of an encoder at any given time
  * @tparam TIM_BASE Timer to be used
@@ -86,6 +85,5 @@ private:
 /*
 template <uint32_t GPIO_BASE, int PIN>
 bool Button<GPIO_BASE, PIN>::previousState = false;
-
 */
 #endif //MIOSIX_DRUM_ENCODER_H
