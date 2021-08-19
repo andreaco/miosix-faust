@@ -51,10 +51,10 @@ void sliderUI()
 
     while (true)
     {
-        slider1::read();
-        slider2::read();
-        slider3::read();
-        slider4::read();
+        synth.setSlider1(slider1::read());
+        synth.setSlider2(slider2::read());
+        synth.setSlider3(slider3::read());
+        synth.setSlider4(slider4::read());
         miosix::Thread::sleep(200);
     }
 
@@ -73,8 +73,11 @@ void encoderUI()
 
     while (true)
     {
-        synth.setFrequency(880*encoder1::getValue());
-        synth.setRatio(encoder2::getValue()*100.0f);
+        synth.setEncoder1(encoder1::getValue());
+        synth.setEncoder2(encoder2::getValue());
+        synth.setEncoder3(encoder3::getValue());
+        synth.setEncoder4(encoder4::getValue());
+
         miosix::Thread::sleep(50);
     }
 }

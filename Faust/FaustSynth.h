@@ -7,12 +7,7 @@ Compilation options: -a arch.cpp -lang cpp -es 1 -single -ftz 0
 #ifndef  __FaustSynth_H__
 #define  __FaustSynth_H__
 
-// Music 256a / CS 476a | fall 2016
-// CCRMA, Stanford University
-//
 // Author: Romain Michon (rmichonATccrmaDOTstanfordDOTedu)
-// Description: Simple Faust architecture file to easily integrate a Faust DSP module
-// in a JUCE project
 
 // needed by any Faust arch file
 /************************** BEGIN misc.h **************************/

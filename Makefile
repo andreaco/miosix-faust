@@ -13,7 +13,9 @@ include $(CONFPATH)/config/Makefile.inc
 ##
 ## List here subdirectories which contains makefiles
 ##
-SUBDIRS := $(KPATH)
+SUBDIRS :=\
+$(KPATH) \
+Faust/
 
 ##
 ## List here your source files (both .s, .c and .cpp)
