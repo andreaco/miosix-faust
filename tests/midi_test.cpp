@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "midi_test_data.h"
-#include "../midi/midi.h"
+#include "../midi/old/midi.h"
 #include "../containers/circular_buffer.h"
 #include <algorithm>
 #include <array>
