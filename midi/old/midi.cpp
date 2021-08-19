@@ -1,7 +1,7 @@
 
 #include "midi.h"
 #include "midiXparser.h"
-#include "../audio/audio_math.h"
+#include "audio/audio_math.h"
 #include <array>
 #include <algorithm>
 #include <functional>

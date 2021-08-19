@@ -5,7 +5,7 @@
 #include "midiXparser.h"
 #include <array>
 #include <list>
-#include "../containers/circular_buffer.h"
+#include "containers/circular_buffer.h"
 
 /**
  * Maximum size of the MidiMessage buffer.
