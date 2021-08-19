@@ -7,6 +7,8 @@
 #include "drivers/stm32f407vg_discovery/potentiometer.h"
 #include "audio/audio_processor.h"
 #include "Faust/FaustAudioProcessor.h"
+#include "drivers/stm32f407vg_discovery/midi_in.h"
+#include "midi/midi_parser.h"
 
 /**
  * ADC Pin Definition
@@ -38,6 +40,11 @@ typedef Button<GPIOD_BASE, 3> button4;
  */
 AudioDriver audioDriver;
 Faust_AudioProcessor synth(audioDriver);
+
+/**
+ * Midi Parser declaration and initialization
+ */
+static MidiParser midiParser;
 
 /**
  * Slider UI Thread Function
@@ -95,10 +102,7 @@ void buttonUI()
 
     while (true)
     {
-        if(button1::getState())
-            synth.gateOn();
-        else
-            synth.gateOff();
+        button1::getState();
         button2::getState();
         button3::getState();
         button4::getState();
@@ -107,6 +111,36 @@ void buttonUI()
 }
 
 
+void midiParsing()
+{
+    MidiIn midiIn;
+
+    uint8_t status;
+    uint8_t byte;
+    while(true)
+    {
+        uint8_t status = midiIn.read(&byte);
+        if(status > 0)
+            midiParser.parseByte(byte);
+    }
+}
+
+void midiProcessing()
+{
+    while(true)
+    {
+        if (midiParser.isNoteAvaiable())
+        {
+            MidiNote note = midiParser.popNote();
+            if (note.msgType == MidiNote::NOTE_ON)
+                synth.gateOn();
+            else
+                synth.gateOff();
+        }
+        miosix::Thread::sleep(20);
+    }
+
+}
 
 int main()
 {
@@ -114,13 +148,14 @@ int main()
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
 
-    // Hardware UI Thread
+    // Hardware UI Threads
     std::thread encoderUIThread(encoderUI);
     std::thread buttonUIThread(buttonUI);
     std::thread sliderUIThread(sliderUI);
 
-    // Debug Thread
-    //std::thread gateThread(gate);
+    // MIDI Threads
+    std::thread midiParsingThread(midiParsing);
+    std::thread midiProcessingThread(midiProcessing);
 
     // Audio Thread
     audioDriver.start();
