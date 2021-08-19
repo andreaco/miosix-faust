@@ -22,5 +22,13 @@
  */
 #define ADC_RESOLUTION (2)
 
+/**
+ * For STM32F407VG
+ * (1): USART1: tx=PA9  rx=PA10 cts=PA11 rts=PA12
+ * (2): USART2: tx=PA2  rx=PA3  cts=PA0  rts=PA1
+ * (3): USART3: tx=PB10 rx=PB11 cts=PB13 rts=PB14
+ */
+#define MIDI_SERIAL_ID 1
+
 
 #endif //MIOSIX_AUDIO_HW_CONFIG_H
