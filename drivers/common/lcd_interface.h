@@ -3,11 +3,13 @@
 #include "miosix.h"
 #include <util/lcd44780.h>
 
-namespace LCDUtils {
+namespace LCDUtils
+{
     /**
      * Struct used to hold and map strings and int values displayed by LCD
      */
-    struct LCDParameter {
+    struct LCDParameter
+    {
         LCDParameter() : name(""), value(0) {}
         std::string name;
         int value;
@@ -16,7 +18,8 @@ namespace LCDUtils {
     /**
      * Struct containing a single page to be displayed by the LCD
      */
-    struct LCDPage {
+    struct LCDPage
+    {
         LCDParameter p[4];
     };
 
