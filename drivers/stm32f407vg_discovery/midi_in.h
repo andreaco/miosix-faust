@@ -23,11 +23,7 @@ public:
      * @param byte to be read from the serial port
      * @return number of bytes read (1 in our case) if some error happened it returns -1 instead
      */
-    inline uint8_t read(uint8_t* byte)
-    {
-        uint8_t status = serialPort.readBlock(byte, 1, 0);
-        return status;
-    }
+    uint8_t read(uint8_t* byte);
 
 private:
 

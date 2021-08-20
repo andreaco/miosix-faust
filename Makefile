@@ -24,8 +24,10 @@ SRC := \
 main.cpp \
 drivers/stm32f407vg_discovery/audio.cpp \
 drivers/stm32f407vg_discovery/cs43l22dac.cpp \
+drivers/stm32f407vg_discovery/midi_in.cpp \
 drivers/common/lcd_interface.cpp \
-midi/midi_parser.cpp
+midi/midi_parser.cpp \
+
 
 ##
 ## List here additional static libraries with relative path
