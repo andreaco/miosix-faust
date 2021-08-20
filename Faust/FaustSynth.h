@@ -794,6 +794,9 @@ static FaustSynthSIG0* newFaustSynthSIG0() { return (FaustSynthSIG0*)new FaustSy
 static void deleteFaustSynthSIG0(FaustSynthSIG0* dsp) { delete dsp; }
 
 static float ftbl0FaustSynthSIG0[257];
+static float FaustSynth_faustpower2_f(float value) {
+	return (value * value);
+}
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS FaustSynth
@@ -808,20 +811,21 @@ class FaustSynth : public dsp {
 	
  private:
 	
+	FAUSTFLOAT fHslider0;
+	FAUSTFLOAT fHslider1;
 	FAUSTFLOAT fButton0;
 	int iVec0[2];
-	FAUSTFLOAT fHslider0;
-	int iRec1[2];
-	FAUSTFLOAT fHslider1;
 	FAUSTFLOAT fHslider2;
+	int iRec1[2];
 	FAUSTFLOAT fHslider3;
+	FAUSTFLOAT fHslider4;
+	FAUSTFLOAT fHslider5;
 	float fRec0[2];
 	FAUSTFLOAT fEntry0;
-	FAUSTFLOAT fHslider4;
-	FAUSTFLOAT fEntry1;
-	FAUSTFLOAT fHslider5;
-	float fRec6[2];
 	FAUSTFLOAT fHslider6;
+	FAUSTFLOAT fHslider7;
+	float fRec6[2];
+	FAUSTFLOAT fHslider8;
 	float fRec7[2];
 	float fRec5[2];
 	float fRec4[2];
@@ -831,27 +835,82 @@ class FaustSynth : public dsp {
  public:
 	
 	void metadata(Meta* m) { 
+		m->declare("aanl.lib/name", "Antialiased nonlinearities");
+		m->declare("aanl.lib/version", "0.1");
+		m->declare("analyzers.lib/name", "Faust Analyzer Library");
+		m->declare("analyzers.lib/version", "0.1");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
 		m->declare("basics.lib/version", "0.2");
 		m->declare("compile_options", "-a arch.cpp -lang cpp -es 1 -single -ftz 0");
+		m->declare("compressors.lib/name", "Faust Compressor Effect Library");
+		m->declare("compressors.lib/version", "0.1");
+		m->declare("delays.lib/name", "Faust Delay Library");
+		m->declare("delays.lib/version", "0.1");
 		m->declare("envelopes.lib/author", "GRAME");
 		m->declare("envelopes.lib/copyright", "GRAME");
 		m->declare("envelopes.lib/license", "LGPL with exception");
 		m->declare("envelopes.lib/name", "Faust Envelope Library");
 		m->declare("envelopes.lib/version", "0.1");
+		m->declare("fds.lib/author", "Romain Michon");
+		m->declare("fds.lib/name", "Faust Finite Difference Schemes Library");
+		m->declare("fds.lib/version", "0.0");
 		m->declare("filename", "FaustSynth.dsp");
+		m->declare("filters.lib/lowpass0_highpass1", "MIT-style STK-4.3 license");
+		m->declare("filters.lib/name", "Faust Filters Library");
+		m->declare("filters.lib/version", "0.3");
+		m->declare("hoa.lib/author", "Pierre Guillot");
+		m->declare("hoa.lib/copyright", "2012-2013 Guillot, Paris, Colafrancesco, CICM labex art H2H, U. Paris 8, 2019 Wargreen");
+		m->declare("hoa.lib/name", "High Order Ambisonics library");
+		m->declare("interpolators.lib/name", "Faust Interpolator Library");
+		m->declare("interpolators.lib/version", "0.3");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.4");
+		m->declare("mi.lib/author", "James Leonard");
+		m->declare("mi.lib/copyright", "2018-2020 GRAME / GIPSA-Lab");
+		m->declare("mi.lib/name", "Faust mass-interaction physical modelling library");
+		m->declare("mi.lib/version", "0.0");
+		m->declare("misceffects.lib/name", "Misc Effects Library");
+		m->declare("misceffects.lib/version", "2.0");
 		m->declare("name", "FaustSynth");
+		m->declare("noises.lib/name", "Faust Noise Generator Library");
+		m->declare("noises.lib/version", "0.0");
 		m->declare("oscillators.lib/name", "Faust Oscillator Library");
 		m->declare("oscillators.lib/version", "0.1");
+		m->declare("phaflangers.lib/name", "Faust Phaser and Flanger Library");
+		m->declare("phaflangers.lib/version", "0.0");
 		m->declare("platform.lib/name", "Embedded Platform Library");
 		m->declare("platform.lib/version", "0.1");
+		m->declare("quantizers.lib/name", "Faust Frequency Quantization Library");
+		m->declare("quantizers.lib/version", "0.1");
+		m->declare("reducemaps.lib/author", "Yann Orlarey (orlarey at grame.fr)");
+		m->declare("reducemaps.lib/copyright", "Grame");
+		m->declare("reducemaps.lib/license", "LGPL with exception");
+		m->declare("reducemaps.lib/name", "Reduce Library");
+		m->declare("reducemaps.lib/version", "0.1");
+		m->declare("reverbs.lib/name", "Faust Reverb Library");
+		m->declare("reverbs.lib/version", "0.2");
+		m->declare("routes.lib/name", "Faust Signal Routing Library");
+		m->declare("routes.lib/version", "0.2");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
 		m->declare("signals.lib/version", "0.0");
+		m->declare("soundfiles.lib/name", "Faust Soundfile Library");
+		m->declare("soundfiles.lib/version", "0.7");
+		m->declare("spats.lib/name", "Faust Spatialization Library");
+		m->declare("spats.lib/version", "0.0");
+		m->declare("synths.lib/name", "Faust Synthesizer Library");
+		m->declare("synths.lib/version", "0.0");
+		m->declare("vaeffects.lib/name", "Faust Virtual Analog Filter Effect Library");
+		m->declare("vaeffects.lib/version", "0.0");
+		m->declare("wdmodels.lib/name", "Faust Wave Digital Model Library");
+		m->declare("wdmodels.lib/version", "0.2.0");
+		m->declare("webaudio.lib/author", "GRAME");
+		m->declare("webaudio.lib/copyright", "GRAME");
+		m->declare("webaudio.lib/license", "LGPL with exception");
+		m->declare("webaudio.lib/name", "WebAudio Filters Library");
+		m->declare("webaudio.lib/version", "0.1");
 	}
 
 	virtual int getNumInputs() {
@@ -873,16 +932,17 @@ class FaustSynth : public dsp {
 	}
 	
 	virtual void instanceResetUserInterface() {
+		fHslider0 = FAUSTFLOAT(3.0f);
+		fHslider1 = FAUSTFLOAT(12.0f);
 		fButton0 = FAUSTFLOAT(0.0f);
-		fHslider0 = FAUSTFLOAT(0.80000000000000004f);
-		fHslider1 = FAUSTFLOAT(0.01f);
-		fHslider2 = FAUSTFLOAT(0.59999999999999998f);
-		fHslider3 = FAUSTFLOAT(0.20000000000000001f);
+		fHslider2 = FAUSTFLOAT(0.80000000000000004f);
+		fHslider3 = FAUSTFLOAT(0.01f);
+		fHslider4 = FAUSTFLOAT(0.59999999999999998f);
+		fHslider5 = FAUSTFLOAT(0.20000000000000001f);
 		fEntry0 = FAUSTFLOAT(440.0f);
-		fHslider4 = FAUSTFLOAT(0.0f);
-		fEntry1 = FAUSTFLOAT(1.0f);
-		fHslider5 = FAUSTFLOAT(0.0f);
-		fHslider6 = FAUSTFLOAT(2.0f);
+		fHslider6 = FAUSTFLOAT(0.0f);
+		fHslider7 = FAUSTFLOAT(0.0f);
+		fHslider8 = FAUSTFLOAT(2.0f);
 	}
 	
 	virtual void instanceClear() {
@@ -932,65 +992,72 @@ class FaustSynth : public dsp {
 	
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("FaustSynth");
-		ui_interface->declare(&fHslider1, "midi", "ctrl 73");
-		ui_interface->addHorizontalSlider("A", &fHslider1, 0.00999999978f, 0.00999999978f, 4.0f, 0.00999999978f);
-		ui_interface->declare(&fHslider2, "midi", "ctrl 76");
-		ui_interface->addHorizontalSlider("D", &fHslider2, 0.600000024f, 0.00999999978f, 8.0f, 0.00999999978f);
-		ui_interface->declare(&fHslider0, "midi", "ctrl 72");
-		ui_interface->addHorizontalSlider("R", &fHslider0, 0.800000012f, 0.00999999978f, 8.0f, 0.00999999978f);
-		ui_interface->declare(&fHslider3, "midi", "ctrl 77");
-		ui_interface->addHorizontalSlider("S", &fHslider3, 0.200000003f, 0.0f, 1.0f, 0.00999999978f);
-		ui_interface->declare(&fHslider4, "midi", "pitchwheel");
-		ui_interface->addHorizontalSlider("bend", &fHslider4, 0.0f, -2.0f, 2.0f, 0.00999999978f);
-		ui_interface->declare(&fHslider5, "midi", "ctrl 1");
-		ui_interface->addHorizontalSlider("feedb", &fHslider5, 0.0f, 0.0f, 1.0f, 0.00100000005f);
+		ui_interface->declare(&fHslider3, "midi", "ctrl 73");
+		ui_interface->addHorizontalSlider("A", &fHslider3, 0.00999999978f, 0.00999999978f, 4.0f, 0.00999999978f);
+		ui_interface->declare(&fHslider4, "midi", "ctrl 76");
+		ui_interface->addHorizontalSlider("D", &fHslider4, 0.600000024f, 0.00999999978f, 8.0f, 0.00999999978f);
+		ui_interface->declare(&fHslider2, "midi", "ctrl 72");
+		ui_interface->addHorizontalSlider("R", &fHslider2, 0.800000012f, 0.00999999978f, 8.0f, 0.00999999978f);
+		ui_interface->declare(&fHslider5, "midi", "ctrl 77");
+		ui_interface->addHorizontalSlider("S", &fHslider5, 0.200000003f, 0.0f, 1.0f, 0.00999999978f);
+		ui_interface->declare(&fHslider6, "midi", "pitchwheel");
+		ui_interface->addHorizontalSlider("bend", &fHslider6, 0.0f, -2.0f, 2.0f, 0.00999999978f);
+		ui_interface->addHorizontalSlider("distortion", &fHslider1, 12.0f, 0.0f, 100.0f, 0.100000001f);
+		ui_interface->declare(&fHslider7, "midi", "ctrl 1");
+		ui_interface->addHorizontalSlider("feedb", &fHslider7, 0.0f, 0.0f, 1.0f, 0.00100000005f);
 		ui_interface->declare(&fEntry0, "unit", "Hz");
 		ui_interface->addNumEntry("freq", &fEntry0, 440.0f, 20.0f, 20000.0f, 1.0f);
-		ui_interface->addNumEntry("gain", &fEntry1, 1.0f, 0.0f, 1.0f, 0.00999999978f);
+		ui_interface->addHorizontalSlider("gain", &fHslider0, 3.0f, -96.0f, 96.0f, 0.100000001f);
 		ui_interface->addButton("gate", &fButton0);
-		ui_interface->declare(&fHslider6, "midi", "ctrl 14");
-		ui_interface->addHorizontalSlider("ratio", &fHslider6, 2.0f, 0.0f, 20.0f, 0.00999999978f);
+		ui_interface->declare(&fHslider8, "midi", "ctrl 14");
+		ui_interface->addHorizontalSlider("ratio", &fHslider8, 2.0f, 0.0f, 20.0f, 0.00999999978f);
 		ui_interface->closeBox();
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) {
 		FAUSTFLOAT* output0 = outputs[0];
-		int iSlow0 = (float(fButton0) > 0.0f);
-		int iSlow1 = iSlow0;
-		float fSlow2 = float(fHslider0);
-		float fSlow3 = float(fHslider1);
-		int iSlow4 = int((48000.0f * fSlow3));
-		float fSlow5 = float(fHslider2);
-		float fSlow6 = float(iSlow0);
-		float fSlow7 = (float(fHslider3) * fSlow6);
-		float fSlow8 = (float(fEntry0) * std::pow(2.0f, (0.0833333358f * float(fHslider4))));
-		float fSlow9 = (1000.0f * float(fEntry1));
-		float fSlow10 = (fSlow8 + -1.0f);
-		float fSlow11 = (0.000918750011f * float(fHslider5));
-		float fSlow12 = (0.000918750011f * float(fHslider6));
+		float fSlow0 = float(fHslider1);
+		float fSlow1 = (std::pow(10.0f, (0.0500000007f * float(fHslider0))) / std::sqrt((fSlow0 + 1.0f)));
+		int iSlow2 = (float(fButton0) > 0.0f);
+		int iSlow3 = iSlow2;
+		float fSlow4 = float(fHslider2);
+		float fSlow5 = float(fHslider3);
+		int iSlow6 = int((48000.0f * fSlow5));
+		float fSlow7 = float(fHslider4);
+		float fSlow8 = float(iSlow2);
+		float fSlow9 = (float(fHslider5) * fSlow8);
+		float fSlow10 = (float(fEntry0) * std::pow(2.0f, (0.0833333358f * float(fHslider6))));
+		float fSlow11 = (fSlow10 + -1.0f);
+		float fSlow12 = (0.000918750011f * float(fHslider7));
+		float fSlow13 = (0.000918750011f * float(fHslider8));
+		float fSlow14 = std::pow(10.0f, (0.0500000007f * fSlow0));
+		float fSlow15 = (fSlow14 + -1.0f);
 		for (int i0 = 0; (i0 < count); i0 = (i0 + 1)) {
-			iVec0[0] = iSlow0;
-			iRec1[0] = (iSlow0 * (iRec1[1] + 1));
-			int iTemp0 = (iSlow0 - iVec0[1]);
-			int iTemp1 = ((iRec1[0] < iSlow4) | (iTemp0 * (iTemp0 > 0)));
-			float fTemp2 = (0.144717798f * (iSlow1 ? (iTemp1 ? fSlow3 : fSlow5) : fSlow2));
+			iVec0[0] = iSlow2;
+			iRec1[0] = (iSlow2 * (iRec1[1] + 1));
+			int iTemp0 = (iSlow2 - iVec0[1]);
+			int iTemp1 = ((iRec1[0] < iSlow6) | (iTemp0 * (iTemp0 > 0)));
+			float fTemp2 = (0.144717798f * (iSlow3 ? (iTemp1 ? fSlow5 : fSlow7) : fSlow4));
 			int iTemp3 = (std::fabs(fTemp2) < 1.1920929e-07f);
 			float fTemp4 = (iTemp3 ? 0.0f : std::exp((0.0f - (2.08333331e-05f / (iTemp3 ? 1.0f : fTemp2)))));
-			fRec0[0] = ((fRec0[1] * fTemp4) + ((iSlow1 ? (iTemp1 ? fSlow6 : fSlow7) : 0.0f) * (1.0f - fTemp4)));
-			fRec6[0] = (fSlow11 + (0.999081254f * fRec6[1]));
-			fRec7[0] = (fSlow12 + (0.999081254f * fRec7[1]));
-			float fTemp5 = (fRec5[1] + (2.08333331e-05f * ((fSlow10 * (fRec6[0] * fRec4[1])) + (fSlow8 * fRec7[0]))));
+			fRec0[0] = ((fRec0[1] * fTemp4) + ((iSlow3 ? (iTemp1 ? fSlow8 : fSlow9) : 0.0f) * (1.0f - fTemp4)));
+			fRec6[0] = (fSlow12 + (0.999081254f * fRec6[1]));
+			fRec7[0] = (fSlow13 + (0.999081254f * fRec7[1]));
+			float fTemp5 = (fRec5[1] + (2.08333331e-05f * ((fSlow11 * (fRec6[0] * fRec4[1])) + (fSlow10 * fRec7[0]))));
 			fRec5[0] = (fTemp5 - std::floor(fTemp5));
 			float fTemp6 = (256.0f * fRec5[0]);
 			int iTemp7 = int(fTemp6);
 			float fTemp8 = ftbl0FaustSynthSIG0[iTemp7];
 			fRec4[0] = (fTemp8 + ((fTemp6 - std::floor(fTemp6)) * (ftbl0FaustSynthSIG0[(iTemp7 + 1)] - fTemp8)));
-			float fTemp9 = (fRec3[1] + (2.08333331e-05f * (fSlow8 + (fSlow9 * (fRec0[0] * fRec4[0])))));
+			float fTemp9 = (fRec3[1] + (2.08333331e-05f * (fSlow10 + (1000.0f * (fRec0[0] * fRec4[0])))));
 			fRec3[0] = (fTemp9 - std::floor(fTemp9));
 			float fTemp10 = (256.0f * fRec3[0]);
 			int iTemp11 = int(fTemp10);
 			float fTemp12 = ftbl0FaustSynthSIG0[iTemp11];
-			output0[i0] = FAUSTFLOAT((fRec0[0] * (fTemp12 + ((fTemp10 - std::floor(fTemp10)) * (ftbl0FaustSynthSIG0[(iTemp11 + 1)] - fTemp12)))));
+			float fTemp13 = (fTemp12 + ((fTemp10 - std::floor(fTemp10)) * (ftbl0FaustSynthSIG0[(iTemp11 + 1)] - fTemp12)));
+			float fTemp14 = (fRec0[0] * fTemp13);
+			float fTemp15 = std::fabs(fTemp14);
+			output0[i0] = FAUSTFLOAT((fSlow1 * ((fTemp14 * (fSlow14 + fTemp15)) / (((FaustSynth_faustpower2_f(fRec0[0]) * FaustSynth_faustpower2_f(fTemp13)) + (fSlow15 * fTemp15)) + 1.0f))));
 			iVec0[1] = iVec0[0];
 			iRec1[1] = iRec1[0];
 			fRec0[1] = fRec0[0];

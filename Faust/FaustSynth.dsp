@@ -1,9 +1,27 @@
-import("stdfaust.lib");
+
+import("all.lib");
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Simple FM synthesizer.
+// 2 oscillators and FM feedback on modulant oscillator
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// MIDI IMPLEMENTATION:
+//
+// CC 1 : FM feedback on modulant oscillator.
+// CC 14 : Modulator frequency ratio.
+//
+// CC 73 : Attack
+// CC 76 : Decay
+// CC 77 : Sustain
+// CC 72 : Release
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // GENERAL, Keyboard
 midigate = button("gate");
 midifreq = nentry("freq[unit:Hz]", 440, 20, 20000, 1);
-midigain = nentry("gain", 1, 0, 1, 0.01);
 
 // modwheel:
 feedb = (gFreq-1) * (hslider("feedb[midi:ctrl 1]", 0, 0, 1, 0.001) : si.smoo);
@@ -27,14 +45,26 @@ envelop = en.adsre(volA,volD,volS,volR,midigate);
 modFreq = gFreq*modFreqRatio;
 
 // modulation index
-FMdepth = envelop * 1000 * midigain;
+FMdepth = envelop * 1000;
 
 // Out amplitude
 vol = envelop;
 
 //============================================ DSP =======================================
 //========================================================================================
+
 FMfeedback(frq) = (+(_,frq):os.osci) ~ (*(feedb));
 FMall(f) = os.osci(f + (FMdepth*FMfeedback(f*modFreqRatio)));
 
-process = FMall(gFreq) * vol;
+dist	= hslider("distortion", 12, 0, 100, 0.1);	// distortion parameter
+gain	= hslider("gain", 3, -96, 96, 0.1);		// output gain (dB)
+
+// the waveshaping function
+f(a,x)	= x*(abs(x) + a)/(x*x + (a-1)*abs(x) + 1);
+
+// gain correction factor to compensate for distortion
+g(a)	= 1/sqrt(a+1);
+
+
+process = db2linear(gain)*g(dist)*f(db2linear(dist), FMall(gFreq) * vol);
+

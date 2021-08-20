@@ -37,12 +37,12 @@
 #define ENCODER2_MIN 0.0f
 #define ENCODER2_MAX 20.0f
 
-#define ENCODER3_NAME "/FaustSynth/bend"
-#define ENCODER3_MIN -2.0f
-#define ENCODER3_MAX +2.0f
+#define ENCODER3_NAME "/FaustSynth/distortion"
+#define ENCODER3_MIN 0.0f
+#define ENCODER3_MAX 100.0f
 
-#define ENCODER4_NAME "/FaustSynth/feedb"
+#define ENCODER4_NAME "/FaustSynth/gain"
 #define ENCODER4_MIN 0.0f
-#define ENCODER4_MAX 1.0f
+#define ENCODER4_MAX +96.0f
 
 #endif //MIOSIX_DRUM_PARAMETER_CONFIG_H
