@@ -9,14 +9,25 @@
 #include "Faust/FaustAudioProcessor.h"
 #include "drivers/stm32f407vg_discovery/midi_in.h"
 #include "midi/midi_parser.h"
+#include "lcd_interface.h"
+#include <util/lcd44780.h>
 
 /**
- * ADC Pin Definition
+ * LCD Pin Definition
  */
-typedef Potentiometer<GPIOA_BASE, 2, 2> slider1;
-typedef Potentiometer<GPIOA_BASE, 5, 5> slider2;
-typedef Potentiometer<GPIOA_BASE, 6, 6> slider3;
-typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
+typedef miosix::Gpio<GPIOB_BASE, 12> d4;
+typedef miosix::Gpio<GPIOB_BASE, 13> d5;
+typedef miosix::Gpio<GPIOB_BASE, 14> d6;
+typedef miosix::Gpio<GPIOB_BASE, 15> d7;
+typedef miosix::Gpio<GPIOC_BASE, 1> rs;
+typedef miosix::Gpio<GPIOC_BASE, 2> e;
+
+/**
+ * LCD Initialization
+ */
+static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
+                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
+LCDUtils::LCDPage lcdPage;
 
 /**
  * Encoders Pin Definition
@@ -47,6 +58,14 @@ Faust_AudioProcessor synth(audioDriver);
 static MidiParser midiParser;
 
 /**
+ * ADC Pin Definition
+ */
+typedef Potentiometer<GPIOA_BASE, 2, 2> slider1;
+typedef Potentiometer<GPIOA_BASE, 5, 5> slider2;
+typedef Potentiometer<GPIOA_BASE, 6, 6> slider3;
+typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
+
+/**
  * Slider UI Thread Function
  */
 void sliderUI()
@@ -64,7 +83,6 @@ void sliderUI()
         synth.setSlider4(slider4::read());
         miosix::Thread::sleep(200);
     }
-
 }
 
 /**
@@ -80,10 +98,20 @@ void encoderUI()
 
     while (true)
     {
-        synth.setEncoder1(encoder1::getValue());
-        synth.setEncoder2(encoder2::getValue());
-        synth.setEncoder3(encoder3::getValue());
-        synth.setEncoder4(encoder4::getValue());
+        float e1 = encoder1::getValue();
+        float e2 = encoder2::getValue();
+        float e3 = encoder3::getValue();
+        float e4 = encoder4::getValue();
+
+        synth.setEncoder1(e1);
+        synth.setEncoder2(e2);
+        synth.setEncoder3(e3);
+        synth.setEncoder4(e4);
+
+        lcdPage.p[0].value = (int) (e1 * 999);
+        lcdPage.p[1].value = (int) (e2 * 999);
+        lcdPage.p[2].value = (int) (e3 * 999);
+        lcdPage.p[3].value = (int) (e4 * 999);
 
         miosix::Thread::sleep(50);
     }
@@ -107,6 +135,21 @@ void buttonUI()
         button3::getState();
         button4::getState();
         miosix::Thread::sleep(10);
+    }
+}
+
+void lcdUI()
+{
+    lcdPage.p[0].name = "FRQ";
+    lcdPage.p[1].name = "MOD";
+    lcdPage.p[2].name = "FZZ";
+    lcdPage.p[3].name = "GAN";
+
+    while(true) {
+        {
+            LCDUtils::lcdPrintPage(display, lcdPage);
+            miosix::Thread::sleep(250);
+        }
     }
 }
 
@@ -152,6 +195,7 @@ int main()
     std::thread encoderUIThread(encoderUI);
     std::thread buttonUIThread(buttonUI);
     std::thread sliderUIThread(sliderUI);
+    std::thread lcdUIThread(lcdUI);
 
     // MIDI Threads
     std::thread midiParsingThread(midiParsing);
@@ -160,72 +204,3 @@ int main()
     // Audio Thread
     audioDriver.start();
 }
-
-#if 0
-#include <util/lcd44780.h>
-/**
- * LCD Pin Definition
- */
-typedef miosix::Gpio<GPIOB_BASE, 12> d4;
-typedef miosix::Gpio<GPIOB_BASE, 13> d5;
-typedef miosix::Gpio<GPIOB_BASE, 14> d6;
-typedef miosix::Gpio<GPIOB_BASE, 15> d7;
-typedef miosix::Gpio<GPIOC_BASE, 1> rs;
-typedef miosix::Gpio<GPIOC_BASE, 2> e;
-
-/**
- * LCD Initialization
- */
-static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
-                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
-
-struct LCDParameter
-{
-    std::string name;
-    int value;
-};
-
-void lcdPage(miosix::Lcd44780& lcd,
-             LCDParameter& p1,
-             LCDParameter& p2,
-             LCDParameter& p3,
-             LCDParameter& p4)
-{
-    display.go(0, 0);
-    display.printf(" %s %s %s %s",
-                   p1.name.c_str(),
-                   p2.name.c_str(),
-                   p3.name.c_str(),
-                   p4.name.c_str());
-
-    display.go(0, 1);
-    display.printf(" %3d %3d %3d %3d",
-                   p1.value,
-                   p2.value,
-                   p3.value,
-                   p4.value);
-}
-
-
-
-void lcdThreadF()
-{
-    while(true) {
-        {
-            int e1 = 1;
-            int e2 = 2;
-            int e3 = 3;
-            int e4 = 4;
-
-            LCDParameter p1{"En1", (int) e1};
-            LCDParameter p2{"En2", (int) e2};
-            LCDParameter p3{"En3", (int) e3};
-            LCDParameter p4{"En4", (int) e4};
-
-            LCDParameter lp;
-            lcdPage(display, p1, p2, p3, p4);
-            miosix::Thread::sleep(1000);
-        }
-    }
-}
-#endif

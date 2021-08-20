@@ -23,7 +23,8 @@ Faust/
 SRC := \
 main.cpp \
 drivers/stm32f407vg_discovery/audio.cpp \
-drivers/stm32f407vg_discovery/cs43l22dac.cpp
+drivers/stm32f407vg_discovery/cs43l22dac.cpp \
+lcd_interface.cpp
 
 ##
 ## List here additional static libraries with relative path
