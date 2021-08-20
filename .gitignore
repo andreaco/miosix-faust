@@ -20,3 +20,4 @@ miosix/_doc/doxygen/html/*
 miosix.code-workspace
 .vscode/c_cpp_properties.json
 tests/test_main
+compile_commands.json
