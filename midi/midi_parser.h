@@ -56,124 +56,34 @@ public:
      * and removes it from the buffer
      * @return Oldest note from the Note Message Buffer
      */
-    MidiNote popNote()
-    {
-        MidiNote note = noteMessageBuffer.front();
-        noteMessageBuffer.pop();
-        return note;
-    }
+    MidiNote popNote();
 
     /**
      * Get the oldest Control Change from the CC Message Buffer
      * and removes it from the buffer
      * @return Oldest CC message from CC Message Buffer
      */
-    ControlChange popCC()
-    {
-        ControlChange cc = ccMessageBuffer.front();
-        ccMessageBuffer.pop();
-        return cc;
-    }
+    ControlChange popCC();
 
     /**
      * Check whether a new note is available
      * @return true if there are notes in the Note Message Buffer, false otherwise
      */
-    bool isNoteAvaiable()
-    {
-        return !noteMessageBuffer.empty();
-    }
+    bool isNoteAvaiable();
 
     /**
      * Check whether a new CC is available
      * @return
      */
-    bool isCCAvaiable()
-    {
-        return !ccMessageBuffer.empty();
-    }
+    bool isCCAvaiable();
 
     /**
      * Parse a byte at a time and construct the messages to be inserted
      * in their relative queue
      * TODO: Fault management when some byte is dropped
-     * TODO: Add Running Status parsing
      * @param byte Byte extracted from the stream to be parsed
      */
-    void parseByte(uint8_t byte)
-    {
-        uint8_t channel = byte & 0x0f;
-
-        uint8_t message = byte & 0xf0;
-
-        // MIDI Running status Check
-        if (state == STATUS && message < NOTE_OFF_MASK)
-        {
-            if (lastState == NOTE_DATA2)
-                state = NOTE_DATA1;
-            if (lastState == CC_DATA2)
-                state = CC_DATA1;
-        }
-
-        switch(state)
-        {
-            case STATUS:
-            {
-                // Look for note on event on midi channel 0
-                if (message == NOTE_ON_MASK)
-                {
-                    state = NOTE_DATA1;
-                    currentNote.msgType = MidiNote::NOTE_ON;
-                    currentNote.channel = channel;
-                    break;
-                }
-                // Look for a note off event on midi channel 0
-                if (message == NOTE_OFF_MASK)
-                {
-                    state = NOTE_DATA1;
-                    currentNote.msgType = MidiNote::NOTE_OFF;
-                    currentNote.channel = channel;
-                    break;
-                }
-
-                if (message == CC_MASK)
-                {
-                    state = CC_DATA1;
-                    currentCC.channel = channel;
-                    break;
-                }
-
-            }
-            case NOTE_DATA1:
-            {
-                currentNote.note = byte;
-                state = NOTE_DATA2;
-                break;
-
-            }
-            case NOTE_DATA2:
-            {
-                currentNote.velocity = byte;
-                state = STATUS;
-                lastState = NOTE_DATA2;
-                noteMessageBuffer.push(currentNote);
-                break;
-            }
-            case CC_DATA1:
-            {
-                currentCC.controlNumber = byte;
-                state = CC_DATA2;
-                break;
-            }
-            case CC_DATA2:
-            {
-                currentCC.value = byte;
-                state = STATUS;
-                lastState = CC_DATA2;
-                ccMessageBuffer.push(currentCC);
-            }
-        }
-    }
+    void parseByte(uint8_t byte);
 
 private:
     /**
