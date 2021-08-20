@@ -1,33 +1,18 @@
 #include <cstdint>
 #include <thread>
+#include <util/lcd44780.h>
 #include "miosix.h"
 #include "drivers/common/audio.h"
+#include "drivers/common/lcd_interface.h"
 #include "drivers/stm32f407vg_discovery/encoder.h"
 #include "drivers/stm32f407vg_discovery/button.h"
 #include "drivers/stm32f407vg_discovery/potentiometer.h"
 #include "drivers/stm32f407vg_discovery/midi_in.h"
 #include "faust/faust_audio_processor.h"
 #include "midi/midi_parser.h"
-#include "drivers/common/lcd_interface.h"
-#include <util/lcd44780.h>
+#include "config/thread_update_rates.h"
 
-/**
- * LCD Pin Definition
- */
-typedef miosix::Gpio<GPIOB_BASE, 12> d4;
-typedef miosix::Gpio<GPIOB_BASE, 13> d5;
-typedef miosix::Gpio<GPIOB_BASE, 14> d6;
-typedef miosix::Gpio<GPIOB_BASE, 15> d7;
-typedef miosix::Gpio<GPIOC_BASE, 1> rs;
-typedef miosix::Gpio<GPIOC_BASE, 2> e;
 
-/**
- * LCD Initialization
- */
-static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
-                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
-LCDUtils::LCDPage lcdPage;
-miosix::Mutex lcdMutex;
 
 /**
  * Encoders Pin Definition
@@ -45,18 +30,6 @@ typedef Button<GPIOD_BASE, 1> button2;
 typedef Button<GPIOD_BASE, 2> button3;
 typedef Button<GPIOD_BASE, 3> button4;
 
-
-/**
- * Audio Driver and Synthesizer declaration
- */
-AudioDriver audioDriver;
-FaustAudioProcessor synth(audioDriver);
-
-/**
- * Midi Parser declaration and initialization
- */
-static MidiParser midiParser;
-
 /**
  * ADC Pin Definition
  */
@@ -66,10 +39,40 @@ typedef Potentiometer<GPIOA_BASE, 6, 6> slider3;
 typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 
 /**
+ * LCD Pin Definition
+ */
+typedef miosix::Gpio<GPIOB_BASE, 12> d4;
+typedef miosix::Gpio<GPIOB_BASE, 13> d5;
+typedef miosix::Gpio<GPIOB_BASE, 14> d6;
+typedef miosix::Gpio<GPIOB_BASE, 15> d7;
+typedef miosix::Gpio<GPIOC_BASE, 1> rs;
+typedef miosix::Gpio<GPIOC_BASE, 2> e;
+
+/**
+ * Audio Driver and Synthesizer declaration
+ */
+static AudioDriver audioDriver;
+static FaustAudioProcessor synth(audioDriver);
+
+/**
+ * Midi Parser declaration and initialization
+ */
+static MidiParser midiParser;
+
+/**
+ * LCD Initialization, declaration of shared LCDPage and its mutex
+ */
+static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
+                                d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
+LCDUtils::LCDPage lcdPage;
+miosix::Mutex lcdMutex;
+
+/**
  * Slider UI Thread Function
  */
 void sliderUI()
 {
+    // Initialize the sliders
     slider1::init();
     slider2::init();
     slider3::init();
@@ -81,7 +84,7 @@ void sliderUI()
         synth.setSlider2(slider2::read());
         synth.setSlider3(slider3::read());
         synth.setSlider4(slider4::read());
-        miosix::Thread::sleep(200);
+        miosix::Thread::sleep(SLIDER_SLEEP_TIME);
     }
 }
 
@@ -115,7 +118,7 @@ void encoderUI()
             lcdPage.p[2].value = (int) (e3 * 999);
             lcdPage.p[3].value = (int) (e4 * 999);
         }
-        miosix::Thread::sleep(50);
+        miosix::Thread::sleep(ENCODER_SLEEP_TIME);
     }
 }
 
@@ -136,7 +139,7 @@ void buttonUI()
         button2::getState();
         button3::getState();
         button4::getState();
-        miosix::Thread::sleep(10);
+        miosix::Thread::sleep(BUTTON_SLEEP_TIME);
     }
 }
 
@@ -152,7 +155,7 @@ void lcdUI()
         {
             miosix::Lock<miosix::Mutex> l(lcdMutex);
             LCDUtils::lcdPrintPage(display, lcdPage);
-            miosix::Thread::sleep(250);
+            miosix::Thread::sleep(LCD_SLEEP_TIME);
         }
     }
 }
@@ -183,7 +186,7 @@ void midiProcessing()
             else if (note.msgType == MidiNote::NOTE_OFF || note.velocity == 0)
                 synth.gateOff();
         }
-        miosix::Thread::sleep(10);
+        miosix::Thread::sleep(MIDI_SLEEP_TIME);
     }
 
 }
