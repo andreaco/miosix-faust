@@ -5,8 +5,8 @@
 #include "drivers/stm32f407vg_discovery/encoder.h"
 #include "drivers/stm32f407vg_discovery/button.h"
 #include "drivers/stm32f407vg_discovery/potentiometer.h"
-#include "Faust/faust_audio_processor.h"
 #include "drivers/stm32f407vg_discovery/midi_in.h"
+#include "faust/faust_audio_processor.h"
 #include "midi/midi_parser.h"
 #include "lcd_interface.h"
 #include <util/lcd44780.h>
@@ -185,7 +185,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 
 int main()
 {
-    // Audio Driver and Faust initialization
+    // Audio Driver and faust initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
 
