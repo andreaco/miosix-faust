@@ -1,7 +1,7 @@
 #ifndef MIOSIX_DRUM_MIDI_IN_H
 #define MIOSIX_DRUM_MIDI_IN_H
-#include "config/hw_config.h"
-#include "../../miosix/arch/common/drivers/serial_stm32.h"
+#include "../../config/hw_config.h"
+#include "../../../miosix/arch/common/drivers/serial_stm32.h"
 
 /**
  * Class encapsulating the serial communication

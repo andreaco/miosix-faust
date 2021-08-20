@@ -1,8 +1,8 @@
 #ifndef MIOSIX_DRUM_POTENTIOMETER_H
 #define MIOSIX_DRUM_POTENTIOMETER_H
 
-#include "miosix.h"
-#include "config/hw_config.h"
+#include "../../../miosix/miosix.h"
+#include "../../config/hw_config.h"
 #include "utility.h"
 
 #if ADC_RESOLUTION == 0

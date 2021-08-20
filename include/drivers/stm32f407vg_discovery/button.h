@@ -1,7 +1,7 @@
 #ifndef MIOSIX_DRUM_BUTTON_H
 #define MIOSIX_DRUM_BUTTON_H
-#include <miosix.h>
-#include "drivers/stm32f407vg_discovery/utility.h"
+#include "../../../miosix/miosix.h"
+#include "utility.h"
 
 /**
  * Templated static class that allows to initialize

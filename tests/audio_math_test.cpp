@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "../audio/audio_math.h"
+#include "../include/audio/audio_math.h"
 #include <functional>
 
 TEST_CASE("linearInterpolation", "[audio]") {

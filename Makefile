@@ -21,13 +21,13 @@ faust/
 ## List here your source files (both .s, .c and .cpp)
 ##
 SRC := \
-main.cpp \
-drivers/stm32f407vg_discovery/audio.cpp \
-drivers/stm32f407vg_discovery/cs43l22dac.cpp \
-drivers/stm32f407vg_discovery/midi_in.cpp \
-drivers/stm32f407vg_discovery/utility.cpp \
-drivers/common/lcd_interface.cpp \
-midi/midi_parser.cpp \
+src/main.cpp \
+src/drivers/stm32f407vg_discovery/audio.cpp \
+src/drivers/stm32f407vg_discovery/cs43l22dac.cpp \
+src/drivers/stm32f407vg_discovery/midi_in.cpp \
+src/drivers/stm32f407vg_discovery/utility.cpp \
+src/drivers/common/lcd_interface.cpp \
+src/midi/midi_parser.cpp \
 faust/faust_audio_processor.cpp
 
 

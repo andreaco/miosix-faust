@@ -2,7 +2,7 @@
 #ifndef MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 #define MIOSIX_KERNEL_AUDIO_PROCESSOR_H
 
-#include "drivers/common/audio.h"
+#include "../drivers/common/audio.h"
 #include "audio_processable.h"
 #include "audio_buffer.h"
 

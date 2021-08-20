@@ -2,10 +2,10 @@
 #ifndef MIOSIX_AUDIO_DRIVER_AUDIO_H
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
-#include "miosix.h"
-#include "config/audio_config.h"
-#include "../audio/audio_processable.h"
-#include "../audio/audio_buffer.h"
+#include "../../../miosix/miosix.h"
+#include "../../config/audio_config.h"
+#include "../../audio/audio_processable.h"
+#include "../../audio/audio_buffer.h"
 
 
 /**

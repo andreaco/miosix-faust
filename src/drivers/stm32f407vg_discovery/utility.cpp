@@ -1,4 +1,4 @@
-#include "utility.h"
+#include "../../../include/drivers/stm32f407vg_discovery/utility.h"
 
 void GPIOUtility::enableRCC(GPIO_TypeDef *GPIO)
 {

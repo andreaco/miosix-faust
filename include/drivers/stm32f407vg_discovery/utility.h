@@ -1,6 +1,6 @@
 #ifndef MIOSIX_DRUM_UTILITY_H
 #define MIOSIX_DRUM_UTILITY_H
-#include <miosix.h>
+#include "../../../miosix/miosix.h"
 
 /**
  * Namespace containing utility functions related to GPIOs

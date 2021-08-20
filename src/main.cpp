@@ -2,15 +2,15 @@
 #include <thread>
 #include <util/lcd44780.h>
 #include "miosix.h"
-#include "drivers/common/audio.h"
-#include "drivers/common/lcd_interface.h"
-#include "drivers/stm32f407vg_discovery/encoder.h"
-#include "drivers/stm32f407vg_discovery/button.h"
-#include "drivers/stm32f407vg_discovery/potentiometer.h"
-#include "drivers/stm32f407vg_discovery/midi_in.h"
+#include "include/drivers/common/audio.h"
+#include "include/drivers/common/lcd_interface.h"
+#include "include/drivers/stm32f407vg_discovery/encoder.h"
+#include "include/drivers/stm32f407vg_discovery/button.h"
+#include "include/drivers/stm32f407vg_discovery/potentiometer.h"
+#include "include/drivers/stm32f407vg_discovery/midi_in.h"
 #include "faust/faust_audio_processor.h"
-#include "midi/midi_parser.h"
-#include "config/thread_update_rates.h"
+#include "include/midi/midi_parser.h"
+#include "include/config/thread_update_rates.h"
 
 
 /**

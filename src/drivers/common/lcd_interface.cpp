@@ -1,4 +1,4 @@
-#include "lcd_interface.h"
+#include "../../../include/drivers/common/lcd_interface.h"
 
 
 void LCDUtils::lcdPrintPage(miosix::Lcd44780& lcd,

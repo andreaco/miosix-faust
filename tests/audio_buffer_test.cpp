@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "../audio/audio_buffer.h"
+#include "../include/audio/audio_buffer.h"
 
 TEST_CASE("AudioBuffer", "[audio]") {
 

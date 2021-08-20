@@ -1,12 +1,13 @@
-#include "miosix.h"
-#include "../common/audio.h"
-#include "config/audio_config.h"
-#include "cs43l22dac.h"
-#include "kernel/scheduler/scheduler.h"
-#include "../../audio/audio_processor.h"
-#include "../../audio/audio_buffer.h"
-#include "../../audio/audio_math.h"
 #include <array>
+#include "miosix.h"
+#include "include/drivers/common/audio.h"
+#include "include/config/audio_config.h"
+#include "include/drivers/stm32f407vg_discovery/cs43l22dac.h"
+#include "kernel/scheduler/scheduler.h"
+#include "../include/audio/audio_processor.h"
+#include "../include/audio/audio_buffer.h"
+#include "../include/audio/audio_math.h"
+
 
 #define DOUBLE_BUFFER_BUFFERS 2
 

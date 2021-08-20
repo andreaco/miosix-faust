@@ -1,7 +1,7 @@
 #ifndef MIOSIX_DRUM_LCD_INTERFACE_H
 #define MIOSIX_DRUM_LCD_INTERFACE_H
-#include "miosix.h"
-#include <util/lcd44780.h>
+#include "../../../miosix/miosix.h"
+#include "../../../miosix/util/lcd44780.h"
 
 namespace LCDUtils
 {

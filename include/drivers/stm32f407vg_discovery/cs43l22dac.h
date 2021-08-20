@@ -1,8 +1,8 @@
 #ifndef MIOSIX_CS43L22DAC_H
 #define MIOSIX_CS43L22DAC_H
 
-#include "miosix.h"
-#include "util/software_i2c.h"
+#include "../../../miosix/miosix.h"
+#include "../../../miosix/util/software_i2c.h"
 
 #define CS43L22DAC_DEFAULT_VOLUME_DB -20
 

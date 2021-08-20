@@ -1,4 +1,4 @@
-#include "midi_parser.h"
+#include "../../include/midi/midi_parser.h"
 
 MidiNote MidiParser::popNote()
 {

@@ -1,8 +1,8 @@
 #ifndef MIOSIX_DRUM_ENCODER_H
 #define MIOSIX_DRUM_ENCODER_H
-#include <miosix.h>
+#include "../../../miosix/miosix.h"
 #include <math.h>
-#include "drivers/stm32f407vg_discovery/utility.h"
+#include "utility.h"
 
 /**
  * Templated static class that allows to initialize
