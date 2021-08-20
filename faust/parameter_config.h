@@ -45,4 +45,13 @@
 #define ENCODER4_MIN 0.0f
 #define ENCODER4_MAX +96.0f
 
+/**
+ * Buttons
+ */
+
+#define BUTTON1_NAME ""
+#define BUTTON2_NAME ""
+#define BUTTON3_NAME ""
+#define BUTTON4_NAME ""
+
 #endif //MIOSIX_DRUM_PARAMETER_CONFIG_H
