@@ -66,5 +66,5 @@ f(a,x)	= x*(abs(x) + a)/(x*x + (a-1)*abs(x) + 1);
 g(a)	= 1/sqrt(a+1);
 
 
-process = db2linear(gain)*g(dist)*f(db2linear(dist), FMall(gFreq) * vol);
+process = db2linear(gain)*g(dist)*f(db2linear(dist), FMall(gFreq) * vol) <: _ , _;
 
