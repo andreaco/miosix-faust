@@ -132,12 +132,12 @@ void midiProcessing()
         if (midiParser.isNoteAvaiable())
         {
             MidiNote note = midiParser.popNote();
-            if (note.msgType == MidiNote::NOTE_ON)
+            if (note.msgType == MidiNote::NOTE_ON && note.velocity > (uint8_t) 0)
                 synth.gateOn();
-            else
+            else if (note.msgType == MidiNote::NOTE_OFF || note.velocity == 0)
                 synth.gateOff();
         }
-        miosix::Thread::sleep(20);
+        miosix::Thread::sleep(10);
     }
 
 }
