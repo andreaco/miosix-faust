@@ -23,6 +23,7 @@ struct MidiNote {
     NOTE_TYPE msgType;
     uint8_t note;
     uint8_t velocity;
+    uint8_t rawData[3];
 };
 
 /**
@@ -32,6 +33,7 @@ struct ControlChange {
     uint8_t channel;
     uint8_t controlNumber;
     uint8_t value;
+    uint8_t rawData[3];
 };
 
 /**

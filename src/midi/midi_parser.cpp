@@ -35,36 +35,37 @@ void MidiParser::parseByte(uint8_t byte) {
 
     switch (state) {
         case STATUS: {
-            // Look for note on event on midi channel 0
+            // Look for note on event
             if (message == NOTE_ON_MASK) {
                 state = NOTE_DATA1;
                 currentNote.msgType = MidiNote::NOTE_ON;
                 currentNote.channel = channel;
-                break;
+                currentNote.rawData[0] = byte;
             }
-            // Look for a note off event on midi channel 0
-            if (message == NOTE_OFF_MASK) {
+            // Look for a note off event
+            else if (message == NOTE_OFF_MASK) {
                 state = NOTE_DATA1;
                 currentNote.msgType = MidiNote::NOTE_OFF;
                 currentNote.channel = channel;
-                break;
+                currentNote.rawData[0] = byte;
             }
-
+            // Look for control change event
             if (message == CC_MASK) {
                 state = CC_DATA1;
                 currentCC.channel = channel;
-                break;
+                currentCC.rawData[0] = byte;
             }
-
+            break;
         }
         case NOTE_DATA1: {
             currentNote.note = byte;
+            currentNote.rawData[1] = byte;
             state = NOTE_DATA2;
             break;
-
         }
         case NOTE_DATA2: {
             currentNote.velocity = byte;
+            currentNote.rawData[2] = byte;
             state = STATUS;
             lastState = NOTE_DATA2;
             noteMessageBuffer.push(currentNote);
@@ -72,11 +73,13 @@ void MidiParser::parseByte(uint8_t byte) {
         }
         case CC_DATA1: {
             currentCC.controlNumber = byte;
+            currentCC.rawData[1] = byte;
             state = CC_DATA2;
             break;
         }
         case CC_DATA2: {
             currentCC.value = byte;
+            currentCC.rawData[2] = byte;
             state = STATUS;
             lastState = CC_DATA2;
             ccMessageBuffer.push(currentCC);
