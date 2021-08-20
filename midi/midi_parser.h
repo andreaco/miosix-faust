@@ -49,7 +49,7 @@ public:
     /**
      * Constructor
      */
-    MidiParser() : state(STATUS) {}
+    MidiParser() : state(STATUS), lastState(STATUS) {}
 
     /**
      * Get the oldest note from the Note Message Buffer
@@ -102,19 +102,30 @@ public:
      */
     void parseByte(uint8_t byte)
     {
+        uint8_t channel = byte & 0x0f;
+
+        uint8_t message = byte & 0xf0;
+
+        // MIDI Running status Check
+        if (state == STATUS && message < NOTE_OFF_MASK)
+        {
+            if (lastState == NOTE_DATA2)
+                state = NOTE_DATA1;
+            if (lastState == CC_DATA2)
+                state = CC_DATA1;
+        }
+
         switch(state)
         {
             case STATUS:
             {
-                uint8_t channel = byte & 0x0f;
-
-                uint8_t message = byte & 0xf0;
                 // Look for note on event on midi channel 0
                 if (message == NOTE_ON_MASK)
                 {
                     state = NOTE_DATA1;
                     currentNote.msgType = MidiNote::NOTE_ON;
                     currentNote.channel = channel;
+                    break;
                 }
                 // Look for a note off event on midi channel 0
                 if (message == NOTE_OFF_MASK)
@@ -122,14 +133,16 @@ public:
                     state = NOTE_DATA1;
                     currentNote.msgType = MidiNote::NOTE_OFF;
                     currentNote.channel = channel;
+                    break;
                 }
 
                 if (message == CC_MASK)
                 {
                     state = CC_DATA1;
                     currentCC.channel = channel;
+                    break;
                 }
-                break;
+
             }
             case NOTE_DATA1:
             {
@@ -142,6 +155,7 @@ public:
             {
                 currentNote.velocity = byte;
                 state = STATUS;
+                lastState = NOTE_DATA2;
                 noteMessageBuffer.push(currentNote);
                 break;
             }
@@ -155,6 +169,7 @@ public:
             {
                 currentCC.value = byte;
                 state = STATUS;
+                lastState = CC_DATA2;
                 ccMessageBuffer.push(currentCC);
             }
         }
@@ -197,6 +212,11 @@ private:
      * Current parsing state
      */
     ParseState state;
+
+    /**
+     * Last saved message for running status
+     */
+    ParseState lastState;
 };
 
 #endif //MICROAUDIO_MIDIPARSER_H
