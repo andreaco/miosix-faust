@@ -12,161 +12,106 @@ public:
      * Sets the sampleRate and builds the UI
      * @param audioDriver
      */
-    FaustAudioProcessor(AudioDriver &audioDriver)
-        : AudioProcessor(audioDriver)
-    {
-        float currentSampleRate = audioDriver.getSampleRate();
-
-        synth.init(currentSampleRate); // initializing the faust module
-        synth.buildUserInterface(&control); // linking the faust module to the controler
-    }
+    FaustAudioProcessor(AudioDriver &audioDriver);
 
     /**
      * Process buffers
      */
-    void process() override
-    {
-        audioBuffers[0] = getBuffer().getWritePointer(0);
-        audioBuffers[1] = getBuffer().getWritePointer(1);
-
-        synth.compute(getBufferSize(), NULL, audioBuffers); // computing one block with faust
-    }
+    void process() override;
 
     /**
      * Set slider 1 value, mappings between slider and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setSlider1(float value)
-    {
-        control.setParamValue(SLIDER1_NAME, SLIDER1_MIN + value * (SLIDER1_MAX - SLIDER1_MIN));
-    }
+    void setSlider1(float value);
 
     /**
      * Set slider 2 value, mappings between slider and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setSlider2(float value)
-    {
-        control.setParamValue(SLIDER2_NAME, SLIDER2_MIN + value * (SLIDER2_MAX - SLIDER2_MIN));
-    }
+    void setSlider2(float value);
 
     /**
      * Set slider 3 value, mappings between slider and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setSlider3(float value)
-    {
-        control.setParamValue(SLIDER3_NAME, SLIDER3_MIN + value * (SLIDER3_MAX - SLIDER3_MIN));
-    }
+    void setSlider3(float value);
 
     /**
      * Set slider 4 value, mappings between slider and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setSlider4(float value)
-    {
-        control.setParamValue(SLIDER4_NAME, SLIDER4_MIN + value * (SLIDER4_MAX - SLIDER4_MIN));
-    }
+    void setSlider4(float value);
 
     /**
      * Set encoder 1 value, mappings between encoder and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setEncoder1(float value)
-    {
-        control.setParamValue(ENCODER1_NAME, ENCODER1_MIN + value * (ENCODER1_MAX - ENCODER1_MIN));
-    }
+    void setEncoder1(float value);
 
     /**
      * Set encoder 2 value, mappings between encoder and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setEncoder2(float value)
-    {
-        control.setParamValue(ENCODER2_NAME, ENCODER2_MIN + value * (ENCODER2_MAX - ENCODER2_MIN));
-    }
+    void setEncoder2(float value);
 
     /**
      * Set encoder 3 value, mappings between encoder and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setEncoder3(float value)
-    {
-        control.setParamValue(ENCODER3_NAME, ENCODER3_MIN + value * (ENCODER3_MAX - ENCODER3_MIN));
-    }
+    void setEncoder3(float value);
 
     /**
      * Set encoder 4 value, mappings between encoder and faust parameters
      * can be made through the parameter_config.h file
      * @param value Slider value between 0 and 1
      */
-    inline void setEncoder4(float value)
-    {
-        control.setParamValue(ENCODER4_NAME, ENCODER4_MIN + value * (ENCODER4_MAX - ENCODER4_MIN));
-    }
+    void setEncoder4(float value);
 
     /**
      * Set button 1 value, mappings between button and faust parameters
      * can be made through the parameter_config.h file
      * @param value button state (true if On, false if Off)
      */
-    inline void setButton1(bool value)
-    {
-        control.setParamValue(BUTTON1_NAME, value);
-    }
+    void setButton1(bool value);
 
     /**
      * Set button 2 value, mappings between button and faust parameters
      * can be made through the parameter_config.h file
      * @param value button state (true if On, false if Off)
      */
-    inline void setButton2(bool value)
-    {
-        control.setParamValue(BUTTON2_NAME, value);
-    }
+    void setButton2(bool value);
 
     /**
      * Set button 3 value, mappings between button and faust parameters
      * can be made through the parameter_config.h file
      * @param value button state (true if On, false if Off)
      */
-    inline void setButton3(bool value)
-    {
-        control.setParamValue(BUTTON3_NAME, value);
-    }
+    void setButton3(bool value);
 
     /**
      * Set button 4S value, mappings between button and faust parameters
      * can be made through the parameter_config.h file
      * @param value button state (true if On, false if Off)
      */
-    inline void setButton4(bool value)
-    {
-        control.setParamValue(BUTTON4_NAME, value);
-    }
+    void setButton4(bool value);
 
     /**
      * MIDI Gate On function
      */
-    inline void gateOn()
-    {
-        control.setParamValue("/faust_synth/gate", 1);
-    }
+    void gateOn();
 
     /**
      * MIDI Gate Off function
      */
-    inline void gateOff()
-    {
-        control.setParamValue("/faust_synth/gate", 0);
-    }
+    void gateOff();
 
 private:
     /**
