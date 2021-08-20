@@ -1,8 +1,8 @@
 #ifndef MIOSIX_DRUM_MORPHINGOSCILLATOR_H
 #define MIOSIX_DRUM_MORPHINGOSCILLATOR_H
 #include "PolyBlepOscillator.h"
-#include "../audio/audio_math.h"
-#include "../audio/audio_buffer.h"
+#include "../../audio/audio_math.h"
+#include "../../audio/audio_buffer.h"
 
 
 /**
