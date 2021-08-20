@@ -2,7 +2,7 @@
 #define MIOSIX_DRUM_PARAMETER_CONFIG_H
 
 /**
- * This file is used to link Faust Parameters to physical ones
+ * This file is used to link faust Parameters to physical ones
  */
 
 

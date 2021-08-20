@@ -3,9 +3,7 @@
 #include "../audio/audio_processor.h"
 #include "../drivers/common/audio_config.h"
 #include "parameter_config.h"
-
 #include "faust_synth.h"
-
 
 class Faust_AudioProcessor : public AudioProcessor {
 public:
@@ -13,17 +11,17 @@ public:
         : AudioProcessor(audioDriver)
     {
         float currentSampleRate = audioDriver.getSampleRate();
-        //float blockSize = audioDriver.getBufferSize();
 
-        synth.init(currentSampleRate); // initializing the Faust module
-        synth.buildUserInterface(&control); // linking the Faust module to the controler
+        synth.init(currentSampleRate); // initializing the faust module
+        synth.buildUserInterface(&control); // linking the faust module to the controler
     }
 
     void process() override
     {
-        float* audioBuffer = getBuffer().getWritePointer(1);
+        audioBuffers[0] = getBuffer().getWritePointer(0);
+        audioBuffers[1] = getBuffer().getWritePointer(1);
 
-        synth.compute(getBufferSize(), NULL, &audioBuffer); // computing one block with Faust
+        synth.compute(getBufferSize(), NULL, audioBuffers); // computing one block with faust
     }
 
     inline void setSlider1(float value)
@@ -77,11 +75,13 @@ public:
     }
 
 private:
-    FaustSynth synth; // the Faust module (Saw.h)
-    MapUI control; // used to easily control the Faust module (Saw.h)
+    FaustSynth synth;
+    MapUI control;
 
-
-    std::array<std::array<float, AUDIO_DRIVER_BUFFER_SIZE>, 1> audioBuffer;
+    /**
+     * Array containing the output buffer raw pointers to be passed to faust
+     */
+    float* audioBuffers[2];
 };
 
 

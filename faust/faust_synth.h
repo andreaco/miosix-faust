@@ -9,7 +9,7 @@ Compilation options: -a arch.cpp -lang cpp -es 1 -single -ftz 0
 
 // Author: Romain Michon (rmichonATccrmaDOTstanfordDOTedu)
 
-// needed by any Faust arch file
+// needed by any faust arch file
 /************************** BEGIN misc.h **************************/
 /************************************************************************
  FAUST Architecture File
@@ -162,7 +162,7 @@ static std::string pathToContent(const std::string& path)
 
 /**************************  END  misc.h **************************/
 
-// allows to control a Faust DSP module in a simple manner by using parameter's path
+// allows to control a faust DSP module in a simple manner by using parameter's path
 /************************** BEGIN MapUI.h **************************/
 /************************************************************************
  FAUST Architecture File
@@ -520,7 +520,7 @@ class MapUI : public UI, public PathBuilder
 #endif // FAUST_MAPUI_H
 /**************************  END  MapUI.h **************************/
 
-// needed by any Faust arch file
+// needed by any faust arch file
 /************************** BEGIN dsp.h **************************/
 /************************************************************************
  FAUST Architecture File
@@ -744,7 +744,7 @@ class dsp_factory {
 #endif
 /************************** END dsp.h **************************/
 
-// tags used by the Faust compiler to paste the generated c++ code
+// tags used by the faust compiler to paste the generated c++ code
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif 
@@ -917,7 +917,7 @@ class FaustSynth : public dsp {
 		return 0;
 	}
 	virtual int getNumOutputs() {
-		return 1;
+		return 2;
 	}
 	
 	static void classInit(int sample_rate) {
@@ -1016,6 +1016,7 @@ class FaustSynth : public dsp {
 	
 	virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) {
 		FAUSTFLOAT* output0 = outputs[0];
+		FAUSTFLOAT* output1 = outputs[1];
 		float fSlow0 = float(fHslider1);
 		float fSlow1 = (std::pow(10.0f, (0.0500000007f * float(fHslider0))) / std::sqrt((fSlow0 + 1.0f)));
 		int iSlow2 = (float(fButton0) > 0.0f);
@@ -1057,7 +1058,9 @@ class FaustSynth : public dsp {
 			float fTemp13 = (fTemp12 + ((fTemp10 - std::floor(fTemp10)) * (ftbl0FaustSynthSIG0[(iTemp11 + 1)] - fTemp12)));
 			float fTemp14 = (fRec0[0] * fTemp13);
 			float fTemp15 = std::fabs(fTemp14);
-			output0[i0] = FAUSTFLOAT((fSlow1 * ((fTemp14 * (fSlow14 + fTemp15)) / (((FaustSynth_faustpower2_f(fRec0[0]) * FaustSynth_faustpower2_f(fTemp13)) + (fSlow15 * fTemp15)) + 1.0f))));
+			float fTemp16 = (fSlow1 * ((fTemp14 * (fSlow14 + fTemp15)) / (((FaustSynth_faustpower2_f(fRec0[0]) * FaustSynth_faustpower2_f(fTemp13)) + (fSlow15 * fTemp15)) + 1.0f)));
+			output0[i0] = FAUSTFLOAT(fTemp16);
+			output1[i0] = FAUSTFLOAT(fTemp16);
 			iVec0[1] = iVec0[0];
 			iRec1[1] = iRec1[0];
 			fRec0[1] = fRec0[0];

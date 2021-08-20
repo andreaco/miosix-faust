@@ -15,7 +15,7 @@ include $(CONFPATH)/config/Makefile.inc
 ##
 SUBDIRS :=\
 $(KPATH) \
-Faust/
+faust/
 
 ##
 ## List here your source files (both .s, .c and .cpp)
