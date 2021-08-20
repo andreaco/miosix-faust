@@ -48,7 +48,6 @@
 /**
  * Buttons
  */
-
 #define BUTTON1_NAME ""
 #define BUTTON2_NAME ""
 #define BUTTON3_NAME ""
