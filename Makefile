@@ -25,8 +25,10 @@ main.cpp \
 drivers/stm32f407vg_discovery/audio.cpp \
 drivers/stm32f407vg_discovery/cs43l22dac.cpp \
 drivers/stm32f407vg_discovery/midi_in.cpp \
+drivers/stm32f407vg_discovery/utility.cpp \
 drivers/common/lcd_interface.cpp \
 midi/midi_parser.cpp \
+faust/faust_audio_processor.cpp
 
 
 ##
