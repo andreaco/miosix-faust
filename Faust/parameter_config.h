@@ -31,7 +31,7 @@
 
 #define ENCODER1_NAME "/FaustSynth/freq"
 #define ENCODER1_MIN 20.0f
-#define ENCODER1_MAX 2000.0f
+#define ENCODER1_MAX 200.0f
 
 #define ENCODER2_NAME "/FaustSynth/ratio"
 #define ENCODER2_MIN 0.0f
