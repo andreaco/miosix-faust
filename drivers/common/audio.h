@@ -3,7 +3,7 @@
 #define MIOSIX_AUDIO_DRIVER_AUDIO_H
 
 #include "miosix.h"
-#include "audio_config.h"
+#include "config/audio_config.h"
 #include "../audio/audio_processable.h"
 #include "../audio/audio_buffer.h"
 

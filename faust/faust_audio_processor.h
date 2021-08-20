@@ -1,8 +1,8 @@
 #ifndef MIOSIX_DRUM_FAUST_AUDIOPROCESSOR_H
 #define MIOSIX_DRUM_FAUST_AUDIOPROCESSOR_H
 #include "../audio/audio_processor.h"
-#include "../drivers/common/audio_config.h"
-#include "parameter_config.h"
+#include "config/audio_config.h"
+#include "config/parameter_config.h"
 #include "faust_synth.h"
 
 class FaustAudioProcessor : public AudioProcessor {

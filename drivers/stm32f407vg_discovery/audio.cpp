@@ -1,6 +1,6 @@
 #include "miosix.h"
 #include "../common/audio.h"
-#include "../common/audio_config.h"
+#include "config/audio_config.h"
 #include "cs43l22dac.h"
 #include "kernel/scheduler/scheduler.h"
 #include "../../audio/audio_processor.h"

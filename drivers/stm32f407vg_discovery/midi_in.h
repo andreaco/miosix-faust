@@ -1,6 +1,6 @@
 #ifndef MIOSIX_DRUM_MIDI_IN_H
 #define MIOSIX_DRUM_MIDI_IN_H
-#include "../common/hw_config.h"
+#include "config/hw_config.h"
 #include "../../miosix/arch/common/drivers/serial_stm32.h"
 
 /**

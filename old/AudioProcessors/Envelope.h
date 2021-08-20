@@ -2,7 +2,7 @@
 #define MIOSIX_DRUM_ENVELOPE_H
 
 #include "../../audio/audio_buffer.h"
-#include "../../drivers/common/audio_config.h"
+#include "../../config/audio_config.h"
 
 /**
  * Linear Envelope generator

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <array>
 #include "../../audio/audio_buffer.h"
-#include "../../drivers/common/audio_config.h"
+#include "../../config/audio_config.h"
 
 #define TABLE_SIZE 2048
 #define SIN_RMS 0.7071067811865476
