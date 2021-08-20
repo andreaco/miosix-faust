@@ -65,7 +65,7 @@ public:
      *
      * @return array containing arrays of data
      */
-    inline std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() { return bufferContainer; };
+    inline std::array<std::array<T, BUFFER_LEN>, CHANNEL_NUM> &getBufferContainer() { return bufferContainer; };
 
     /**
      * Applies a constant gain to the AudioBuffer.
@@ -112,7 +112,7 @@ private:
     /**
      * Data structure containing the buffer data.
      */
-    std::array <std::array<T, BUFFER_LEN>, CHANNEL_NUM> bufferContainer;
+    std::array<std::array<T, BUFFER_LEN>, CHANNEL_NUM> bufferContainer;
 
     /**
      * Disabling copy constructor.

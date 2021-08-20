@@ -1,7 +1,6 @@
 #include "../../../include/drivers/stm32f407vg_discovery/utility.h"
 
-void GPIOUtility::enableRCC(GPIO_TypeDef *GPIO)
-{
+void GPIOUtility::enableRCC(GPIO_TypeDef *GPIO) {
     if (GPIO == GPIOA)
         RCC->AHB1ENR |= (1 << 0);
     if (GPIO == GPIOB)
@@ -22,8 +21,7 @@ void GPIOUtility::enableRCC(GPIO_TypeDef *GPIO)
         RCC->AHB1ENR |= (1 << 8);
 }
 
-int TIMUtility::getAFR(TIM_TypeDef *TIM)
-{
+int TIMUtility::getAFR(TIM_TypeDef *TIM) {
     if (TIM == TIM1 || TIM == TIM2)
         return 1;
     if (TIM == TIM3 || TIM == TIM4 || TIM == TIM5)
@@ -34,8 +32,7 @@ int TIMUtility::getAFR(TIM_TypeDef *TIM)
         return 0;
 }
 
-void TIMUtility::enableRCC(TIM_TypeDef *TIM)
-{
+void TIMUtility::enableRCC(TIM_TypeDef *TIM) {
     if (TIM == TIM1)
         RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
     if (TIM == TIM2)

@@ -44,8 +44,8 @@ namespace AudioMath {
      * @return clipped input
      */
     inline float clip(float x, float min, float max) {
-        x = (x < min)? min : x;
-        x = (x > max)? max : x;
+        x = (x < min) ? min : x;
+        x = (x > max) ? max : x;
         return x;
     }
 
@@ -138,8 +138,8 @@ namespace AudioMath {
                         // wrapping the value to the correct range
                         // and calling again operator()
                         // TODO: warning on phase wrapping
-                        while (x < argMin) x += (argMax-argMin);
-                        while (x >= argMax) x -= (argMax-argMin);
+                        while (x < argMin) x += (argMax - argMin);
+                        while (x >= argMax) x -= (argMax - argMin);
                         y = this->operator()(x);
                         break;
                 }

@@ -16,10 +16,10 @@
 /**
  * Encoders Pin Definition
  */
-typedef Encoder<TIM1_BASE, GPIOE_BASE,  9, 11> encoder1;
-typedef Encoder<TIM3_BASE, GPIOB_BASE,  4,  5> encoder2;
+typedef Encoder<TIM1_BASE, GPIOE_BASE, 9, 11> encoder1;
+typedef Encoder<TIM3_BASE, GPIOB_BASE, 4, 5> encoder2;
 typedef Encoder<TIM4_BASE, GPIOD_BASE, 12, 13> encoder3;
-typedef Encoder<TIM5_BASE, GPIOA_BASE,  0,  1> encoder4;
+typedef Encoder<TIM5_BASE, GPIOA_BASE, 0, 1> encoder4;
 
 /**
  * Buttons Pin Definition
@@ -69,16 +69,14 @@ miosix::Mutex lcdMutex;
 /**
  * Slider UI Thread Function
  */
-void sliderUI()
-{
+void sliderUI() {
     // Sliders Initialization
     slider1::init();
     slider2::init();
     slider3::init();
     slider4::init();
 
-    while (true)
-    {
+    while (true) {
         synth.setSlider1(slider1::read());
         synth.setSlider2(slider2::read());
         synth.setSlider3(slider3::read());
@@ -90,16 +88,14 @@ void sliderUI()
 /**
  * Encoder UI Thread Function
  */
-void encoderUI()
-{
+void encoderUI() {
     // Encoders Initialization
     encoder1::init();
     encoder2::init();
     encoder3::init();
     encoder4::init();
 
-    while (true)
-    {
+    while (true) {
         // Read from the encoders
         float e1 = encoder1::getValue();
         float e2 = encoder2::getValue();
@@ -127,16 +123,14 @@ void encoderUI()
 /**
  * Encoder UI Thread Function
  */
-void buttonUI()
-{
+void buttonUI() {
     // Buttons Initialization
     button1::init();
     button2::init();
     button3::init();
     button4::init();
 
-    while (true)
-    {
+    while (true) {
         synth.setButton1(button1::getState());
         synth.setButton2(button2::getState());
         synth.setButton3(button3::getState());
@@ -148,16 +142,14 @@ void buttonUI()
 /**
  * LCD update UI Thread Function
  */
-void lcdUI()
-{
+void lcdUI() {
     // Setup
     lcdPage.p[0].name = ENCODER1_LCD_NAME;
     lcdPage.p[1].name = ENCODER2_LCD_NAME;
     lcdPage.p[2].name = ENCODER3_LCD_NAME;
     lcdPage.p[3].name = ENCODER4_LCD_NAME;
 
-    while(true)
-    {
+    while (true) {
         {
             miosix::Lock<miosix::Mutex> l(lcdMutex);
             LCDUtils::lcdPrintPage(display, lcdPage);
@@ -170,15 +162,13 @@ void lcdUI()
  * Serial MIDI in read (blocking call)
  * and parsing of read bytes
  */
-void midiParsing()
-{
+void midiParsing() {
     MidiIn midiIn;
 
     uint8_t byte;
-    while(true)
-    {
+    while (true) {
         uint8_t status = midiIn.read(&byte);
-        if(status > 0)
+        if (status > 0)
             midiParser.parseByte(byte);
     }
 }
@@ -186,12 +176,9 @@ void midiParsing()
 /**
  * Processing of MIDI data
  */
-void midiProcessing()
-{
-    while(true)
-    {
-        if (midiParser.isNoteAvaiable())
-        {
+void midiProcessing() {
+    while (true) {
+        if (midiParser.isNoteAvaiable()) {
             MidiNote note = midiParser.popNote();
             if (note.msgType == MidiNote::NOTE_ON && note.velocity > (uint8_t) 0)
                 synth.gateOn();
@@ -203,10 +190,7 @@ void midiProcessing()
 }
 
 
-
-
-int main()
-{
+int main() {
     // Audio Driver initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);

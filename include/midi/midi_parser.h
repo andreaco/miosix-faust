@@ -13,10 +13,8 @@
 /**
  * Simple Struct representing a MIDI Note message
  */
-struct MidiNote
-{
-    enum NOTE_TYPE
-    {
+struct MidiNote {
+    enum NOTE_TYPE {
         NOTE_ON,
         NOTE_OFF
     };
@@ -30,8 +28,7 @@ struct MidiNote
 /**
  * Simple Struct representing a MIDI Control Change message
  */
-struct ControlChange
-{
+struct ControlChange {
     uint8_t channel;
     uint8_t controlNumber;
     uint8_t value;
@@ -43,8 +40,7 @@ struct ControlChange
  * messages (Notes and CC as of now), when done parsing the message will be inserted
  * in its relative queue and can be obtained with the relative pop method
  */
-class MidiParser
-{
+class MidiParser {
 public:
     /**
      * Constructor
@@ -109,8 +105,7 @@ private:
     /**
      * Enum containing the possible parsing states
      */
-    enum ParseState
-    {
+    enum ParseState {
         STATUS = 0,
         NOTE_DATA1,
         NOTE_DATA2,

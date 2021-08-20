@@ -1,5 +1,6 @@
 #ifndef MIOSIX_DRUM_FAUST_AUDIOPROCESSOR_H
 #define MIOSIX_DRUM_FAUST_AUDIOPROCESSOR_H
+
 #include "../audio/audio_processor.h"
 #include "../config/audio_config.h"
 #include "../config/parameter_config.h"
@@ -127,7 +128,7 @@ private:
     /**
      * Array containing the output buffer raw pointers to be passed to faust
      */
-    float* audioBuffers[2];
+    float *audioBuffers[2];
 };
 
 

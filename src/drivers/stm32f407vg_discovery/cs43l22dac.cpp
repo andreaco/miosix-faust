@@ -47,54 +47,54 @@ void Cs43l22dac::init(uint32_t sampleRate) {
     int plli2sr;    // Division factor for I2S clocks
     int i2sdiv;     // I2S linear prescaler
     int i2sodd;     // Odd factor for the prescaler
-    switch(sampleRate) {
+    switch (sampleRate) {
         case 8000:
             plli2sn = 256;
             plli2sr = 5;
-            i2sdiv  = 122;
-            i2sodd  = 1;
+            i2sdiv = 122;
+            i2sodd = 1;
             break;
         case 16000:
             plli2sn = 213;
             plli2sr = 2;
-            i2sdiv  = 13;
-            i2sodd  = 0;
+            i2sdiv = 13;
+            i2sodd = 0;
             break;
         case 32000:
             plli2sn = 213;
             plli2sr = 2;
-            i2sdiv  = 6;
-            i2sodd  = 1;
+            i2sdiv = 6;
+            i2sodd = 1;
             break;
         case 48000:
             plli2sn = 258;
             plli2sr = 3;
-            i2sdiv  = 3;
-            i2sodd  = 1;
+            i2sdiv = 3;
+            i2sodd = 1;
             break;
         case 96000:
             plli2sn = 344;
             plli2sr = 2;
-            i2sdiv  = 3;
-            i2sodd  = 1;
+            i2sdiv = 3;
+            i2sodd = 1;
             break;
         case 22050:
             plli2sn = 429;
             plli2sr = 4;
-            i2sdiv  = 9;
-            i2sodd  = 1;
+            i2sdiv = 9;
+            i2sodd = 1;
             break;
         case 44100:
             plli2sn = 271;
             plli2sr = 2;
-            i2sdiv  = 6;
-            i2sodd  = 0;
+            i2sdiv = 6;
+            i2sodd = 0;
             break;
         default:
             plli2sn = 0;
             plli2sr = 0;
-            i2sdiv  = 0;
-            i2sodd  = 0;
+            i2sdiv = 0;
+            i2sodd = 0;
             break;
     }
 
@@ -138,7 +138,7 @@ void Cs43l22dac::init(uint32_t sampleRate) {
 
     //"Magic" Initialization:
     //https://www.mouser.com/datasheet/2/76/CS43L22_F2-1142121.pdf, Page 32
-    send(0x00, 0x99); 
+    send(0x00, 0x99);
     send(0x47, 0x80);
     send(0x32, 0xbb);
     send(0x32, 0x3b);
@@ -169,7 +169,6 @@ void Cs43l22dac::init(uint32_t sampleRate) {
 }
 
 
-
 void Cs43l22dac::send(unsigned char index, unsigned char data) {
     i2c::sendStart();
 
@@ -180,7 +179,6 @@ void Cs43l22dac::send(unsigned char index, unsigned char data) {
     i2c::send(data);
     i2c::sendStop();
 }
-
 
 
 void Cs43l22dac::setVolume(int db) {
