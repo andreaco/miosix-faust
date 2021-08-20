@@ -8,7 +8,7 @@
 #include "include/drivers/stm32f407vg_discovery/button.h"
 #include "include/drivers/stm32f407vg_discovery/potentiometer.h"
 #include "include/drivers/stm32f407vg_discovery/midi_in.h"
-#include "faust/faust_audio_processor.h"
+#include "include/faust/faust_audio_processor.h"
 #include "include/midi/midi_parser.h"
 #include "include/config/thread_update_rates.h"
 

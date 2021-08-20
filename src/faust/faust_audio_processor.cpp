@@ -1,4 +1,4 @@
-#include "faust_audio_processor.h"
+#include "../../include/faust/faust_audio_processor.h"
 
 FaustAudioProcessor::FaustAudioProcessor(AudioDriver &audioDriver)
     : AudioProcessor(audioDriver)

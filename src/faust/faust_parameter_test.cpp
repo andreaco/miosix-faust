@@ -1,5 +1,5 @@
 #include <iostream>
-#include "faust_synth.h"
+#include "../../include/faust/faust_synth.h"
 
 int main()
 {

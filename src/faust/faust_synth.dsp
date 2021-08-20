@@ -1,35 +1,17 @@
-
 import("all.lib");
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Simple FM synthesizer.
-// 2 oscillators and FM feedback on modulant oscillator
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// MIDI IMPLEMENTATION:
-//
-// CC 1 : FM feedback on modulant oscillator.
-// CC 14 : Modulator frequency ratio.
-//
-// CC 73 : Attack
-// CC 76 : Decay
-// CC 77 : Sustain
-// CC 72 : Release
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-// GENERAL, Keyboard
+// Gate and MIDI
 midigate = button("gate");
 midifreq = nentry("freq[unit:Hz]", 440, 20, 20000, 1);
 
-// modwheel:
+// Mod
 feedb = (gFreq-1) * (hslider("feedb[midi:ctrl 1]", 0, 0, 1, 0.001) : si.smoo);
 modFreqRatio = hslider("ratio[midi:ctrl 14]",2,0,20,0.01) : si.smoo;
 
 // pitchwheel
 bend = ba.semi2ratio(hslider("bend [midi:pitchwheel]",0,-2,2,0.01));
 
+// freq
 gFreq = midifreq * bend;
 
 //=================================== Parameters Mapping =================================

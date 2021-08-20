@@ -15,7 +15,7 @@ include $(CONFPATH)/config/Makefile.inc
 ##
 SUBDIRS :=\
 $(KPATH) \
-faust/
+src/faust/
 
 ##
 ## List here your source files (both .s, .c and .cpp)
@@ -28,7 +28,7 @@ src/drivers/stm32f407vg_discovery/midi_in.cpp \
 src/drivers/stm32f407vg_discovery/utility.cpp \
 src/drivers/common/lcd_interface.cpp \
 src/midi/midi_parser.cpp \
-faust/faust_audio_processor.cpp
+src/faust/faust_audio_processor.cpp
 
 
 ##

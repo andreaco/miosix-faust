@@ -1,3 +1,5 @@
+// TODO: Test new parser
+#if 0
 #include "catch.hpp"
 #include "midi_test_data.h"
 #include "../include/midi/midi_parser.h"
@@ -6,8 +8,7 @@
 #include <array>
 #include <queue>
 
-// TODO: Test new parser
-#if 0
+
 TEST_CASE("Midi std::queue", "[midi]") {
     uint8_t *p;
     Midi::MidiParser midiParser;
