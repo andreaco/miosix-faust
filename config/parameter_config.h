@@ -32,18 +32,22 @@
 #define ENCODER1_NAME "/faust_synth/freq"
 #define ENCODER1_MIN 20.0f
 #define ENCODER1_MAX 200.0f
+#define ENCODER1_LCD_NAME "FRQ"
 
 #define ENCODER2_NAME "/faust_synth/ratio"
 #define ENCODER2_MIN 0.0f
 #define ENCODER2_MAX 20.0f
+#define ENCODER2_LCD_NAME "MOD"
 
 #define ENCODER3_NAME "/faust_synth/distortion"
 #define ENCODER3_MIN 0.0f
 #define ENCODER3_MAX 100.0f
+#define ENCODER3_LCD_NAME "FZZ"
 
 #define ENCODER4_NAME "/faust_synth/gain"
 #define ENCODER4_MIN 0.0f
 #define ENCODER4_MAX +96.0f
+#define ENCODER4_LCD_NAME "GAN"
 
 /**
  * Buttons

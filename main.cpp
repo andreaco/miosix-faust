@@ -13,7 +13,6 @@
 #include "config/thread_update_rates.h"
 
 
-
 /**
  * Encoders Pin Definition
  */
@@ -72,7 +71,7 @@ miosix::Mutex lcdMutex;
  */
 void sliderUI()
 {
-    // Initialize the sliders
+    // Sliders Initialization
     slider1::init();
     slider2::init();
     slider3::init();
@@ -101,16 +100,19 @@ void encoderUI()
 
     while (true)
     {
+        // Read from the encoders
         float e1 = encoder1::getValue();
         float e2 = encoder2::getValue();
         float e3 = encoder3::getValue();
         float e4 = encoder4::getValue();
 
+        // Set encoder to synth
         synth.setEncoder1(e1);
         synth.setEncoder2(e2);
         synth.setEncoder3(e3);
         synth.setEncoder4(e4);
 
+        // Update shared variable lcdPage to reflect the changes on the LCD
         {
             miosix::Lock<miosix::Mutex> l(lcdMutex);
             lcdPage.p[0].value = (int) (e1 * 999);
@@ -135,20 +137,24 @@ void buttonUI()
 
     while (true)
     {
-        button1::getState();
-        button2::getState();
-        button3::getState();
-        button4::getState();
+        synth.setButton1(button1::getState());
+        synth.setButton2(button2::getState());
+        synth.setButton3(button3::getState());
+        synth.setButton4(button4::getState());
         miosix::Thread::sleep(BUTTON_SLEEP_TIME);
     }
 }
 
+/**
+ * LCD update UI Thread Function
+ */
 void lcdUI()
 {
-    lcdPage.p[0].name = "FRQ";
-    lcdPage.p[1].name = "MOD";
-    lcdPage.p[2].name = "FZZ";
-    lcdPage.p[3].name = "GAN";
+    // Setup
+    lcdPage.p[0].name = ENCODER1_LCD_NAME;
+    lcdPage.p[1].name = ENCODER2_LCD_NAME;
+    lcdPage.p[2].name = ENCODER3_LCD_NAME;
+    lcdPage.p[3].name = ENCODER4_LCD_NAME;
 
     while(true)
     {
@@ -160,7 +166,10 @@ void lcdUI()
     }
 }
 
-
+/**
+ * Serial MIDI in read (blocking call)
+ * and parsing of read bytes
+ */
 void midiParsing()
 {
     MidiIn midiIn;
@@ -174,6 +183,9 @@ void midiParsing()
     }
 }
 
+/**
+ * Processing of MIDI data
+ */
 void midiProcessing()
 {
     while(true)
@@ -188,12 +200,14 @@ void midiProcessing()
         }
         miosix::Thread::sleep(MIDI_SLEEP_TIME);
     }
-
 }
+
+
+
 
 int main()
 {
-    // Audio Driver and faust initialization
+    // Audio Driver initialization
     audioDriver.init();
     audioDriver.setAudioProcessable(synth);
 
