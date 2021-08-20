@@ -1799,16 +1799,6 @@
   "file": "drivers/stm32f407vg_discovery/cs43l22dac.cpp"
  },
  {
-  "directory": "/home/andrea/STM32/miosix-drum/Faust",
-  "arguments": [
-   "g++",
-   "FaustParameterTest.cpp",
-   "-o",
-   "FaustParameterTest"
-  ],
-  "file": "FaustParameterTest.cpp"
- },
- {
   "directory": "/home/andrea/STM32/miosix-drum",
   "arguments": [
    "arm-miosix-eabi-g++",
@@ -1843,5 +1833,15 @@
    "lcd_interface.o"
   ],
   "file": "lcd_interface.cpp"
+ },
+ {
+  "directory": "/home/andrea/STM32/miosix-drum/faust",
+  "arguments": [
+   "g++",
+   "faust_parameter_test.cpp",
+   "-o",
+   "FaustParameterTest"
+  ],
+  "file": "faust_parameter_test.cpp"
  }
 ]
