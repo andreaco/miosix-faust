@@ -9,8 +9,8 @@
 
 /**
  * Sample rate of the DAC.
+ * This must be set equal to the one set in faust/embedded/platform.lib
  */
-//TODO: FIX to faust precomputed SR
 #define AUDIO_DRIVER_SAMPLE_RATE 48000
 
 /**

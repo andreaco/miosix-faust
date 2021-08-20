@@ -1,7 +1,7 @@
 
 
-#ifndef STM32_MONOSYNTH_AUDIO_MODULE_H
-#define STM32_MONOSYNTH_AUDIO_MODULE_H
+#ifndef MIOSIX-DRUM_AUDIO_MODULE_H
+#define MIOSIX-DRUM_AUDIO_MODULE_H
 
 #include "../drivers/common/audio.h"
 #include "audio_buffer.h"
@@ -63,4 +63,4 @@ private:
 
 };
 
-#endif //STM32_MONOSYNTH_AUDIO_MODULE_H
+#endif //MIOSIX-DRUM_AUDIO_MODULE_H
