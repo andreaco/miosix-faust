@@ -1,9 +1,9 @@
 CC=g++
 
-faustsynth: FaustSynth.dsp
-	@faust -I /usr/local/share/faust/embedded/ -a arch.cpp -i -cn FaustSynth FaustSynth.dsp -o FaustSynth.h
+faustsynth: faust_synth.dsp
+	@faust -I /usr/local/share/faust/embedded/ -a arch.cpp -i -cn FaustSynth faust_synth.dsp -o faust_synth.h
 	$(info Avaiable Parameters:)
-	@$(CC) FaustParameterTest.cpp -o FaustParameterTest && ./FaustParameterTest && rm FaustParameterTest
+	@$(CC) faust_parameter_test.cpp -o FaustParameterTest && ./FaustParameterTest && rm FaustParameterTest
 
 .PHONY: clean
 

@@ -4,7 +4,7 @@
 #include "../drivers/common/audio_config.h"
 #include "parameter_config.h"
 
-#include "FaustSynth.h"
+#include "faust_synth.h"
 
 
 class Faust_AudioProcessor : public AudioProcessor {
@@ -68,12 +68,12 @@ public:
 
     inline void gateOn()
     {
-        control.setParamValue("/FaustSynth/gate", 1);
+        control.setParamValue("/faust_synth/gate", 1);
     }
 
     inline void gateOff()
     {
-        control.setParamValue("/FaustSynth/gate", 0);
+        control.setParamValue("/faust_synth/gate", 0);
     }
 
 private:

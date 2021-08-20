@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------
-name: "FaustSynth"
+name: "faust_synth"
 Code generated with Faust 2.33.1 (https://faust.grame.fr)
 Compilation options: -a arch.cpp -lang cpp -es 1 -single -ftz 0
 ------------------------------------------------------------ */
@@ -854,7 +854,7 @@ class FaustSynth : public dsp {
 		m->declare("fds.lib/author", "Romain Michon");
 		m->declare("fds.lib/name", "Faust Finite Difference Schemes Library");
 		m->declare("fds.lib/version", "0.0");
-		m->declare("filename", "FaustSynth.dsp");
+		m->declare("filename", "faust_synth.dsp");
 		m->declare("filters.lib/lowpass0_highpass1", "MIT-style STK-4.3 license");
 		m->declare("filters.lib/name", "Faust Filters Library");
 		m->declare("filters.lib/version", "0.3");
@@ -874,7 +874,7 @@ class FaustSynth : public dsp {
 		m->declare("mi.lib/version", "0.0");
 		m->declare("misceffects.lib/name", "Misc Effects Library");
 		m->declare("misceffects.lib/version", "2.0");
-		m->declare("name", "FaustSynth");
+		m->declare("name", "faust_synth");
 		m->declare("noises.lib/name", "Faust Noise Generator Library");
 		m->declare("noises.lib/version", "0.0");
 		m->declare("oscillators.lib/name", "Faust Oscillator Library");
@@ -991,7 +991,7 @@ class FaustSynth : public dsp {
 	}
 	
 	virtual void buildUserInterface(UI* ui_interface) {
-		ui_interface->openVerticalBox("FaustSynth");
+		ui_interface->openVerticalBox("faust_synth");
 		ui_interface->declare(&fHslider3, "midi", "ctrl 73");
 		ui_interface->addHorizontalSlider("A", &fHslider3, 0.00999999978f, 0.00999999978f, 4.0f, 0.00999999978f);
 		ui_interface->declare(&fHslider4, "midi", "ctrl 76");

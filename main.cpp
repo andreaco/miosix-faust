@@ -5,8 +5,7 @@
 #include "drivers/stm32f407vg_discovery/encoder.h"
 #include "drivers/stm32f407vg_discovery/button.h"
 #include "drivers/stm32f407vg_discovery/potentiometer.h"
-#include "audio/audio_processor.h"
-#include "Faust/FaustAudioProcessor.h"
+#include "Faust/faust_audio_processor.h"
 #include "drivers/stm32f407vg_discovery/midi_in.h"
 #include "midi/midi_parser.h"
 #include "lcd_interface.h"
@@ -68,7 +67,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 /**
  * Slider UI Thread Function
  */
-void sliderUI()
+[[noreturn]] void sliderUI()
 {
     slider1::init();
     slider2::init();
@@ -88,7 +87,7 @@ void sliderUI()
 /**
  * Encoder UI Thread Function
  */
-void encoderUI()
+[[noreturn]] void encoderUI()
 {
     // Encoders Initialization
     encoder1::init();
@@ -120,7 +119,7 @@ void encoderUI()
 /**
  * Encoder UI Thread Function
  */
-void buttonUI()
+[[noreturn]] void buttonUI()
 {
     // Buttons Initialization
     button1::init();
@@ -138,7 +137,7 @@ void buttonUI()
     }
 }
 
-void lcdUI()
+[[noreturn]] void lcdUI()
 {
     lcdPage.p[0].name = "FRQ";
     lcdPage.p[1].name = "MOD";
@@ -154,11 +153,10 @@ void lcdUI()
 }
 
 
-void midiParsing()
+[[noreturn]] void midiParsing()
 {
     MidiIn midiIn;
 
-    uint8_t status;
     uint8_t byte;
     while(true)
     {
@@ -168,7 +166,7 @@ void midiParsing()
     }
 }
 
-void midiProcessing()
+[[noreturn]] void midiProcessing()
 {
     while(true)
     {
