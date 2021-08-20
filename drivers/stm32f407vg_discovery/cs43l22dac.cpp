@@ -184,7 +184,7 @@ void Cs43l22dac::send(unsigned char index, unsigned char data) {
 
 
 void Cs43l22dac::setVolume(int db) {
-    db = 2 * std::max(-102, std::min(0, db));
+    db = 2 * std::max(-102, std::min(12, db));
     unsigned char vol = static_cast<unsigned int>(db) & 0xff;
     send(0x20, vol);
     send(0x21, vol);

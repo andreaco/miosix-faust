@@ -114,7 +114,7 @@ void AudioDriver::init() {
     Cs43l22dac::init(AUDIO_DRIVER_SAMPLE_RATE);
 
     // default volume
-    setVolume(0.9);
+    setVolume(1);
 
     // saving the writer thread
     writerThread = miosix::Thread::getCurrentThread();
