@@ -8,7 +8,7 @@
 #include "drivers/stm32f407vg_discovery/midi_in.h"
 #include "faust/faust_audio_processor.h"
 #include "midi/midi_parser.h"
-#include "lcd_interface.h"
+#include "drivers/common/lcd_interface.h"
 #include <util/lcd44780.h>
 
 /**
@@ -27,6 +27,7 @@ typedef miosix::Gpio<GPIOC_BASE, 2> e;
 static miosix::Lcd44780 display(rs::getPin(), e::getPin(), d4::getPin(),
                                 d5::getPin(), d6::getPin(), d7::getPin(), 2, 16);
 LCDUtils::LCDPage lcdPage;
+miosix::Mutex lcdMutex;
 
 /**
  * Encoders Pin Definition
@@ -49,7 +50,7 @@ typedef Button<GPIOD_BASE, 3> button4;
  * Audio Driver and Synthesizer declaration
  */
 AudioDriver audioDriver;
-Faust_AudioProcessor synth(audioDriver);
+FaustAudioProcessor synth(audioDriver);
 
 /**
  * Midi Parser declaration and initialization
@@ -67,7 +68,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 /**
  * Slider UI Thread Function
  */
-[[noreturn]] void sliderUI()
+void sliderUI()
 {
     slider1::init();
     slider2::init();
@@ -87,7 +88,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 /**
  * Encoder UI Thread Function
  */
-[[noreturn]] void encoderUI()
+void encoderUI()
 {
     // Encoders Initialization
     encoder1::init();
@@ -107,11 +108,13 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
         synth.setEncoder3(e3);
         synth.setEncoder4(e4);
 
-        lcdPage.p[0].value = (int) (e1 * 999);
-        lcdPage.p[1].value = (int) (e2 * 999);
-        lcdPage.p[2].value = (int) (e3 * 999);
-        lcdPage.p[3].value = (int) (e4 * 999);
-
+        {
+            miosix::Lock<miosix::Mutex> l(lcdMutex);
+            lcdPage.p[0].value = (int) (e1 * 999);
+            lcdPage.p[1].value = (int) (e2 * 999);
+            lcdPage.p[2].value = (int) (e3 * 999);
+            lcdPage.p[3].value = (int) (e4 * 999);
+        }
         miosix::Thread::sleep(50);
     }
 }
@@ -119,7 +122,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 /**
  * Encoder UI Thread Function
  */
-[[noreturn]] void buttonUI()
+void buttonUI()
 {
     // Buttons Initialization
     button1::init();
@@ -137,15 +140,17 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
     }
 }
 
-[[noreturn]] void lcdUI()
+void lcdUI()
 {
     lcdPage.p[0].name = "FRQ";
     lcdPage.p[1].name = "MOD";
     lcdPage.p[2].name = "FZZ";
     lcdPage.p[3].name = "GAN";
 
-    while(true) {
+    while(true)
+    {
         {
+            miosix::Lock<miosix::Mutex> l(lcdMutex);
             LCDUtils::lcdPrintPage(display, lcdPage);
             miosix::Thread::sleep(250);
         }
@@ -153,7 +158,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
 }
 
 
-[[noreturn]] void midiParsing()
+void midiParsing()
 {
     MidiIn midiIn;
 
@@ -166,7 +171,7 @@ typedef Potentiometer<GPIOA_BASE, 7, 7> slider4;
     }
 }
 
-[[noreturn]] void midiProcessing()
+void midiProcessing()
 {
     while(true)
     {
