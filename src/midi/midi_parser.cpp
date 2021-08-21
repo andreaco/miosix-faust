@@ -1,14 +1,22 @@
 #include "../../include/midi/midi_parser.h"
 
 MidiNote MidiParser::popNote() {
-    MidiNote note = noteMessageBuffer.front();
-    noteMessageBuffer.pop();
+    MidiNote note;
+    {
+        miosix::Lock<miosix::Mutex> l(bufferMutex);
+        note = noteMessageBuffer.front();
+        noteMessageBuffer.pop();
+    }
     return note;
 }
 
 ControlChange MidiParser::popCC() {
-    ControlChange cc = ccMessageBuffer.front();
-    ccMessageBuffer.pop();
+    ControlChange cc;
+    {
+        miosix::Lock<miosix::Mutex> l(bufferMutex);
+        cc = ccMessageBuffer.front();
+        ccMessageBuffer.pop();
+    }
     return cc;
 }
 
@@ -42,7 +50,7 @@ void MidiParser::parseByte(uint8_t byte) {
                 currentNote.channel = channel;
                 currentNote.rawData[0] = byte;
             }
-            // Look for a note off event
+                // Look for a note off event
             else if (message == NOTE_OFF_MASK) {
                 state = NOTE_DATA1;
                 currentNote.msgType = MidiNote::NOTE_OFF;
@@ -68,7 +76,10 @@ void MidiParser::parseByte(uint8_t byte) {
             currentNote.rawData[2] = byte;
             state = STATUS;
             lastState = NOTE_DATA2;
-            noteMessageBuffer.push(currentNote);
+            {
+                miosix::Lock<miosix::Mutex> l(bufferMutex);
+                noteMessageBuffer.push(currentNote);
+            }
             break;
         }
         case CC_DATA1: {
@@ -82,7 +93,11 @@ void MidiParser::parseByte(uint8_t byte) {
             currentCC.rawData[2] = byte;
             state = STATUS;
             lastState = CC_DATA2;
-            ccMessageBuffer.push(currentCC);
+            {
+                miosix::Lock<miosix::Mutex> l(bufferMutex);
+                ccMessageBuffer.push(currentCC);
+            }
+            break;
         }
     }
 }

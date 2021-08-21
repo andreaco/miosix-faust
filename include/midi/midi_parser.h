@@ -1,6 +1,7 @@
 #ifndef MICROAUDIO_MIDIPARSER_H
 #define MICROAUDIO_MIDIPARSER_H
 
+#include "miosix.h"
 #include "../containers/circular_buffer.h"
 #include "../config/hw_config.h"
 
@@ -127,8 +128,9 @@ private:
     ParseState lastState;
 
     /**
-     *
+     * Buffer Mutex
      */
+     miosix::Mutex bufferMutex;
 };
 
 #endif //MICROAUDIO_MIDIPARSER_H
