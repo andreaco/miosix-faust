@@ -19,7 +19,9 @@
 
 /**
  * Templated static class that allows to initialize
- * and get the state of an ADC channel from a pin at any given time
+ * and get the state of an ADC1 channel from a pin at any given time
+ * In order to choose a pin, please refer to the datasheet,
+ * searching for ADC1 available pins, and choosing the right ADC_CHANNEL related to them
  * @tparam GPIO_BASE GPIO base for ADC pin
  * @tparam PIN GPIO pin to be used as ADC input
  * @tparam ADC_CHANNEL ADC channel related to the pin (See Datasheet)
@@ -82,10 +84,8 @@ public:
         // Averaging
         float result = 0;
         for (int i = 0; i < ADC_AVG_SAMPLES; ++i)
-        {
-            miosix::FastInterruptDisableLock dLock;
             result += readChannel();
-        }
+
         result /= (float) ADC_AVG_SAMPLES;
         result /= ADC_MAX_VALUE;
         return result;
@@ -100,6 +100,7 @@ private:
      */
     static uint16_t readChannel()
     {
+        miosix::FastInterruptDisableLock dLock;
         // Clear sequence register
         ADC1->SQR3 = 0;
 
