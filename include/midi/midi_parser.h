@@ -2,6 +2,7 @@
 #define MICROAUDIO_MIDIPARSER_H
 
 #include "../containers/circular_buffer.h"
+#include "../config/hw_config.h"
 
 /**
  * Definition of MIDI Standard Statuses
@@ -87,7 +88,7 @@ private:
     /**
      * Circular Buffer containing the parsed MIDI notes
      */
-    CircularBuffer<MidiNote, 32> noteMessageBuffer;
+    CircularBuffer<MidiNote, MIDI_NOTE_MESSAGE_QUEUE_SIZE> noteMessageBuffer;
 
     /**
      * Attribute containing the MidiNote being currently parsed
@@ -97,7 +98,7 @@ private:
     /**
      * Circular Buffer containing the parsed CC messages
      */
-    CircularBuffer<ControlChange, 32> ccMessageBuffer;
+    CircularBuffer<ControlChange, CC_MESSAGE_QUEUE_SIZE> ccMessageBuffer;
 
     /**
      * Attributet containing the CC message being currently parsed
@@ -124,6 +125,10 @@ private:
      * Last saved message for running status
      */
     ParseState lastState;
+
+    /**
+     *
+     */
 };
 
 #endif //MICROAUDIO_MIDIPARSER_H

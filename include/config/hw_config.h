@@ -30,5 +30,14 @@
  */
 #define MIDI_SERIAL_ID 1
 
+/**
+ * MIDI notes circular buffer size
+ */
+#define MIDI_NOTE_MESSAGE_QUEUE_SIZE 32
+
+/**
+ * MIDI CC circular buffer size
+ */
+#define CC_MESSAGE_QUEUE_SIZE 32
 
 #endif //MIOSIX_AUDIO_HW_CONFIG_H
