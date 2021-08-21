@@ -31,7 +31,7 @@ public:
             GPIO->MODER |= (2 << PIN1 * 2); // TIM Mode
             GPIO->MODER |= (2 << PIN2 * 2); // TIM Mode
 
-            // Set Alternate Function RegisterS
+            // Set Alternate Function Registers
             uint8_t AFR = TIMUtility::getAFR(TIM);
             GPIO->AFR[PIN1 / 8] |= (AFR << (PIN1 % 8) * 4);
             GPIO->AFR[PIN2 / 8] |= (AFR << (PIN2 % 8) * 4);
