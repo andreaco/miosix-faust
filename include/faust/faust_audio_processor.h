@@ -114,6 +114,10 @@ public:
      */
     void gateOff();
 
+    void processMidi(MidiNote midiNote)
+    {
+        miosixMidi.handleIncomingMidiMessage(midiNote);
+    }
 private:
     /**
      * Faust processor coming from the compilation of faust_synth.dsp
@@ -125,10 +129,15 @@ private:
      */
     MapUI control;
 
+    std::unique_ptr<MidiUI> midiUI;
+    miosix_midi_handler midiHandler;
+
     /**
      * Array containing the output buffer raw pointers to be passed to faust
      */
     float *audioBuffers[2];
+
+    miosix_midi miosixMidi;
 };
 
 

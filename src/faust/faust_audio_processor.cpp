@@ -5,7 +5,11 @@ FaustAudioProcessor::FaustAudioProcessor(AudioDriver &audioDriver)
     float currentSampleRate = audioDriver.getSampleRate();
 
     synth.init(currentSampleRate); // initializing the faust module
-    synth.buildUserInterface(&control); // linking the faust module to the controler
+    synth.buildUserInterface(&control); // linking the faust module to the controller
+
+    miosix_midi_handler midi_handler;
+    midiUI = std::make_unique<MidiUI>(&midi_handler);
+    synth.buildUserInterface(midiUI.get());
 }
 
 void FaustAudioProcessor::process() {

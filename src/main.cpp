@@ -12,6 +12,8 @@
 #include "include/midi/midi_parser.h"
 #include "include/config/thread_update_rates.h"
 
+#include "include/miosix-midi.h"
+
 
 /**
  * Encoders Pin Definition

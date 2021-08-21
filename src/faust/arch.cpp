@@ -3,6 +3,10 @@
 // needed by any faust arch file
 #include "faust/misc.h"
 
+
+#include "faust/gui/MidiUI.h"
+#include "../../include/miosix-midi.h"
+
 // allows to control a faust DSP module in a simple manner by using parameter's path
 #include "faust/gui/MapUI.h"
 
