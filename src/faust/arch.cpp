@@ -1,4 +1,4 @@
-// Author: Romain Michon (rmichonATccrmaDOTstanfordDOTedu)
+// Edited from Author: Romain Michon (rmichonATccrmaDOTstanfordDOTedu)
 
 // needed by any faust arch file
 #include "faust/misc.h"
