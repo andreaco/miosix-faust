@@ -21,16 +21,17 @@ ControlChange MidiParser::popCC() {
 }
 
 bool MidiParser::isNoteAvaiable() {
+    miosix::Lock<miosix::Mutex> l(bufferMutex);
     return !noteMessageBuffer.empty();
 }
 
 bool MidiParser::isCCAvaiable() {
+    miosix::Lock<miosix::Mutex> l(bufferMutex);
     return !ccMessageBuffer.empty();
 }
 
 void MidiParser::parseByte(uint8_t byte) {
     uint8_t channel = byte & 0x0f;
-
     uint8_t message = byte & 0xf0;
 
     // MIDI Running status Check
@@ -50,7 +51,7 @@ void MidiParser::parseByte(uint8_t byte) {
                 currentNote.channel = channel;
                 currentNote.rawData[0] = byte;
             }
-                // Look for a note off event
+            // Look for a note off event
             else if (message == NOTE_OFF_MASK) {
                 state = NOTE_DATA1;
                 currentNote.msgType = MidiNote::NOTE_OFF;
