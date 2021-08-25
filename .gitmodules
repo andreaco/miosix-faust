@@ -1,3 +1,6 @@
 [submodule "miosix/_examples/datalogger/tscpp"]
 	path = miosix/_examples/datalogger/tscpp
 	url = https://github.com/fedetft/tscpp.git
+[submodule "docs/doxygen-awesome-css"]
+	path = docs/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git

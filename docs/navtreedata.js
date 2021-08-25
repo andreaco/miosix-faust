@@ -60,8 +60,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"",
-"encoder_8h_source.html"
+"annotated.html",
+"faust__synth_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

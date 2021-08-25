@@ -1,7 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"encoder_8h_source.html":[3,0,0,3,1,2],
-"faust__audio__processor_8h_source.html":[3,0,0,4,0],
 "faust__synth_8h_source.html":[3,0,0,4,1],
 "files.html":[3,0],
 "functions.html":[2,3,0],
@@ -9,8 +7,8 @@ var NAVTREEINDEX1 =
 "functions_type.html":[2,3,2],
 "hierarchy.html":[2,2],
 "hw__config_8h_source.html":[3,0,0,1,1],
-"index.html":[],
 "index.html":[0],
+"index.html":[],
 "index.html#autotoc_md1":[0,0],
 "index.html#autotoc_md2":[0,1],
 "index.html#autotoc_md3":[0,2],
@@ -88,5 +86,7 @@ var NAVTREEINDEX1 =
 "structdsp__memory__manager.html#a4266efbb5df86b8b0d60eab4daa57bde":[2,0,18,1],
 "structdsp__memory__manager.html#a58349e8177315a3e79576856059c59c6":[2,0,18,2],
 "thread__update__rates_8h_source.html":[3,0,0,1,3],
-"utility_8h_source.html":[3,0,0,3,1,5]
+"utility_8h_source.html":[3,0,0,3,1,5],
+"":[1,0,0],
+"":[1,0,3]
 };
