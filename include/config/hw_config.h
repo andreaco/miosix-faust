@@ -20,7 +20,7 @@
  * if (2): 8-bit  (11 ADCCLK cycles)
  * if (3): 6-bit  ( 9 ADCCLK cycles)
  */
-#define ADC_RESOLUTION (2)
+#define ADC_RESOLUTION (1)
 
 /**
  * For STM32F407VG
