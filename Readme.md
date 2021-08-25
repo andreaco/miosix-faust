@@ -62,7 +62,7 @@ Similarly to the ```Potentiometer``` class, this class is templated and needs th
 - ```PIN1```: pin 1 connected to the encoder.
 - ```PIN2```: pin 2 connected to the encoder.
 
-Analogously to the potentiometer class, the initialization of the encoder is performed by calling the static function \verb!init()!.
+Analogously to the potentiometer class, the initialization of the encoder is performed by calling the static function ```init()```.
 In the following code snippet a basic usage of this class is shown.
 ```cpp
     // Definition
