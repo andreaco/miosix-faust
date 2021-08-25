@@ -106,24 +106,159 @@ Collaboration diagram for AudioProcessor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af083870e2c870eeaad23d54317b2cda7"><td class="memItemLeft" align="right" valign="top"><a id="af083870e2c870eeaad23d54317b2cda7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>AudioProcessor</b> (<a class="el" href="class_audio_driver.html">AudioDriver</a> &amp;audioDriver)</td></tr>
+<tr class="memitem:af083870e2c870eeaad23d54317b2cda7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_audio_processor.html#af083870e2c870eeaad23d54317b2cda7">AudioProcessor</a> (<a class="el" href="class_audio_driver.html">AudioDriver</a> &amp;audioDriver)</td></tr>
 <tr class="separator:af083870e2c870eeaad23d54317b2cda7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1aa926a013f5083581ff94e3a708714d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_audio_processor.html#a1aa926a013f5083581ff94e3a708714d">process</a> ()=0</td></tr>
 <tr class="separator:a1aa926a013f5083581ff94e3a708714d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79b34fba652cd440c94a8d502fff7391"><td class="memItemLeft" align="right" valign="top"><a id="a79b34fba652cd440c94a8d502fff7391"></a>
-<a class="el" href="class_audio_buffer.html">AudioBuffer</a>&lt; float, 2, AUDIO_DRIVER_BUFFER_SIZE &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getBuffer</b> () const</td></tr>
+<tr class="memitem:a79b34fba652cd440c94a8d502fff7391"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_audio_buffer.html">AudioBuffer</a>&lt; float, 2, AUDIO_DRIVER_BUFFER_SIZE &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_audio_processor.html#a79b34fba652cd440c94a8d502fff7391">getBuffer</a> () const</td></tr>
 <tr class="separator:a79b34fba652cd440c94a8d502fff7391"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace7610a339d41e43443002e67bbea72a"><td class="memItemLeft" align="right" valign="top"><a id="ace7610a339d41e43443002e67bbea72a"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>getBufferSize</b> () const</td></tr>
+<tr class="memitem:ace7610a339d41e43443002e67bbea72a"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_audio_processor.html#ace7610a339d41e43443002e67bbea72a">getBufferSize</a> () const</td></tr>
 <tr class="separator:ace7610a339d41e43443002e67bbea72a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f8928fdc1824dba28e313cb1b63e2f1"><td class="memItemLeft" align="right" valign="top"><a id="a1f8928fdc1824dba28e313cb1b63e2f1"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>getSampleRate</b> () const</td></tr>
+<tr class="memitem:a1f8928fdc1824dba28e313cb1b63e2f1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_audio_processor.html#a1f8928fdc1824dba28e313cb1b63e2f1">getSampleRate</a> () const</td></tr>
 <tr class="separator:a1f8928fdc1824dba28e313cb1b63e2f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa63cf60a090b055de8279f415707762b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_audio_processor.html#aa63cf60a090b055de8279f415707762b">AudioProcessor</a> ()=delete</td></tr>
+<tr class="separator:aa63cf60a090b055de8279f415707762b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base abstract class that can be extended to implement a processor for audio. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af083870e2c870eeaad23d54317b2cda7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af083870e2c870eeaad23d54317b2cda7">&#9670;&nbsp;</a></span>AudioProcessor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AudioProcessor::AudioProcessor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_audio_driver.html">AudioDriver</a> &amp;&#160;</td>
+          <td class="paramname"><em>audioDriver</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor, builds the object by referencing to a specific <a class="el" href="class_audio_driver.html">AudioDriver</a> that will give the buffers to write to and its other attributs such like sample rate and block size. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">audioDriver</td><td>The <a class="el" href="class_audio_driver.html">AudioDriver</a> to use </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa63cf60a090b055de8279f415707762b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa63cf60a090b055de8279f415707762b">&#9670;&nbsp;</a></span>AudioProcessor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AudioProcessor::AudioProcessor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Inheriting destructor from <a class="el" href="class_audio_processable.html">AudioProcessable</a> </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a79b34fba652cd440c94a8d502fff7391"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79b34fba652cd440c94a8d502fff7391">&#9670;&nbsp;</a></span>getBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_audio_buffer.html">AudioBuffer</a>&lt;float, 2, AUDIO_DRIVER_BUFFER_SIZE&gt;&amp; AudioProcessor::getBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Used to obtain a reference to the output <a class="el" href="class_audio_buffer.html">AudioBuffer</a> </p><dl class="section return"><dt>Returns</dt><dd>The audio buffer in which to write to </dd></dl>
+
+</div>
+</div>
+<a id="ace7610a339d41e43443002e67bbea72a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace7610a339d41e43443002e67bbea72a">&#9670;&nbsp;</a></span>getBufferSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int AudioProcessor::getBufferSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Getter for the buffer size </p><dl class="section return"><dt>Returns</dt><dd>Audio Driver BufferSize </dd></dl>
+
+</div>
+</div>
+<a id="a1f8928fdc1824dba28e313cb1b63e2f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f8928fdc1824dba28e313cb1b63e2f1">&#9670;&nbsp;</a></span>getSampleRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float AudioProcessor::getSampleRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the current sample rate in use by the Audio Driver </p><dl class="section return"><dt>Returns</dt><dd>Current sample rate </dd></dl>
+
+</div>
+</div>
 <a id="a1aa926a013f5083581ff94e3a708714d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1aa926a013f5083581ff94e3a708714d">&#9670;&nbsp;</a></span>process()</h2>
 
@@ -146,7 +281,7 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>getSampleRate</b> ()
   </tr>
 </table>
 </div><div class="memdoc">
-<p>This method is called by the <a class="el" href="class_audio_driver.html">AudioDriver</a> during a DMA complete transfer IRQ. </p>
+<p>Inherited from <a class="el" href="class_audio_processable.html">AudioProcessable</a>, called each time a buffer is ready to be written </p>
 
 <p>Implements <a class="el" href="class_audio_processable.html#a76e94315c35120b55149ec06ef377b13">AudioProcessable</a>.</p>
 

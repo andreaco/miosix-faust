@@ -9,5 +9,5 @@ var searchData=
   ['audioparameter_6',['AudioParameter',['../class_audio_parameter.html',1,'AudioParameter&lt; T &gt;'],['../class_audio_parameter.html#ac0c2a2ac8828c06ef1ec0ece9e837f64',1,'AudioParameter::AudioParameter()']]],
   ['audioprocessable_7',['AudioProcessable',['../class_audio_processable.html',1,'']]],
   ['audioprocessabledummy_8',['AudioProcessableDummy',['../class_audio_processable_dummy.html',1,'']]],
-  ['audioprocessor_9',['AudioProcessor',['../class_audio_processor.html',1,'']]]
+  ['audioprocessor_9',['AudioProcessor',['../class_audio_processor.html',1,'AudioProcessor'],['../class_audio_processor.html#af083870e2c870eeaad23d54317b2cda7',1,'AudioProcessor::AudioProcessor(AudioDriver &amp;audioDriver)'],['../class_audio_processor.html#aa63cf60a090b055de8279f415707762b',1,'AudioProcessor::AudioProcessor()=delete']]]
 ];

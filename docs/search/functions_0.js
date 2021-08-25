@@ -5,5 +5,6 @@ var searchData=
   ['audiobuffer_167',['AudioBuffer',['../class_audio_buffer.html#a6a671439e0de9078c8c6263dc07626d4',1,'AudioBuffer']]],
   ['audiodriver_168',['AudioDriver',['../class_audio_driver.html#ae798102c5dbdfda16f840bc5b5356773',1,'AudioDriver::AudioDriver()'],['../class_audio_driver.html#ae9da40a899700d25b2eee4e47c88dfcb',1,'AudioDriver::AudioDriver(const AudioDriver &amp;)=delete']]],
   ['audiomodule_169',['AudioModule',['../class_audio_module.html#acdf531c91c5d0789f3642567980ef634',1,'AudioModule::AudioModule(AudioProcessor &amp;audioProcessor)'],['../class_audio_module.html#aef2f356817336226be1ae17fb81fa01f',1,'AudioModule::AudioModule()=delete'],['../class_audio_module.html#ae404192390219efd42b5361f507e3921',1,'AudioModule::AudioModule(const AudioModule&lt; CHANNEL_NUM &gt; &amp;)=delete']]],
-  ['audioparameter_170',['AudioParameter',['../class_audio_parameter.html#ac0c2a2ac8828c06ef1ec0ece9e837f64',1,'AudioParameter']]]
+  ['audioparameter_170',['AudioParameter',['../class_audio_parameter.html#ac0c2a2ac8828c06ef1ec0ece9e837f64',1,'AudioParameter']]],
+  ['audioprocessor_171',['AudioProcessor',['../class_audio_processor.html#af083870e2c870eeaad23d54317b2cda7',1,'AudioProcessor::AudioProcessor(AudioDriver &amp;audioDriver)'],['../class_audio_processor.html#aa63cf60a090b055de8279f415707762b',1,'AudioProcessor::AudioProcessor()=delete']]]
 ];
