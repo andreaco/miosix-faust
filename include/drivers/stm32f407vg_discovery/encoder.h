@@ -86,7 +86,7 @@ public:
             // Reset Counter
             TIM->CNT = 0x7FFF;
         }
-        return (counterValue - 0x7FFF) / 1000.0f;
+        return (counterValue - 0x7FFF) / 5000.0f;
     }
 
 private:
@@ -107,7 +107,7 @@ private:
 
     /**
      * Current Stored Value
-     */
+      */
     static float value;
 };
 
