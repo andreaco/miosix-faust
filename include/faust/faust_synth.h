@@ -7,7 +7,7 @@ Compilation options: -a arch.cpp -lang cpp -es 1 -single -ftz 0
 #ifndef  __FaustSynth_H__
 #define  __FaustSynth_H__
 
-// Author: Romain Michon (rmichonATccrmaDOTstanfordDOTedu)
+// Edited from Author: Romain Michon (rmichonATccrmaDOTstanfordDOTedu)
 
 // needed by any faust arch file
 /************************** BEGIN misc.h **************************/
