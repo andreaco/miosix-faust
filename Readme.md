@@ -1,6 +1,9 @@
 # Drum Module based on STM32F407VG
 - [Documentation](https://andreaco.github.io/miosix-drum/)
 
+![Final Product](https://user-images.githubusercontent.com/33195819/132219130-737febbb-8509-4217-a38b-0d73901dc0f4.jpeg)
+
+
 ## Introduction
 This project aims at integrating a digital drum synthesizer using Miosix real time OS on an STM32F407VG Discovery Board.
 To do this, a user interface by means of buttons, sliders, encoders, and an LCD has been implemented to control the synthesizer.
